@@ -13,7 +13,7 @@ This includes:
 - scripts enabling to download the data from its original sources;
 - optionally, some small demo datasets derived from the raw data, in order to facilitate its use for the different courses of the diploma (Python, Unix, statistics with R, ...).
 
-***Beware:** this repository should by no means not contain any massive data like the raw read files or mass spectrometry profiles. *
+_**Beware:** this repository should by no means not contain any massive data like the raw read files or mass spectrometry profiles. _
 
 ## Study cases
 
