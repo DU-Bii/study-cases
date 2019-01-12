@@ -16,4 +16,4 @@ gene-metabolome associations in Escherichia coli. Mol Syst Biol. 2017 Jan
 
 - Profile data for > 34,000 mass spectrometric analysis <http://massive.ucsd.edu/>, accession code: [MSV000078963](https://massive.ucsd.edu/ProteoSAFe/dataset.jsp?task=004a1fdf66844779838d203fbe767182). 
 
-- Raw data and modified z-scores for positive and negative mode (tab- separated and excel files) can be downloaded from <https://www.eb i.ac.uk/biostudies/>, accession code: [S-BSST](<https://www.ebi.ac.uk/biostudies/studies?query=S-BSST5).
+- Raw data and modified z-scores for positive and negative mode (tab- separated and excel files) can be downloaded from <https://www.ebi.ac.uk/biostudies/>, accession code: [S-BSST](https://www.ebi.ac.uk/biostudies/studies?query=S-BSST5).
