@@ -15,6 +15,12 @@ This includes:
 
 ***Beware:** this repository should by no means not contain any massive data like the raw read files or mass spectrometry profiles. *
 
+## Study cases
+
+### Escherichia coli
+
+- [Genomewide landscape of gene–metabolome associations in Escherichia coli](Escherichia_coli/genome-metabolome_fuhrer_2017/)
+
 -------------------------
 
 Contact: <Jacques.van-Helden@univ-amu.fr>
