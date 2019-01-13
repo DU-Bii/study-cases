@@ -1,5 +1,11 @@
 # Study cases for the Diplôme Universitaire en Bioinformatique Intégrative (DU-Bii)
 
+- [License](LICENSE.html)
+
+## Access
+
+- Gitgub: <https://github.com/DU-Bii/study-cases>
+- Web: <https://du-bii.github.io/study-cases/>
 
 ## Contents
 
