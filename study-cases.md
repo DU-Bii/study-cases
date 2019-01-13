@@ -1,13 +1,7 @@
-# Study cases for the Diplôme Universitaire en Bioinformatique Intégrative (DU-Bii)
+# Study cases for the Diplôme Universitaire en Bioinformatique Intégrative ([DU-Bii](https://du-bii.github.io/accueil/))
 
-- [License](LICENSE.html)
 
-## Access
-
-- Gitgub: <https://github.com/DU-Bii/study-cases>
-- Web: <https://du-bii.github.io/study-cases/>
-
-## Contents
+## Description
 
 Preparation of the study cases used for the different courses of the Diplôme Universitaire en Bioinformatique Intégrative (DU-Bii) organised by the Université Paris-Diderot and the Institut Français de Bioinformatique (IFB). 
 
@@ -21,7 +15,7 @@ This includes:
 
 **Beware:** this repository should by no means not contain any massive data like the raw read files or mass spectrometry profiles.
 
-## Study cases
+## Table of contents
 
 ### Escherichia coli
 
@@ -29,6 +23,21 @@ This includes:
 
 - [Bacterial regulons](Escherichia_coli/bacterial-regulons_myers_2013/bacterial-regulons_myers_2013.html): ChIP-seq + RNA-seq
 
--------------------------
 
-Contact: <Jacques.van-Helden@univ-amu.fr>
+## Access
+
+- Gitgub: <https://github.com/DU-Bii/study-cases>
+- Web: <https://du-bii.github.io/study-cases/>
+
+## Contributing
+
+- Jacques van Helden <Jacques.van-Helden@univ-amu.fr>
+- Fabien Jourdan
+- ... (to be updated)
+
+
+## License
+
+- [License](LICENSE.html)
+
+
