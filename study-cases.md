@@ -32,7 +32,7 @@ This includes:
 
 ## Access
 
-- Gitgub: <https://github.com/DU-Bii/study-cases>
+- Github: <https://github.com/DU-Bii/study-cases>
 - Web: <https://du-bii.github.io/study-cases/>
 
 ## Credits
