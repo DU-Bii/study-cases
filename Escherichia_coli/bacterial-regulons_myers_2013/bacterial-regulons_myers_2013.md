@@ -30,7 +30,6 @@ We prepared a few small datasets that can be used for some courses for quick tes
 
 ### ChIP-seq
 
-- Folder: [data/ChIP-seq/](data/ChIP-seq/)
 - Genome coverage files ([wig fixed step](https://genome.ucsc.edu/goldenPath/help/wiggle.html) format)
 
     - [FNR_200bp.wig](data/ChIP-seq/FNR_200bp.wig)
@@ -42,7 +41,6 @@ We prepared a few small datasets that can be used for some courses for quick tes
     
 ### RNA-seq
 
-- Folder: [data/RNA-seq/](data/RNA-seq/)
 
 - Counts per gene ([tab-separated value](https://en.wikipedia.org/wiki/Tab-separated_values) format)
 
