@@ -35,6 +35,21 @@ This includes:
 - Github: <https://github.com/DU-Bii/study-cases>
 - Web: <https://du-bii.github.io/study-cases/>
 
+## Installation
+
+
+### Contributors (members of the teaching team)
+
+```{bash}
+git clone git@github.com:DU-Bii/study-cases.git
+```
+### Other people
+
+```{bash}
+git clone https://github.com/DU-Bii/study-cases.git
+```
+
+
 ## Credits
 
 - Jacques van Helden <Jacques.van-Helden@univ-amu.fr>
