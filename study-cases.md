@@ -25,7 +25,9 @@ This includes:
 
 ### Escherichia coli
 
-- [Genomewide landscape of gene–metabolome associations in Escherichia coli](Escherichia_coli/genome-metabolome_fuhrer_2017/)
+- [Genomewide landscape of gene–metabolome associations](Escherichia_coli/genome-metabolome_fuhrer_2017/genome-metabolome_fuhrer_2017.html): mutations + metabolome
+
+- [Bacterial regulons](Escherichia_coli/bacterial-regulons_myers_2013/bacterial-regulons_myers_2013.html): ChIP-seq + RNA-seq
 
 -------------------------
 
