@@ -28,6 +28,35 @@ This includes:
 
 ### Homo sapiens
 
+#### The Cancer Genome Atlas (TCGA) selected subsets
+
+- Web: <https://cancergenome.nih.gov/>
+
+- Selected subset: 
+
+    - Multi-Omics Cancer Benchmark TCGA Preprocessed Data
+    - Publication: <https://academic.oup.com/nar/article/46/20/10546/5123392>
+    - Data availability: <http://acgt.cs.tau.ac.il/multi_omic_benchmark/download.html>
+    - Breast cancer dataset: <http://acgt.cs.tau.ac.il/multi_omic_benchmark/data/breast.zip>
+        - Note: the data is pre-normalised (library scaling + log2 transformation)
+    - Clinical annotation for the samples: <http://acgt.cs.tau.ac.il/multi_omic_benchmark/data/clinical.zip>
+    - Relevant columns for classification: 2 markers used by clinicians to assign tissues to cancer subtypes
+        - ER_Status_nature2012
+        - HER2_Final_Status_nature2012
+
+
+Use of this dataset:
+
+- Module 3 - Statistical analysis with R:
+    - Differential analysis
+    - Clustering
+    - Evaluation of classifications: compare clustering results with markers
+    - Supervised classification
+
+Question: the Ron Shamir dataset is pre-normalized. Should we also download (from Recount2) the raw counts?
+
+- Module 4: méthodes et outils bioinformatiques ? To check with Olivier and Olivier. 
+
 
 
 ## Access
