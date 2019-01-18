@@ -38,12 +38,13 @@ This includes:
     - Publication: <https://academic.oup.com/nar/article/46/20/10546/5123392>
     - Data availability: <http://acgt.cs.tau.ac.il/multi_omic_benchmark/download.html>
     - Breast cancer dataset: <http://acgt.cs.tau.ac.il/multi_omic_benchmark/data/breast.zip>
-        - Note: the data is pre-normalised (library scaling + log2 transformation)
+            - Note: the data is pre-normalised (library scaling + log2 transformation)
     - Clinical annotation for the samples: <http://acgt.cs.tau.ac.il/multi_omic_benchmark/data/clinical.zip>
-    - Relevant columns for classification: 2 markers used by clinicians to assign tissues to cancer subtypes
-        - ER_Status_nature2012
-        - HER2_Final_Status_nature2012
-
+    - Relevant columns for classification: 
+            - 2 markers used by clinicians to assign tissues to cancer subtypes
+                    - ER_Status_nature2012
+                    - HER2_Final_Status_nature2012
+            - Laura will provide an additional file with the subtypes (<link_to_add>) + a script enabling to produce this subtype label based on the combination of these two markers
 
 Use of this dataset:
 
