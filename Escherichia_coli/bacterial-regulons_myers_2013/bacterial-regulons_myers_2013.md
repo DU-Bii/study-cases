@@ -12,7 +12,9 @@ ChIP-seq. Methods. 2015 Sep 15;86:80-8. doi: 10.1016/j.ymeth.2015.05.022. Epub
 
 ## Data availability
 
-- Raw reads: GEO series [GSE41195](https://www.ncbi.nlm.nih.gov/geo/query/acc.cgi?acc=GSE41195)
+### Raw reads
+
+GEO series [GSE41195](https://www.ncbi.nlm.nih.gov/geo/query/acc.cgi?acc=GSE41195)
 
     **Subsets:**
 
@@ -23,12 +25,21 @@ ChIP-seq. Methods. 2015 Sep 15;86:80-8. doi: 10.1016/j.ymeth.2015.05.022. Epub
     - [GSE41189](https://www.ncbi.nlm.nih.gov/geo/query/acc.cgi?acc=GSE41189)	Expression analysis of Escherichia coli MG1655 K-12 WT and ∆fnr mutant
 
 
-## Preprocessed dataset
+### Reference genome
+
+We download the reference genome from EnsemblGenomes Bacteria, release 37, strain and assembly identifier *Escherichia_coli_str_k_12_substr_mg1655.ASM584v2*.
+
+- [Genome sequence (fasta format)](ftp://ftp.ensemblgenomes.org/pub/bacteria/release-37/fasta/bacteria_0_collection/escherichia_coli_str_k_12_substr_mg1655/dna/Escherichia_coli_str_k_12_substr_mg1655.ASM584v2.dna.chromosome.Chromosome.fa.gz)
+- [Genome annotations (GFF3 format)](ftp://ftp.ensemblgenomes.org/pub/bacteria/release-37/gff3/bacteria_0_collection/escherichia_coli_str_k_12_substr_mg1655/Escherichia_coli_str_k_12_substr_mg1655.ASM584v2.37.chromosome.Chromosome.gff3.gz)
+- [Genome annotations (GTF format)(ftp://ftp.ensemblgenomes.org/pub/release-37/bacteria/gtf/bacteria_0_collection/escherichia_coli_str_k_12_substr_mg1655/Escherichia_coli_str_k_12_substr_mg1655.ASM584v2.37.gtf.gz)
+
+
+### Preprocessed dataset
 
 We prepared a few small datasets that can be used for some courses for quick tests.
 
 
-### ChIP-seq
+#### ChIP-seq
 
 - Genome coverage files ([wig fixed step](https://genome.ucsc.edu/goldenPath/help/wiggle.html) format)
 
@@ -39,7 +50,7 @@ We prepared a few small datasets that can be used for some courses for quick tes
     - [FNR1_vs_input1_cutadapt_bowtie2_homer.bed](data/ChIP-seq/FNR1_vs_input1_cutadapt_bowtie2_homer.bed)
     - [FNR1_vs_input1_cutadapt_bowtie2_macs2.bed](data/ChIP-seq/FNR1_vs_input1_cutadapt_bowtie2_macs2.bed)
     
-### RNA-seq
+#### RNA-seq
 
 
 - Counts per gene ([tab-separated value](https://en.wikipedia.org/wiki/Tab-separated_values) format)
