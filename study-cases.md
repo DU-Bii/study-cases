@@ -45,6 +45,7 @@ This includes:
             - ER_Status_nature2012
             - HER2_Final_Status_nature2012
        
+       
      - Additional [file with the subtypes] (Human/subtypes_annotation.txt) + a script enabling to produce this [subtype label based on the combination of these two markers] (Human/SubAnnot.R)
 Use of this dataset:
 
