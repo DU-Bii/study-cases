@@ -44,7 +44,8 @@ This includes:
         - 2 markers used by clinicians to assign tissues to cancer subtypes
             - ER_Status_nature2012
             - HER2_Final_Status_nature2012
-         - Laura will provide an additional file with the subtypes (<link_to_add>) + a script enabling to produce this subtype label based on the combination of these two markers
+         - Laura will provide an additional file with the subtypes (<link_to_add>) + a script enabling to produce this subtype label based on the combination of these two markers (<study-cases/Human/SubAnnot.R>)
+      
 
 Use of this dataset:
 
