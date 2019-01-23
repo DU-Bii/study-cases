@@ -1,9 +1,20 @@
 # Study cases for the Diplôme Universitaire en Bioinformatique Intégrative ([DU-Bii](https://du-bii.github.io/accueil/))
 
+## Table of contents
 
-## Description
+- [Introduction](#introduction)
+- [Study case descriptions](#study-case-descriptions)
+    - [Escherichia coli](#escherichia-coli)
+    - [Arabidopsis thaliana](#arabidopsis-thaliana)
+    - [Homo sapiens](#homo-sapiens)
+- [Access](#access)
+- [Local installation](#local-installation)
+- [Credits](#credits)
+- [License](#license)
 
-Preparation of the study cases used for the different courses of the Diplôme Universitaire en Bioinformatique Intégrative (DU-Bii) organised by the Université Paris-Diderot and the Institut Français de Bioinformatique (IFB). 
+## Introduction
+
+This repository contains a description of the study cases used for the different courses of the Diplôme Universitaire en Bioinformatique Intégrative (DU-Bii) organised by the Université Paris-Diderot and the Institut Français de Bioinformatique (IFB). 
 
 
 This includes:
@@ -15,7 +26,7 @@ This includes:
 
 **Beware:** this repository should by no means not contain any massive data like the raw read files or mass spectrometry profiles.
 
-## Table of contents
+## Study case descriptions
 
 ### Escherichia coli
 
@@ -46,15 +57,14 @@ PMID: [28785276](https://www.ncbi.nlm.nih.gov/pubmed/?term=28785276); PubMed Cen
 - Github: <https://github.com/DU-Bii/study-cases>
 - Web: <https://du-bii.github.io/study-cases/>
 
-## Installation
+## Local installation
 
-
-### Contributors (members of the teaching team)
+### For contributors (members of the team)
 
 ```{bash}
 git clone git@github.com:DU-Bii/study-cases.git
 ```
-### Other people
+### For non-members of the team
 
 ```{bash}
 git clone https://github.com/DU-Bii/study-cases.git
