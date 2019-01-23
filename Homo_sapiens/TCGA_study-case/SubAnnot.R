@@ -1,6 +1,7 @@
-##### function assigning class to TCGA breast cancer subtypes based on the state of the markers PR, ER and HER
-# input clinical matrix of breast cancer downloaded from Shamir paper
-SubAnnot <- function(clinical){
+## Function assigning class to TCGA breast cancer subtypes 
+## based on the state of the markers PR, ER and HER
+## input clinical matrix of breast cancer downloaded from Shamir paper
+SubAnnot <- function (clinical){
   
   clinical_s<-clinical[which(!is.na(clinical[,8])),c(1,8,22,10)]
   clinical_s<-clinical_s[which(!is.na(clinical_s[,4])),]

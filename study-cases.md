@@ -25,40 +25,20 @@ This includes:
 
 ### Arabidopsis thaliana
 
+- **Strehmel et al. (2017).** 
+
+    - Data types: Metabolomics and proteomics
+    - Reference: Strehmel N, Hoehenwarter W, Mönchgesang S, Majovsky P, Krüger S, Scheel D, Lee
+J. *Stress-Related Mitogen-Activated Protein Kinases Stimulate the Accumulation of
+Small Molecules and Proteins in Arabidopsis thaliana Root Exudates*. Front Plant
+Sci. 2017 Jul 21;8:1292. doi: 10.3389/fpls.2017.01292. eCollection 2017. PubMed
+PMID: [28785276](https://www.ncbi.nlm.nih.gov/pubmed/?term=28785276); PubMed Central PMCID: [PMC5520323](https://europepmc.org/abstract/pmc/pmc5520323).
+    - Article: <https://www.frontiersin.org/articles/10.3389/fpls.2017.01292/full>
+
 
 ### Homo sapiens
 
-#### The Cancer Genome Atlas (TCGA) selected subsets
-
-- Web: <https://cancergenome.nih.gov/>
-
-- Selected subset: 
-
-    - Multi-Omics Cancer Benchmark TCGA Preprocessed Data
-    - Publication: <https://academic.oup.com/nar/article/46/20/10546/5123392>
-    - Data availability: <http://acgt.cs.tau.ac.il/multi_omic_benchmark/download.html>
-    - Breast cancer dataset: <http://acgt.cs.tau.ac.il/multi_omic_benchmark/data/breast.zip>
-        - Note: the data is pre-normalised (library scaling + log2 transformation)
-    - Clinical annotation for the samples: <http://acgt.cs.tau.ac.il/multi_omic_benchmark/data/clinical.zip>
-    - Relevant columns for classification: 
-        - 2 markers used by clinicians to assign tissues to cancer subtypes
-            - ER_Status_nature2012
-            - HER2_Final_Status_nature2012
-       
-       
-     - Additional file with the subtypes (Human/subtypes_annotation.txt) + a script enabling to produce this subtype label based on the combination of these two markers (Human/SubAnnot.R)
-Use of this dataset:
-
-- Module 3 - Statistical analysis with R:
-    - Differential analysis
-    - Clustering
-    - Evaluation of classifications: compare clustering results with markers
-    - Supervised classification
-
-Question: the Ron Shamir dataset is pre-normalized. Should we also download (from Recount2) the raw counts?
-
-- Module 4: méthodes et outils bioinformatiques ? To check with Olivier and Olivier. 
-
+- [The Cancer Genome Atlas (TCGA) selected subsets](Homo_sapiens/TCGA_study-case/)
 
 
 ## Access

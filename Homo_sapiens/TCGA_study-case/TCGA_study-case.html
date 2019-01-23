@@ -189,7 +189,67 @@ $(document).ready(function () {
 
 <div id="tcga-study-case" class="section level1">
 <h1>TCGA study case</h1>
-<p>This page describes a study case based on data from <strong>The Cancer Genome Atlas</strong> (<strong>TCGA</strong>).</p>
+<div id="table-of-content" class="section level2">
+<h2>Table of content</h2>
+<ul>
+<li><a href="#introduction">Introduction</a></li>
+<li><a href="#data-sources">Data sources</a></li>
+<li><a href="#use-in-the-different-courses">Use in the different courses</a></li>
+</ul>
+</div>
+<div id="introduction" class="section level2">
+<h2>Introduction</h2>
+<p>This page describes a study case based on data from <strong>The Cancer Genome Atlas</strong> (<strong>TCGA</strong>). This dataset contains more than 12,000 samples from patients suffering of a wide variety of cancer types. We use some subsets of this huge dataset for different courses of the <a href="https://du-bii.github.io/accueil">Diplôme Universitaire en Bioinformatique Intégrative (DU-Bii)</a>.</p>
+<p>The full datasets are available in the NCBI databases (Gene Expression Ombinus, Short Read Archives). For the sake of simplicity, we took benefit of pre-processed data made available by Ron Shamir’s team.</p>
+<p>We provide here</p>
+<ul>
+<li>the links to the sources of information,</li>
+<li>the scripts used to extract subsets of the original datasets, and format the them according to our particular needs.</li>
+</ul>
+</div>
+<div id="data-sources" class="section level2">
+<h2>Data sources</h2>
+<ul>
+<li><p>Web: <a href="https://cancergenome.nih.gov/" class="uri">https://cancergenome.nih.gov/</a></p></li>
+<li><p>Selected subset:</p>
+<ul>
+<li>Multi-Omics Cancer Benchmark TCGA Preprocessed Data</li>
+<li>Publication: <a href="https://academic.oup.com/nar/article/46/20/10546/5123392" class="uri">https://academic.oup.com/nar/article/46/20/10546/5123392</a></li>
+<li>Data availability: <a href="http://acgt.cs.tau.ac.il/multi_omic_benchmark/download.html" class="uri">http://acgt.cs.tau.ac.il/multi_omic_benchmark/download.html</a></li>
+<li>Breast cancer dataset: <a href="http://acgt.cs.tau.ac.il/multi_omic_benchmark/data/breast.zip" class="uri">http://acgt.cs.tau.ac.il/multi_omic_benchmark/data/breast.zip</a>
+<ul>
+<li>Note: the data is pre-normalised (library scaling + log2 transformation)</li>
+</ul></li>
+<li>Clinical annotation for the samples: <a href="http://acgt.cs.tau.ac.il/multi_omic_benchmark/data/clinical.zip" class="uri">http://acgt.cs.tau.ac.il/multi_omic_benchmark/data/clinical.zip</a></li>
+<li>Relevant columns for classification:
+<ul>
+<li>2 markers used by clinicians to assign tissues to cancer subtypes
+<ul>
+<li>ER_Status_nature2012</li>
+<li>HER2_Final_Status_nature2012</li>
+</ul></li>
+</ul></li>
+<li>Additional file with the subtypes (Human/subtypes_annotation.txt) + a script enabling to produce this subtype label based on the combination of these two markers (Human/SubAnnot.R) Use of this dataset:</li>
+</ul></li>
+</ul>
+</div>
+<div id="use-in-the-different-courses" class="section level2">
+<h2>Use in the different courses</h2>
+<ul>
+<li>Module 3 - Statistical analysis with R:
+<ul>
+<li>Differential analysis</li>
+<li>Clustering</li>
+<li>Evaluation of classifications: compare clustering results with markers</li>
+<li>Supervised classification</li>
+</ul></li>
+<li><p>Module 4: méthodes et outils bioinformatiques ? To check with Olivier and Olivier.</p></li>
+<li>Module 6 - Integrative bioinformatics
+<ul>
+<li>multi-level factorisation of multi-omics data</li>
+</ul></li>
+</ul>
+</div>
 </div>
 
 
