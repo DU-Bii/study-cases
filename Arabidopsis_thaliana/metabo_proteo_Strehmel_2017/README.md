@@ -1,4 +1,4 @@
-<h1>Genome-metabolome associations in Escherichia coli</h1>
+<h1>Transcriptome-proteome-metabolome associations in Arabidopsis thaliana</h1>
 
 <h2>Publication</h2>
 
@@ -9,4 +9,5 @@ PubMed Central PMCID: PMC5520323
 Free access at Frontiers in Plant Science
 <h2>Data availability</h2>
 
-The Metabolomics data is available in the Metabolights repository under the accession number (MTBLS441, http://www.ebi.ac.uk/metabolights/MTBLS441). The mass spectrometry proteomics data have been deposited to the ProteomeXchange Consortium via the PRIDE partner repository with the dataset identifier PXD006328 and DOI 10.6019/PXD006328.
+The Metabolomics data is available in the Metabolights repository under the accession number (MTBLS441, http://www.ebi.ac.uk/metabolights/MTBLS441).
+The mass spectrometry proteomics data have been deposited to the ProteomeXchange Consortium via the PRIDE partner repository with the dataset identifier PXD006328 and DOI 10.6019/PXD006328.
