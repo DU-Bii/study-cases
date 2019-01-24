@@ -1,4 +1,4 @@
-<h1>Transcriptome-proteome-metabolome associations in Arabidopsis thaliana</h1>
+<h1>Proteome-metabolome associations in Arabidopsis thaliana</h1>
 
 <h2>Publication</h2>
 
