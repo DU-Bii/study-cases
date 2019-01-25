@@ -45,6 +45,13 @@ Small Molecules and Proteins in Arabidopsis thaliana Root Exudates*. Front Plant
 Sci. 2017 Jul 21;8:1292. doi: 10.3389/fpls.2017.01292. eCollection 2017. PubMed
 PMID: [28785276](https://www.ncbi.nlm.nih.gov/pubmed/?term=28785276); PubMed Central PMCID: [PMC5520323](https://europepmc.org/abstract/pmc/pmc5520323).
     - Article: <https://www.frontiersin.org/articles/10.3389/fpls.2017.01292/full>
+    
+- **Liang et al. (2016).** 
+
+    - Data types: Transcriptomics, metabolomics and proteomics
+    - Reference: Liang C, Cheng S, Zhang Y, Sun Y, Fernie AR, Kang K, Panagiotou G, Lo C, Lim BL. Transcriptomic, proteomic and metabolic changes in Arabidopsis thaliana leaves after the onset of illumination. BMC Plant Biol. 2016 Feb 11;16:43. doi: 10.1186/s12870-016-0726-3.
+PubMed PMID: 26865323 PubMed Central PMCID: PMC4750186 Free access at BMC Plant Biology (https://europepmc.org/abstract/pmc/pmc4750186).
+    - Article: <https://bmcplantbiol.biomedcentral.com/articles/10.1186/s12870-016-0726-3>
 
 
 ### Homo sapiens
