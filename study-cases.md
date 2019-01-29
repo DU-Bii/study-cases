@@ -34,6 +34,8 @@ This includes:
 
 - [Bacterial regulons](Escherichia_coli/bacterial-regulons_myers_2013/): ChIP-seq + RNA-seq
 
+- [Bacterial compkete genome](Escherichia_coli/genome-sequence_allue-guardia_2019/): DNA-seq
+
 ### Arabidopsis thaliana
 
 - **Strehmel et al. (2017).** 
