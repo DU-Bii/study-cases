@@ -122,8 +122,6 @@ setwd(workdir)
 ```
 
 
-
-
 ## Data source
 
 ```{r download data}
@@ -183,7 +181,7 @@ We downloaded the following file types from Recount2: `r paste(collapse = ", ", 
 ```{r}
 ## Load the TCGA pheno table
 pheno <- read.delim(file = localFiles["phenotype"])
-dim(pheno)
+# dim(pheno)
 
 
 ## Load the TCGA count table.
@@ -193,12 +191,13 @@ dim(pheno)
 system.time(counts.per.gene <- fread(file = localFiles["counts-gene"]))
 # This takes 29 seconds
 
-dim(counts.per.gene) 
-
+# dim(counts.per.gene) 
 
 ```
 
+The full TCGA gene count table contains `r ncol(counts.per.gene)` samples (columns) and `r nrow(counts.per.gene)` genes (rows).
 
+For the study case, we select a breast cancer study. 
 
 
 
