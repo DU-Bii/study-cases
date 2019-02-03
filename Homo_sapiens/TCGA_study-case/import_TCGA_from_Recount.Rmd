@@ -1,0 +1,204 @@
+---
+title: "DU-Bii Study cases - TCGA"
+author: "Jacques van Helden"
+date: '`r Sys.Date()`'
+output:
+  html_document:
+    self_contained: no
+    fig_caption: yes
+    highlight: zenburn
+    theme: cerulean
+    toc: yes
+    toc_depth: 3
+    toc_float: yes
+    code_folding: "hide"
+  beamer_presentation:
+    colortheme: dolphin
+    fig_caption: yes
+    fig_height: 6
+    fig_width: 7
+    fonttheme: structurebold
+    highlight: tango
+    incremental: no
+    keep_tex: no
+    slide_level: 2
+    theme: Montpellier
+    toc: yes
+  revealjs::revealjs_presentation:
+    theme: night
+    transition: none
+    self_contained: true
+    css: ../slides.css
+  slidy_presentation:
+    smart: no
+    slide_level: 2
+    self_contained: yes
+    fig_caption: yes
+    fig_height: 6
+    fig_width: 7
+    highlight: tango
+    incremental: no
+    keep_md: yes
+    smaller: yes
+    theme: cerulean
+    toc: yes
+    widescreen: yes
+  pdf_document:
+    fig_caption: yes
+    highlight: zenburn
+    toc: yes
+    toc_depth: 3
+  ioslides_presentation:
+    slide_level: 2
+    self_contained: no
+    colortheme: dolphin
+    fig_caption: yes
+    fig_height: 6
+    fig_width: 7
+    fonttheme: structurebold
+    highlight: tango
+    smaller: yes
+    toc: yes
+    widescreen: yes
+font-import: http://fonts.googleapis.com/css?family=Risque
+subtitle: DUBii 2019
+font-family: Garamond
+transition: linear
+---
+
+```{r include=FALSE, echo=FALSE, eval=TRUE}
+library(knitr)
+library(kableExtra)
+library(data.table)
+
+# library(formattable)
+
+options(width = 300)
+# options(encoding = 'UTF-8')
+knitr::opts_chunk$set(
+  fig.width = 7, fig.height = 5, 
+  fig.path = 'figures/TCGA_import',
+  fig.align = "center", 
+  size = "tiny", 
+  echo = TRUE, eval = TRUE, 
+  warning = FALSE, message = FALSE, 
+  results = FALSE, comment = "")
+
+options(scipen = 12) ## Max number of digits for non-scientific notation
+# knitr::asis_output("\\footnotesize")
+
+```
+
+
+## Requirements
+
+- Recount library: <https://bioconductor.org/packages/release/bioc/html/recount.html>
+
+```{r}
+# Install BiocManager if required
+if (!requireNamespace("BiocManager", quietly = TRUE))
+    install.packages("BiocManager")
+
+# Install recount if required
+if (!require(recount)) {
+  BiocManager::install("recount", version = "3.8")
+  require(recount)
+}
+
+# BiocManager::valid()
+
+```
+
+
+## Working directory
+
+The downloaded and processed data will be saved in a working directory named **TCGA_import** in the user home folder.  If required this directory is created automatically. 
+
+```{r workdir}
+## Set the working directory
+workdir <- "~/TCGA_import"
+dir.create(workdir, recursive = TRUE, showWarnings = FALSE)
+setwd(workdir)
+```
+
+
+
+
+## Data source
+
+```{r download data}
+
+#### Download the TCGA data from Recount2 database ####
+
+## Set the recoutnID (to "TCGA")
+recountID <- "TCGA"
+
+# Specify the download directory
+download.dir <- file.path(workdir, "downloads", recountID)
+dir.create(download.dir, recursive = TRUE, showWarnings = FALSE)
+
+
+## Data types to download
+download.types <- c("phenotype", "counts-gene")
+localFiles <- c()
+for (type in download.types) {
+  message("Recount data type: ", type)
+  ## Get the URL of the recount file 
+  ## (its extension will depend on the data type)
+  recountURL <- download_study(
+    recountID, 
+    outdir = download.dir, 
+    type = type, 
+    download = FALSE)
+  message("\trecountURLL: ", recountURL)
+  
+  ## Define the local file name
+  localFile <- file.path(download.dir, basename(recountURL))
+  message("\tlocalFile: ", localFile)
+
+  ## Index local file for later use
+  localFiles[type] <- localFile
+
+  
+  ## Download the data only if required
+  if (!file.exists(localFile)) {
+    message("\tDowloading ", type, " from ReCount for study ", recountID)
+    url <- download_study(
+      recountID, 
+      outdir = download.dir, 
+      type = type)
+  } else {
+    message("\tfile already there: ", localFile)
+    
+  }
+}
+## Download the gene-level RangedSummarizedExperiment data
+# download_study(project = "TCGA", type = "counts-gene", outdir = download.dir)
+```
+
+We downloaded the following file types from Recount2: `r paste(collapse = ", ", download.types)`.
+
+## Data exploration
+
+```{r}
+## Load the TCGA pheno table
+pheno <- read.delim(file = localFiles["phenotype"])
+dim(pheno)
+
+
+## Load the TCGA count table.
+## We use gzfile to directly load the zgipped file, 
+## and data.table:::fread() to accelerate the reading. 
+## system.time(counts.per.gene <- read.delim(file = gzfile(localFiles["counts-gene"]))) ## This takes 430 seconds
+system.time(counts.per.gene <- fread(file = localFiles["counts-gene"]))
+# This takes 29 seconds
+
+dim(counts.per.gene) 
+
+
+```
+
+
+
+
+
