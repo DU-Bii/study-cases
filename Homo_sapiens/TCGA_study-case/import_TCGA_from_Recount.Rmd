@@ -112,7 +112,6 @@ if (!require(recount)) {
 
 ## Working directory
 
-The downloaded and processed data will be saved in a working directory named **TCGA_import** in the user home folder.  If required this directory is created automatically. 
 
 ```{r workdir}
 ## Set the working directory
@@ -120,6 +119,9 @@ workdir <- "~/TCGA_import"
 dir.create(workdir, recursive = TRUE, showWarnings = FALSE)
 setwd(workdir)
 ```
+
+
+The downloaded and processed data will be saved in a working directory named **TCGA_import** in the user home folder (``r workdir).  If required this directory is created automatically. 
 
 
 ## Data source
