@@ -214,6 +214,10 @@ $(document).ready(function () {
 <h3>TCGA web site</h3>
 <p><a href="https://cancergenome.nih.gov/" class="uri">https://cancergenome.nih.gov/</a></p>
 </div>
+<div id="recount2" class="section level3">
+<h3>Recount2</h3>
+<p><strong>Recount2</strong> (<a href="https://jhubiostatistics.shinyapps.io/recount/" class="uri">https://jhubiostatistics.shinyapps.io/recount/</a>) is a database rasembling several thousands of human RNA-seq studies, that were all processed with a same workflow in order to ensure the consistency of the transcriptome measurements. Recount2 provides direct access to tables of raw counts per gene, exon or transcript.</p>
+</div>
 <div id="preprocessed-datasets-made-available-by-ron-shamirs-team" class="section level3">
 <h3>Preprocessed datasets made available by Ron Shamir’s team</h3>
 <ul>
@@ -225,7 +229,9 @@ $(document).ready(function () {
 <li><p>Selected study case: Breast cancer dataset</p>
 <ul>
 <li>Data tables: <a href="http://acgt.cs.tau.ac.il/multi_omic_benchmark/data/breast.zip" class="uri">http://acgt.cs.tau.ac.il/multi_omic_benchmark/data/breast.zip</a></li>
-<li><p><strong>Relevant columns for classification</strong>: 2 markers used by clinicians to assign tissues to cancer subtypes - ER_Status_nature2012 - HER2_Final_Status_nature2012</p></li>
+<li><p><strong>Relevant columns for classification</strong>: 2 markers used by clinicians to assign tissues to cancer subtypes</p>
+<pre><code>- ER_Status_nature2012
+- HER2_Final_Status_nature2012</code></pre></li>
 <li><p>Laura Cantini prepared an additional file with the subtypes (Human/subtypes_annotation.txt) + a script enabling to produce this subtype label based on the combination of these two markers (Human/SubAnnot.R)</p></li>
 </ul></li>
 </ul>
@@ -246,7 +252,7 @@ $(document).ready(function () {
 <ul>
 <li>Module 6 - Integrative bioinformatics
 <ul>
-<li>multi-level factorisation of multi-omics data</li>
+<li>Multi-level factorisation of multi-omics data (Laura Cantini)</li>
 </ul></li>
 </ul>
 </div>

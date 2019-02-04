@@ -1,0 +1,494 @@
+<!DOCTYPE html>
+
+<html xmlns="http://www.w3.org/1999/xhtml">
+
+<head>
+
+<meta charset="utf-8" />
+<meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+<meta name="generator" content="pandoc" />
+
+
+<meta name="author" content="Jacques van Helden" />
+
+<meta name="date" content="2019-02-03" />
+
+<title>DU-Bii Study cases - TCGA</title>
+
+<script src="import_TCGA_from_Recount_files/jquery-1.11.3/jquery.min.js"></script>
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<link href="import_TCGA_from_Recount_files/bootstrap-3.3.5/css/cerulean.min.css" rel="stylesheet" />
+<script src="import_TCGA_from_Recount_files/bootstrap-3.3.5/js/bootstrap.min.js"></script>
+<script src="import_TCGA_from_Recount_files/bootstrap-3.3.5/shim/html5shiv.min.js"></script>
+<script src="import_TCGA_from_Recount_files/bootstrap-3.3.5/shim/respond.min.js"></script>
+<script src="import_TCGA_from_Recount_files/jqueryui-1.11.4/jquery-ui.min.js"></script>
+<link href="import_TCGA_from_Recount_files/tocify-1.9.1/jquery.tocify.css" rel="stylesheet" />
+<script src="import_TCGA_from_Recount_files/tocify-1.9.1/jquery.tocify.js"></script>
+<script src="import_TCGA_from_Recount_files/navigation-1.1/tabsets.js"></script>
+<script src="import_TCGA_from_Recount_files/navigation-1.1/codefolding.js"></script>
+
+
+<style type="text/css">code{white-space: pre;}</style>
+<style type="text/css" data-origin="pandoc">
+div.sourceCode { overflow-x: auto; }
+table.sourceCode, tr.sourceCode, td.lineNumbers, td.sourceCode {
+  margin: 0; padding: 0; vertical-align: baseline; border: none; }
+table.sourceCode { width: 100%; line-height: 100%; background-color: #303030; color: #cccccc; }
+td.lineNumbers { text-align: right; padding-right: 4px; padding-left: 4px; }
+td.sourceCode { padding-left: 5px; }
+pre, code { color: #cccccc; background-color: #303030; }
+code > span.kw { color: #f0dfaf; } /* Keyword */
+code > span.dt { color: #dfdfbf; } /* DataType */
+code > span.dv { color: #dcdccc; } /* DecVal */
+code > span.bn { color: #dca3a3; } /* BaseN */
+code > span.fl { color: #c0bed1; } /* Float */
+code > span.ch { color: #dca3a3; } /* Char */
+code > span.st { color: #cc9393; } /* String */
+code > span.co { color: #7f9f7f; } /* Comment */
+code > span.ot { color: #efef8f; } /* Other */
+code > span.al { color: #ffcfaf; } /* Alert */
+code > span.fu { color: #efef8f; } /* Function */
+code > span.er { color: #c3bf9f; } /* Error */
+code > span.wa { color: #7f9f7f; font-weight: bold; } /* Warning */
+code > span.cn { color: #dca3a3; font-weight: bold; } /* Constant */
+code > span.sc { color: #dca3a3; } /* SpecialChar */
+code > span.vs { color: #cc9393; } /* VerbatimString */
+code > span.ss { color: #cc9393; } /* SpecialString */
+code > span.im { } /* Import */
+code > span.va { } /* Variable */
+code > span.cf { color: #f0dfaf; } /* ControlFlow */
+code > span.op { color: #f0efd0; } /* Operator */
+code > span.bu { } /* BuiltIn */
+code > span.ex { } /* Extension */
+code > span.pp { color: #ffcfaf; font-weight: bold; } /* Preprocessor */
+code > span.at { } /* Attribute */
+code > span.do { color: #7f9f7f; } /* Documentation */
+code > span.an { color: #7f9f7f; font-weight: bold; } /* Annotation */
+code > span.cv { color: #7f9f7f; font-weight: bold; } /* CommentVar */
+code > span.in { color: #7f9f7f; font-weight: bold; } /* Information */
+
+.sourceCode .row {
+  width: 100%;
+}
+.sourceCode {
+  overflow-x: auto;
+}
+.code-folding-btn {
+  margin-right: -30px;
+}
+</style>
+<script>
+// apply pandoc div.sourceCode style to pre.sourceCode instead
+(function() {
+  var sheets = document.styleSheets;
+  for (var i = 0; i < sheets.length; i++) {
+    if (sheets[i].ownerNode.dataset["origin"] !== "pandoc") continue;
+    try { var rules = sheets[i].cssRules; } catch (e) { continue; }
+    for (var j = 0; j < rules.length; j++) {
+      var rule = rules[j];
+      // check if there is a div.sourceCode rule
+      if (rule.type !== rule.STYLE_RULE || rule.selectorText !== "div.sourceCode") continue;
+      var style = rule.style.cssText;
+      // check if color or background-color is set
+      if (rule.style.color === '' || rule.style.backgroundColor === '') continue;
+      // replace div.sourceCode by a pre.sourceCode rule
+      sheets[i].deleteRule(j);
+      sheets[i].insertRule('pre.sourceCode{' + style + '}', j);
+    }
+  }
+})();
+</script>
+<style type="text/css">
+  pre:not([class]) {
+    background-color: white;
+  }
+</style>
+
+
+<style type="text/css">
+h1 {
+  font-size: 34px;
+}
+h1.title {
+  font-size: 38px;
+}
+h2 {
+  font-size: 30px;
+}
+h3 {
+  font-size: 24px;
+}
+h4 {
+  font-size: 18px;
+}
+h5 {
+  font-size: 16px;
+}
+h6 {
+  font-size: 12px;
+}
+.table th:not([align]) {
+  text-align: left;
+}
+</style>
+
+
+</head>
+
+<body>
+
+<style type = "text/css">
+.main-container {
+  max-width: 940px;
+  margin-left: auto;
+  margin-right: auto;
+}
+code {
+  color: inherit;
+  background-color: rgba(0, 0, 0, 0.04);
+}
+img {
+  max-width:100%;
+  height: auto;
+}
+.tabbed-pane {
+  padding-top: 12px;
+}
+.html-widget {
+  margin-bottom: 20px;
+}
+button.code-folding-btn:focus {
+  outline: none;
+}
+summary {
+  display: list-item;
+}
+</style>
+
+
+
+<div class="container-fluid main-container">
+
+<!-- tabsets -->
+
+<style type="text/css">
+.tabset-dropdown > .nav-tabs {
+  display: inline-table;
+  max-height: 500px;
+  min-height: 44px;
+  overflow-y: auto;
+  background: white;
+  border: 1px solid #ddd;
+  border-radius: 4px;
+}
+
+.tabset-dropdown > .nav-tabs > li.active:before {
+  content: "";
+  font-family: 'Glyphicons Halflings';
+  display: inline-block;
+  padding: 10px;
+  border-right: 1px solid #ddd;
+}
+
+.tabset-dropdown > .nav-tabs.nav-tabs-open > li.active:before {
+  content: "&#xe258;";
+  border: none;
+}
+
+.tabset-dropdown > .nav-tabs.nav-tabs-open:before {
+  content: "";
+  font-family: 'Glyphicons Halflings';
+  display: inline-block;
+  padding: 10px;
+  border-right: 1px solid #ddd;
+}
+
+.tabset-dropdown > .nav-tabs > li.active {
+  display: block;
+}
+
+.tabset-dropdown > .nav-tabs > li > a,
+.tabset-dropdown > .nav-tabs > li > a:focus,
+.tabset-dropdown > .nav-tabs > li > a:hover {
+  border: none;
+  display: inline-block;
+  border-radius: 4px;
+}
+
+.tabset-dropdown > .nav-tabs.nav-tabs-open > li {
+  display: block;
+  float: none;
+}
+
+.tabset-dropdown > .nav-tabs > li {
+  display: none;
+}
+</style>
+
+<script>
+$(document).ready(function () {
+  window.buildTabsets("TOC");
+});
+
+$(document).ready(function () {
+  $('.tabset-dropdown > .nav-tabs > li').click(function () {
+    $(this).parent().toggleClass('nav-tabs-open')
+  });
+});
+</script>
+
+<!-- code folding -->
+<style type="text/css">
+.code-folding-btn { margin-bottom: 4px; }
+</style>
+<script>
+$(document).ready(function () {
+  window.initializeCodeFolding("hide" === "show");
+});
+</script>
+
+
+
+<script>
+$(document).ready(function ()  {
+
+    // move toc-ignore selectors from section div to header
+    $('div.section.toc-ignore')
+        .removeClass('toc-ignore')
+        .children('h1,h2,h3,h4,h5').addClass('toc-ignore');
+
+    // establish options
+    var options = {
+      selectors: "h1,h2,h3",
+      theme: "bootstrap3",
+      context: '.toc-content',
+      hashGenerator: function (text) {
+        return text.replace(/[.\\/?&!#<>]/g, '').replace(/\s/g, '_').toLowerCase();
+      },
+      ignoreSelector: ".toc-ignore",
+      scrollTo: 0
+    };
+    options.showAndHide = true;
+    options.smoothScroll = true;
+
+    // tocify
+    var toc = $("#TOC").tocify(options).data("toc-tocify");
+});
+</script>
+
+<style type="text/css">
+
+#TOC {
+  margin: 25px 0px 20px 0px;
+}
+@media (max-width: 768px) {
+#TOC {
+  position: relative;
+  width: 100%;
+}
+}
+
+
+.toc-content {
+  padding-left: 30px;
+  padding-right: 40px;
+}
+
+div.main-container {
+  max-width: 1200px;
+}
+
+div.tocify {
+  width: 20%;
+  max-width: 260px;
+  max-height: 85%;
+}
+
+@media (min-width: 768px) and (max-width: 991px) {
+  div.tocify {
+    width: 25%;
+  }
+}
+
+@media (max-width: 767px) {
+  div.tocify {
+    width: 100%;
+    max-width: none;
+  }
+}
+
+.tocify ul, .tocify li {
+  line-height: 20px;
+}
+
+.tocify-subheader .tocify-item {
+  font-size: 0.90em;
+  padding-left: 25px;
+  text-indent: 0;
+}
+
+.tocify .list-group-item {
+  border-radius: 0px;
+}
+
+
+</style>
+
+<!-- setup 3col/9col grid for toc_float and main content  -->
+<div class="row-fluid">
+<div class="col-xs-12 col-sm-4 col-md-3">
+<div id="TOC" class="tocify">
+</div>
+</div>
+
+<div class="toc-content col-xs-12 col-sm-8 col-md-9">
+
+
+
+
+<div class="fluid-row" id="header">
+
+<div class="btn-group pull-right">
+<button type="button" class="btn btn-default btn-xs dropdown-toggle" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false"><span>Code</span> <span class="caret"></span></button>
+<ul class="dropdown-menu" style="min-width: 50px;">
+<li><a id="rmd-show-all-code" href="#">Show All Code</a></li>
+<li><a id="rmd-hide-all-code" href="#">Hide All Code</a></li>
+</ul>
+</div>
+
+
+
+<h1 class="title toc-ignore">DU-Bii Study cases - TCGA</h1>
+<h3 class="subtitle"><em>DUBii 2019</em></h3>
+<h4 class="author"><em>Jacques van Helden</em></h4>
+<h4 class="date"><em>2019-02-03</em></h4>
+
+</div>
+
+
+<div id="requirements" class="section level2">
+<h2>Requirements</h2>
+<ul>
+<li>Recount library: <a href="https://bioconductor.org/packages/release/bioc/html/recount.html" class="uri">https://bioconductor.org/packages/release/bioc/html/recount.html</a></li>
+</ul>
+<div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r"><span class="co"># Install BiocManager if required</span>
+<span class="cf">if</span> (<span class="op">!</span><span class="kw">requireNamespace</span>(<span class="st">&quot;BiocManager&quot;</span>, <span class="dt">quietly =</span> <span class="ot">TRUE</span>))
+    <span class="kw">install.packages</span>(<span class="st">&quot;BiocManager&quot;</span>)
+
+<span class="co"># Install recount if required</span>
+<span class="cf">if</span> (<span class="op">!</span><span class="kw">require</span>(recount)) {
+  BiocManager<span class="op">::</span><span class="kw">install</span>(<span class="st">&quot;recount&quot;</span>, <span class="dt">version =</span> <span class="st">&quot;3.8&quot;</span>)
+  <span class="kw">require</span>(recount)
+}
+
+<span class="co"># BiocManager::valid()</span></code></pre></div>
+</div>
+<div id="working-directory" class="section level2">
+<h2>Working directory</h2>
+<p>The downloaded and processed data will be saved in a working directory named <strong>TCGA_import</strong> in the user home folder. If required this directory is created automatically.</p>
+<div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r">## Set the working directory
+workdir &lt;-<span class="st"> &quot;~/TCGA_import&quot;</span>
+<span class="kw">dir.create</span>(workdir, <span class="dt">recursive =</span> <span class="ot">TRUE</span>, <span class="dt">showWarnings =</span> <span class="ot">FALSE</span>)
+<span class="kw">setwd</span>(workdir)</code></pre></div>
+</div>
+<div id="data-source" class="section level2">
+<h2>Data source</h2>
+<div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r">#### Download the TCGA data from Recount2 database ####
+
+## Set the recoutnID (to &quot;TCGA&quot;)
+recountID &lt;-<span class="st"> &quot;TCGA&quot;</span>
+
+<span class="co"># Specify the download directory</span>
+download.dir &lt;-<span class="st"> </span><span class="kw">file.path</span>(workdir, <span class="st">&quot;downloads&quot;</span>, recountID)
+<span class="kw">dir.create</span>(download.dir, <span class="dt">recursive =</span> <span class="ot">TRUE</span>, <span class="dt">showWarnings =</span> <span class="ot">FALSE</span>)
+
+
+## Data types to download
+download.types &lt;-<span class="st"> </span><span class="kw">c</span>(<span class="st">&quot;phenotype&quot;</span>, <span class="st">&quot;counts-gene&quot;</span>)
+localFiles &lt;-<span class="st"> </span><span class="kw">c</span>()
+<span class="cf">for</span> (type <span class="cf">in</span> download.types) {
+  <span class="kw">message</span>(<span class="st">&quot;Recount data type: &quot;</span>, type)
+  ## Get the URL of the recount file 
+  ## (its extension will depend on the data type)
+  recountURL &lt;-<span class="st"> </span><span class="kw">download_study</span>(
+    recountID, 
+    <span class="dt">outdir =</span> download.dir, 
+    <span class="dt">type =</span> type, 
+    <span class="dt">download =</span> <span class="ot">FALSE</span>)
+  <span class="kw">message</span>(<span class="st">&quot;</span><span class="ch">\t</span><span class="st">recountURLL: &quot;</span>, recountURL)
+  
+  ## Define the local file name
+  localFile &lt;-<span class="st"> </span><span class="kw">file.path</span>(download.dir, <span class="kw">basename</span>(recountURL))
+  <span class="kw">message</span>(<span class="st">&quot;</span><span class="ch">\t</span><span class="st">localFile: &quot;</span>, localFile)
+
+  ## Index local file for later use
+  localFiles[type] &lt;-<span class="st"> </span>localFile
+
+  
+  ## Download the data only if required
+  <span class="cf">if</span> (<span class="op">!</span><span class="kw">file.exists</span>(localFile)) {
+    <span class="kw">message</span>(<span class="st">&quot;</span><span class="ch">\t</span><span class="st">Dowloading &quot;</span>, type, <span class="st">&quot; from ReCount for study &quot;</span>, recountID)
+    url &lt;-<span class="st"> </span><span class="kw">download_study</span>(
+      recountID, 
+      <span class="dt">outdir =</span> download.dir, 
+      <span class="dt">type =</span> type)
+  } <span class="cf">else</span> {
+    <span class="kw">message</span>(<span class="st">&quot;</span><span class="ch">\t</span><span class="st">file already there: &quot;</span>, localFile)
+    
+  }
+}
+## Download the gene-level RangedSummarizedExperiment data
+<span class="co"># download_study(project = &quot;TCGA&quot;, type = &quot;counts-gene&quot;, outdir = download.dir)</span></code></pre></div>
+<p>We downloaded the following file types from Recount2: phenotype, counts-gene.</p>
+</div>
+<div id="data-exploration" class="section level2">
+<h2>Data exploration</h2>
+<div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r">## Load the TCGA pheno table
+pheno &lt;-<span class="st"> </span><span class="kw">read.delim</span>(<span class="dt">file =</span> localFiles[<span class="st">&quot;phenotype&quot;</span>])
+<span class="co"># dim(pheno)</span>
+
+
+## Load the TCGA count table.
+## We use gzfile to directly load the zgipped file, 
+## and data.table:::fread() to accelerate the reading. 
+## system.time(counts.per.gene &lt;- read.delim(file = gzfile(localFiles[&quot;counts-gene&quot;]))) ## This takes 430 seconds
+<span class="kw">system.time</span>(counts.per.gene &lt;-<span class="st"> </span><span class="kw">fread</span>(<span class="dt">file =</span> localFiles[<span class="st">&quot;counts-gene&quot;</span>]))
+<span class="co"># This takes 29 seconds</span>
+
+<span class="co"># dim(counts.per.gene) </span></code></pre></div>
+<p>The full TCGA gene count table contains 11285 samples (columns) and 58037 genes (rows).</p>
+<p>For the study case, we select a breast cancer study.</p>
+</div>
+
+
+
+</div>
+</div>
+
+</div>
+
+<script>
+
+// add bootstrap table styles to pandoc tables
+function bootstrapStylePandocTables() {
+  $('tr.header').parent('thead').parent('table').addClass('table table-condensed');
+}
+$(document).ready(function () {
+  bootstrapStylePandocTables();
+});
+
+
+</script>
+
+<!-- dynamically load mathjax for compatibility with self-contained -->
+<script>
+  (function () {
+    var script = document.createElement("script");
+    script.type = "text/javascript";
+    script.src  = "https://mathjax.rstudio.com/latest/MathJax.js?config=TeX-AMS-MML_HTMLorMML";
+    document.getElementsByTagName("head")[0].appendChild(script);
+  })();
+</script>
+
+</body>
+</html>

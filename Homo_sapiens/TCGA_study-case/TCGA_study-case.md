@@ -28,7 +28,7 @@ We provide here
 
 ### Recount2
 
-**Recount2** () is a database
+
 
 ### Preprocessed datasets made available by Ron Shamir's team
 
@@ -42,9 +42,7 @@ We provide here
 - Selected study case: Breast cancer dataset
 
     - Data tables: <http://acgt.cs.tau.ac.il/multi_omic_benchmark/data/breast.zip>
-    - **Relevant columns for classification**: 2 markers used by clinicians to assign tissues to cancer subtypes
-            - ER_Status_nature2012
-            - HER2_Final_Status_nature2012
+    - **Relevant columns for classification**: 2 markers used by clinicians to assign tissues to cancer subtypes: *ER_Status_nature2012* and *HER2_Final_Status_nature2012*
        
        
      - Laura Cantini prepared an additional file with the subtypes (Human/subtypes_annotation.txt) + a script enabling to produce this subtype label based on the combination of these two markers (Human/SubAnnot.R)

@@ -90,6 +90,15 @@ options(scipen = 12) ## Max number of digits for non-scientific notation
 ```
 
 
+## Introduction
+
+
+## Data source
+
+**Recount2** (https://jhubiostatistics.shinyapps.io/recount/) is a database rasembling several thousands of human RNA-seq studies, that were all processed with a same workflow in order to ensure the consistency of the transcriptome measurements. Recount2 provides direct access to tables of raw counts per gene, exon or transcript. 
+
+
+
 ## Requirements
 
 - Recount library: <https://bioconductor.org/packages/release/bioc/html/recount.html>
@@ -182,6 +191,7 @@ We downloaded the following file types from Recount2: `r paste(collapse = ", ", 
 
 ```{r}
 ## Load the TCGA pheno table
+message("Reading phenotype table")
 pheno <- read.delim(file = localFiles["phenotype"])
 # dim(pheno)
 
@@ -190,6 +200,7 @@ pheno <- read.delim(file = localFiles["phenotype"])
 ## We use gzfile to directly load the zgipped file, 
 ## and data.table:::fread() to accelerate the reading. 
 ## system.time(counts.per.gene <- read.delim(file = gzfile(localFiles["counts-gene"]))) ## This takes 430 seconds
+message("Loading counts per gene")
 system.time(counts.per.gene <- fread(file = localFiles["counts-gene"]))
 # This takes 29 seconds
 
@@ -201,5 +212,16 @@ The full TCGA gene count table contains `r ncol(counts.per.gene)` samples (colum
 
 For the study case, we select a breast cancer study. 
 
+## Class labels
 
+To classify Breast cancer, the relevant columns should be: 
+
+- xml_lab_proc_her2_neu_immunohistochemistry_receptor_status
+- xml_breast_carcinoma_estrogen_receptor_status
+
+```{r}
+table(pheno[, c("xml_lab_proc_her2_neu_immunohistochemistry_receptor_status", "xml_breast_carcinoma_estrogen_receptor_status")], useNA = TRUE)
+table(pheno$xml_lab_proc_her2_neu_immunohistochemistry_receptor_status, useNA = TRUE)
+
+```
 
