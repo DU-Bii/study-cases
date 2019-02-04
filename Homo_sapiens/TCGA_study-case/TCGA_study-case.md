@@ -8,9 +8,11 @@
 
 ## Introduction
 
-This page describes a study case based on data from __The Cancer Genome Atlas__ (__TCGA__). This dataset contains more than 12,000 samples from patients suffering of a wide variety of cancer types. We use some subsets of this huge dataset for different courses of the [Diplôme Universitaire en Bioinformatique Intégrative (DU-Bii)](https://du-bii.github.io/accueil). 
+This page describes a study case based on data from **The Cancer Genome Atlas** (**TCGA**; <https://cancergenome.nih.gov/>). This dataset contains more than 11,285 samples from patients suffering of a wide variety of cancer types. We use some subsets of this huge dataset for different courses of the [Diplôme Universitaire en Bioinformatique Intégrative (DU-Bii)](https://du-bii.github.io/accueil). 
 
-The full datasets are available in the NCBI databases (Gene Expression Ombinus, Short Read Archives). For the sake of simplicity, we took benefit of pre-processed data made available by Ron Shamir's team.
+The full datasets are available in the NCBI databases (Gene Expression Ombinus, Short Read Archives). 
+
+For the sake of simplicity, we took benefit of pre-processed data made available by Ron Shamir's team.
 
 We provide here 
 
@@ -20,24 +22,32 @@ We provide here
 
 ## Data sources
 
-- Web: <https://cancergenome.nih.gov/>
+### TCGA web site
 
-- Selected subset: 
+<https://cancergenome.nih.gov/>
 
-    - Multi-Omics Cancer Benchmark TCGA Preprocessed Data
-    - Publication: <https://academic.oup.com/nar/article/46/20/10546/5123392>
-    - Data availability: <http://acgt.cs.tau.ac.il/multi_omic_benchmark/download.html>
-    - Breast cancer dataset: <http://acgt.cs.tau.ac.il/multi_omic_benchmark/data/breast.zip>
-        - Note: the data is pre-normalised (library scaling + log2 transformation)
-    - Clinical annotation for the samples: <http://acgt.cs.tau.ac.il/multi_omic_benchmark/data/clinical.zip>
-    - Relevant columns for classification: 
-        - 2 markers used by clinicians to assign tissues to cancer subtypes
+### Recount2
+
+**Recount2** () is a database
+
+### Preprocessed datasets made available by Ron Shamir's team
+
+- Multi-Omics Cancer Benchmark TCGA Preprocessed Data
+- Publication: <https://academic.oup.com/nar/article/46/20/10546/5123392>
+- Data availability: <http://acgt.cs.tau.ac.il/multi_omic_benchmark/download.html>
+- Clinical annotation for the samples: <http://acgt.cs.tau.ac.il/multi_omic_benchmark/data/clinical.zip>
+
+- Note: the data is pre-normalised (library scaling + log2 transformation)
+
+- Selected study case: Breast cancer dataset
+
+    - Data tables: <http://acgt.cs.tau.ac.il/multi_omic_benchmark/data/breast.zip>
+    - **Relevant columns for classification**: 2 markers used by clinicians to assign tissues to cancer subtypes
             - ER_Status_nature2012
             - HER2_Final_Status_nature2012
        
        
-     - Additional file with the subtypes (Human/subtypes_annotation.txt) + a script enabling to produce this subtype label based on the combination of these two markers (Human/SubAnnot.R)
-Use of this dataset:
+     - Laura Cantini prepared an additional file with the subtypes (Human/subtypes_annotation.txt) + a script enabling to produce this subtype label based on the combination of these two markers (Human/SubAnnot.R)
 
 ## Use in the different courses
 
@@ -47,9 +57,9 @@ Use of this dataset:
     - Evaluation of classifications: compare clustering results with markers
     - Supervised classification
 
-- Module 4: méthodes et outils bioinformatiques ? To check with Olivier and Olivier. 
+<!--- Module 4: méthodes et outils bioinformatiques ? To check with Olivier and Olivier. -->
 
 - Module 6 - Integrative bioinformatics
-    - multi-level factorisation of multi-omics data
+    - Multi-level factorisation of multi-omics data (Laura Cantini)
 
  

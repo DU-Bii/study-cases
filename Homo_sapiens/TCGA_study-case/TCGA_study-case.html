@@ -199,8 +199,9 @@ $(document).ready(function () {
 </div>
 <div id="introduction" class="section level2">
 <h2>Introduction</h2>
-<p>This page describes a study case based on data from <strong>The Cancer Genome Atlas</strong> (<strong>TCGA</strong>). This dataset contains more than 12,000 samples from patients suffering of a wide variety of cancer types. We use some subsets of this huge dataset for different courses of the <a href="https://du-bii.github.io/accueil">Diplôme Universitaire en Bioinformatique Intégrative (DU-Bii)</a>.</p>
-<p>The full datasets are available in the NCBI databases (Gene Expression Ombinus, Short Read Archives). For the sake of simplicity, we took benefit of pre-processed data made available by Ron Shamir’s team.</p>
+<p>This page describes a study case based on data from <strong>The Cancer Genome Atlas</strong> (<strong>TCGA</strong>; <a href="https://cancergenome.nih.gov/" class="uri">https://cancergenome.nih.gov/</a>). This dataset contains more than 11,285 samples from patients suffering of a wide variety of cancer types. We use some subsets of this huge dataset for different courses of the <a href="https://du-bii.github.io/accueil">Diplôme Universitaire en Bioinformatique Intégrative (DU-Bii)</a>.</p>
+<p>The full datasets are available in the NCBI databases (Gene Expression Ombinus, Short Read Archives).</p>
+<p>For the sake of simplicity, we took benefit of pre-processed data made available by Ron Shamir’s team.</p>
 <p>We provide here</p>
 <ul>
 <li>the links to the sources of information,</li>
@@ -209,29 +210,26 @@ $(document).ready(function () {
 </div>
 <div id="data-sources" class="section level2">
 <h2>Data sources</h2>
-<ul>
-<li><p>Web: <a href="https://cancergenome.nih.gov/" class="uri">https://cancergenome.nih.gov/</a></p></li>
-<li><p>Selected subset:</p>
+<div id="tcga-web-site" class="section level3">
+<h3>TCGA web site</h3>
+<p><a href="https://cancergenome.nih.gov/" class="uri">https://cancergenome.nih.gov/</a></p>
+</div>
+<div id="preprocessed-datasets-made-available-by-ron-shamirs-team" class="section level3">
+<h3>Preprocessed datasets made available by Ron Shamir’s team</h3>
 <ul>
 <li>Multi-Omics Cancer Benchmark TCGA Preprocessed Data</li>
 <li>Publication: <a href="https://academic.oup.com/nar/article/46/20/10546/5123392" class="uri">https://academic.oup.com/nar/article/46/20/10546/5123392</a></li>
 <li>Data availability: <a href="http://acgt.cs.tau.ac.il/multi_omic_benchmark/download.html" class="uri">http://acgt.cs.tau.ac.il/multi_omic_benchmark/download.html</a></li>
-<li>Breast cancer dataset: <a href="http://acgt.cs.tau.ac.il/multi_omic_benchmark/data/breast.zip" class="uri">http://acgt.cs.tau.ac.il/multi_omic_benchmark/data/breast.zip</a>
+<li><p>Clinical annotation for the samples: <a href="http://acgt.cs.tau.ac.il/multi_omic_benchmark/data/clinical.zip" class="uri">http://acgt.cs.tau.ac.il/multi_omic_benchmark/data/clinical.zip</a></p></li>
+<li><p>Note: the data is pre-normalised (library scaling + log2 transformation)</p></li>
+<li><p>Selected study case: Breast cancer dataset</p>
 <ul>
-<li>Note: the data is pre-normalised (library scaling + log2 transformation)</li>
-</ul></li>
-<li>Clinical annotation for the samples: <a href="http://acgt.cs.tau.ac.il/multi_omic_benchmark/data/clinical.zip" class="uri">http://acgt.cs.tau.ac.il/multi_omic_benchmark/data/clinical.zip</a></li>
-<li>Relevant columns for classification:
-<ul>
-<li>2 markers used by clinicians to assign tissues to cancer subtypes
-<ul>
-<li>ER_Status_nature2012</li>
-<li>HER2_Final_Status_nature2012</li>
-</ul></li>
-</ul></li>
-<li>Additional file with the subtypes (Human/subtypes_annotation.txt) + a script enabling to produce this subtype label based on the combination of these two markers (Human/SubAnnot.R) Use of this dataset:</li>
+<li>Data tables: <a href="http://acgt.cs.tau.ac.il/multi_omic_benchmark/data/breast.zip" class="uri">http://acgt.cs.tau.ac.il/multi_omic_benchmark/data/breast.zip</a></li>
+<li><p><strong>Relevant columns for classification</strong>: 2 markers used by clinicians to assign tissues to cancer subtypes - ER_Status_nature2012 - HER2_Final_Status_nature2012</p></li>
+<li><p>Laura Cantini prepared an additional file with the subtypes (Human/subtypes_annotation.txt) + a script enabling to produce this subtype label based on the combination of these two markers (Human/SubAnnot.R)</p></li>
 </ul></li>
 </ul>
+</div>
 </div>
 <div id="use-in-the-different-courses" class="section level2">
 <h2>Use in the different courses</h2>
@@ -243,7 +241,9 @@ $(document).ready(function () {
 <li>Evaluation of classifications: compare clustering results with markers</li>
 <li>Supervised classification</li>
 </ul></li>
-<li><p>Module 4: méthodes et outils bioinformatiques ? To check with Olivier and Olivier.</p></li>
+</ul>
+<!--- Module 4: méthodes et outils bioinformatiques ? To check with Olivier and Olivier. -->
+<ul>
 <li>Module 6 - Integrative bioinformatics
 <ul>
 <li>multi-level factorisation of multi-omics data</li>
