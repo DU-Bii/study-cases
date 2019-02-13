@@ -222,7 +222,20 @@ To classify Breast cancer, the relevant columns should be:
 ```{r}
 table(pheno[, c("xml_lab_proc_her2_neu_immunohistochemistry_receptor_status", "xml_breast_carcinoma_estrogen_receptor_status")], useNA = "ifany")
 
-table(pheno$xml_lab_proc_her2_neu_immunohistochemistry_receptor_status, useNA = "ifany")
+## Select the columns relevant for the Breast cancer study
+immuno.columns <- c(
+  PR = "xml_breast_carcinoma_progesterone_receptor_status",
+  ER = "xml_breast_carcinoma_estrogen_receptor_status",
+  HER2 = "xml_lab_proc_her2_neu_immunohistochemistry_receptor_status")
+pheno.selection <- pheno[, immuno.columns]
+colnames(pheno.selection) <- names(immuno.columns)
+summary(pheno.selection)
+
+## Select samples based on marker values
+
+data.frame(table(pheno$xml_lab_proc_her2_neu_immunohistochemistry_receptor_status, useNA = "ifany"))
+data.frame(table(pheno$xml_lab_proc_her2_neu_immunohistochemistry_receptor_status, useNA = "ifany"))
+
 
 ```
 
