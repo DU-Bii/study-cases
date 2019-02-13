@@ -366,6 +366,51 @@ div.tocify {
 </div>
 
 
+<div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r">## Define parameters for the analysis
+parameters &lt;-<span class="st"> </span><span class="kw">list</span>(
+  <span class="dt">epsilon =</span> <span class="fl">0.1</span>,
+  <span class="dt">gene.filter.min.count =</span> <span class="dv">10</span>,
+  <span class="dt">gene.filter.percent.zeros =</span> <span class="dv">95</span>
+)
+
+<span class="kw">kable</span>(<span class="kw">t</span>(<span class="kw">data.frame</span>(parameters)), <span class="dt">col.names =</span> <span class="st">&quot;Parameter value&quot;</span>)</code></pre></div>
+<table>
+<thead>
+<tr>
+<th style="text-align:left;">
+</th>
+<th style="text-align:right;">
+Parameter value
+</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td style="text-align:left;">
+epsilon
+</td>
+<td style="text-align:right;">
+0.1
+</td>
+</tr>
+<tr>
+<td style="text-align:left;">
+gene.filter.min.count
+</td>
+<td style="text-align:right;">
+10.0
+</td>
+</tr>
+<tr>
+<td style="text-align:left;">
+gene.filter.percent.zeros
+</td>
+<td style="text-align:right;">
+95.0
+</td>
+</tr>
+</tbody>
+</table>
 <div id="introduction" class="section level2">
 <h2>Introduction</h2>
 </div>
@@ -420,7 +465,7 @@ download.dir &lt;-<span class="st"> </span><span class="kw">file.path</span>(wor
 
 
 ## Data types to download
-download.types &lt;-<span class="st"> </span><span class="kw">c</span>(<span class="st">&quot;phenotype&quot;</span>, <span class="st">&quot;counts-gene&quot;</span>)
+download.types &lt;-<span class="st"> </span><span class="kw">c</span>(<span class="st">&quot;phenotype&quot;</span>, <span class="st">&quot;counts-gene&quot;</span>, <span class="st">&quot;rse-gene&quot;</span>)
 localFiles &lt;-<span class="st"> </span><span class="kw">c</span>()
 <span class="cf">for</span> (type <span class="cf">in</span> download.types) {
   <span class="kw">message</span>(<span class="st">&quot;Recount data type: &quot;</span>, type)
@@ -455,29 +500,105 @@ localFiles &lt;-<span class="st"> </span><span class="kw">c</span>()
 }
 ## Download the gene-level RangedSummarizedExperiment data
 <span class="co"># download_study(project = &quot;TCGA&quot;, type = &quot;counts-gene&quot;, outdir = download.dir)</span></code></pre></div>
-<p>We downloaded the following file types from Recount2: phenotype, counts-gene.</p>
+<p>We downloaded the following file types from Recount2: phenotype, counts-gene, rse-gene.</p>
 </div>
 <div id="data-loading" class="section level2">
 <h2>Data loading</h2>
-<div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r">## Load the TCGA pheno table
-<span class="kw">message</span>(<span class="st">&quot;Reading phenotype table&quot;</span>)
-pheno &lt;-<span class="st"> </span><span class="kw">read.delim</span>(<span class="dt">file =</span> localFiles[<span class="st">&quot;phenotype&quot;</span>])
+<div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r"><span class="co"># ## Choose a way to load the data. </span>
+<span class="co"># ## either from the Rdata file or from the TSV files . </span>
+<span class="co"># loadRdata &lt;- TRUE </span>
+<span class="co"># </span>
+<span class="co"># </span>
+<span class="co"># if (loadRdata) {</span>
+## Load the RData memory image provided by Recount2, whcih contains the count table + pheno table
+<span class="kw">message</span>(<span class="st">&quot;Loading Recount file for TCGA&quot;</span>)
+<span class="kw">load</span>(localFiles[<span class="st">&quot;rse-gene&quot;</span>])
+
+
+## Extract the pheno table from the rse-gene object
+phenoTable &lt;-<span class="st"> </span><span class="kw">colData</span>(rse_gene) ## phenotype per run
+project.name &lt;-<span class="st"> &quot;Breast invasive carcinoma&quot;</span>
+<span class="kw">message</span>(<span class="st">&quot;Identifying samples for project &quot;</span>, project.name)
+project.samples &lt;-<span class="st"> </span>phenoTable<span class="op">$</span>gdc_cases.tissue_source_site.project <span class="op">==</span><span class="st"> </span>project.name
+<span class="kw">message</span>(<span class="st">&quot;</span><span class="ch">\t</span><span class="st">Number of project samples: &quot;</span>, <span class="kw">sum</span>(project.samples))
+
+## Select the columns relevant for the Breast cancer study
+immuno.columns &lt;-<span class="st"> </span><span class="kw">c</span>(
+  <span class="dt">ER =</span> <span class="st">&quot;xml_breast_carcinoma_estrogen_receptor_status&quot;</span>,
+  <span class="dt">PR =</span> <span class="st">&quot;xml_breast_carcinoma_progesterone_receptor_status&quot;</span>,
+  <span class="dt">HER2 =</span> <span class="st">&quot;xml_lab_proc_her2_neu_immunohistochemistry_receptor_status&quot;</span>)
+<span class="kw">message</span>(<span class="st">&quot;Immuno marker columns:</span><span class="ch">\n\t</span><span class="st">&quot;</span>, <span class="kw">paste</span>(<span class="dt">collapse =</span> <span class="st">&quot;</span><span class="ch">\n\t</span><span class="st">&quot;</span>, immuno.columns))
+
+## Only keep project samples with valid markers (i.e. Negative or Positive), discard Undertermined, Equivocal and  NA
+valid.markers &lt;-<span class="st"> </span><span class="kw">c</span>(<span class="st">&quot;Negative&quot;</span>, <span class="st">&quot;Positive&quot;</span>)
+<span class="kw">message</span>(<span class="st">&quot;Selecting samples with valid immuno markers: &quot;</span>, <span class="kw">paste</span>(<span class="dt">collapse =</span> <span class="st">&quot;, &quot;</span>, valid.markers))
+valid.samples &lt;-<span class="st"> </span>
+<span class="st">  </span>project.samples <span class="op">&amp;</span>
+<span class="st">  </span><span class="kw">apply</span>(<span class="kw">is.na</span>(phenoTable[, immuno.columns]), <span class="dv">1</span>, sum) <span class="op">==</span><span class="st"> </span><span class="dv">0</span> <span class="op">&amp;</span>
+<span class="st">  </span>phenoTable[, immuno.columns[<span class="st">&quot;ER&quot;</span>]] <span class="op">%in%</span><span class="st"> </span>valid.markers <span class="op">&amp;</span>
+<span class="st">  </span>phenoTable[, immuno.columns[<span class="st">&quot;PR&quot;</span>]] <span class="op">%in%</span><span class="st"> </span>valid.markers <span class="op">&amp;</span>
+<span class="st">  </span>phenoTable[, immuno.columns[<span class="st">&quot;HER2&quot;</span>]] <span class="op">%in%</span><span class="st"> </span>valid.markers
+<span class="co"># table(valid.samples)</span>
+<span class="kw">message</span>(<span class="st">&quot;</span><span class="ch">\t</span><span class="st">valid samples: &quot;</span>, <span class="kw">sum</span>(valid.samples))
+
+## Subset the expression data by selecting the valid samples
+<span class="kw">message</span>(<span class="st">&quot;Extracting expression data for valid samples&quot;</span>)
+rse.valid.samples &lt;-<span class="st"> </span><span class="kw">subset</span>(rse_gene, <span class="dt">select =</span> valid.samples)  
+<span class="co"># dim(rse.valid.samples)</span>
+
+## Extract a pheno table for the subset
+pheno &lt;-<span class="st"> </span><span class="kw">colData</span>(rse.valid.samples)
+<span class="co"># dim(pheno.valid.samples)</span>
+
+## Scale counts by mapped reads, in order to to get read counts per gene
+<span class="co">#rse.valid.samples.scaled &lt;- scale_counts(rse.valid.samples, by = &quot;mapped_reads&quot;)</span>
+<span class="co"># summary(assay(rse.valid.samples.scaled)[,1:7])</span>
+## <span class="al">WARNING</span>: THIS DOES NOT WORK WITH THIS DATASET: ALL VALUES ARE SET TO 0.
+## I THIS COMMENT IT
+
+## Extract the count table from the rse-gene object
+<span class="kw">message</span>(<span class="st">&quot;Extracting counts per gene&quot;</span>)
+counts.per.gene &lt;-<span class="st"> </span><span class="kw">assay</span>(rse.valid.samples)
+<span class="co"># summary(counts.per.gene[, 1:10])</span>
+<span class="co"># dim(counts.per.gene)</span>
+
+
+<span class="co"># dim(phenoTable)</span>
+## <span class="al">NOTE</span>: this phenoTable is a complex object: a DataFrame whose cells may be a list containing a table. 
+## To avoid messing around, I prefer to use the TSV version of the pheno table.
 <span class="co"># dim(pheno)</span>
+<span class="co"># class(pheno)</span>
 
+<span class="co">#   </span>
+<span class="co">#   # dim(countTable)</span>
+<span class="co"># } else {</span>
+<span class="co">#   ## Load the data from the TSV files downloaded from Recount2</span>
+<span class="co">#   </span>
+<span class="co">#   </span>
+<span class="co">#   ## Load the TCGA count table.</span>
+<span class="co">#   ## We use gzfile to directly load the zgipped file, </span>
+<span class="co">#   ## and data.table:::fread() to accelerate the reading. </span>
+<span class="co">#   ## system.time(counts.per.gene &lt;- read.delim(file = gzfile(localFiles[&quot;counts-gene&quot;]))) ## This takes 430 seconds</span>
+<span class="co">#   message(&quot;Loading counts per gene&quot;)</span>
+<span class="co">#   system.time(counts.per.gene &lt;- fread(file = localFiles[&quot;counts-gene&quot;]))</span>
+<span class="co">#   # This takes 29 seconds</span>
+<span class="co"># </span>
+<span class="co">#   ## Load the TCGA pheno table</span>
+<span class="co">#   message(&quot;Reading phenotype table&quot;)</span>
+<span class="co">#   pheno &lt;- read.delim(file = localFiles[&quot;phenotype&quot;])</span>
+<span class="co">#   # dim(pheno)</span>
+<span class="co">#   </span>
+<span class="co">#   # dim(counts.per.gene) </span>
+<span class="co"># }</span>
 
-## Load the TCGA count table.
-## We use gzfile to directly load the zgipped file, 
-## and data.table:::fread() to accelerate the reading. 
-## system.time(counts.per.gene &lt;- read.delim(file = gzfile(localFiles[&quot;counts-gene&quot;]))) ## This takes 430 seconds
-<span class="kw">message</span>(<span class="st">&quot;Loading counts per gene&quot;</span>)
-<span class="kw">system.time</span>(counts.per.gene &lt;-<span class="st"> </span><span class="kw">fread</span>(<span class="dt">file =</span> localFiles[<span class="st">&quot;counts-gene&quot;</span>]))</code></pre></div>
-<pre><code>   user  system elapsed 
- 70.921  11.917  36.918 </code></pre>
-<div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r"><span class="co"># This takes 29 seconds</span>
-
-<span class="co"># dim(counts.per.gene) </span></code></pre></div>
-<p>The full TCGA gene count table contains 11285 samples (columns) and 58037 genes (rows).</p>
-<div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r"><span class="kw">kable</span>(<span class="kw">sort</span>(<span class="kw">summary</span>(pheno<span class="op">$</span>gdc_cases.project.name), <span class="dt">decreasing =</span> <span class="ot">TRUE</span>), <span class="dt">caption =</span> <span class="st">&quot;Number of samples per TGCA project. &quot;</span>, <span class="dt">col.names =</span> <span class="st">&quot;Number of samples&quot;</span>)</code></pre></div>
+  
+<span class="kw">message</span>(<span class="st">&quot;Selected dataset (project and valid markers)&quot;</span>)
+<span class="kw">message</span>(<span class="st">&quot;</span><span class="ch">\t</span><span class="st">Read count table contains &quot;</span>, <span class="kw">nrow</span>(counts.per.gene), <span class="st">&quot; rows (genes) x &quot;</span>, <span class="kw">ncol</span>(counts.per.gene), <span class="st">&quot; columns (samples). &quot;</span>)
+<span class="kw">message</span>(<span class="st">&quot;</span><span class="ch">\t</span><span class="st">Pheno table contains &quot;</span>, <span class="kw">nrow</span>(pheno), <span class="st">&quot; rows (samples) x &quot;</span>, <span class="kw">ncol</span>(pheno), <span class="st">&quot; columns (sample attributes). &quot;</span>)</code></pre></div>
+<p>The full TCGA gene count table contains 819 samples (columns) and 58037 genes (rows).</p>
+<div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r"><span class="kw">kable</span>(<span class="kw">sort</span>(<span class="kw">table</span>(phenoTable<span class="op">$</span>gdc_cases.project.name), <span class="dt">decreasing =</span> <span class="ot">TRUE</span>),
+      <span class="dt">caption =</span> <span class="st">&quot;Number of samples per TGCA project. &quot;</span>, 
+      <span class="dt">col.names =</span> <span class="kw">c</span>(<span class="st">&quot;Project&quot;</span>,<span class="st">&quot;samples&quot;</span>))</code></pre></div>
 <table>
 <caption>
 Number of samples per TGCA project.
@@ -485,9 +606,10 @@ Number of samples per TGCA project.
 <thead>
 <tr>
 <th style="text-align:left;">
+Project
 </th>
 <th style="text-align:right;">
-Number of samples
+samples
 </th>
 </tr>
 </thead>
@@ -756,110 +878,73 @@ Cholangiocarcinoma
 45
 </td>
 </tr>
-<tr>
-<td style="text-align:left;">
-</td>
-<td style="text-align:right;">
-1
-</td>
-</tr>
-<tr>
-<td style="text-align:left;">
-T3
-</td>
-<td style="text-align:right;">
-1
-</td>
-</tr>
-<tr>
-<td style="text-align:left;">
-NA’s
-</td>
-<td style="text-align:right;">
-1
-</td>
-</tr>
 </tbody>
 </table>
-<div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r">project.samples &lt;-<span class="st"> </span>pheno<span class="op">$</span>gdc_cases.project.name <span class="op">==</span><span class="st"> </span>selected.project
-<span class="co"># sum(project.samples, na.rm = TRUE)</span></code></pre></div>
-<p>For the study case, we select the project ****, which contains NA samples.</p>
+<p>For the study case, we select the project <strong>1246</strong>, which contains 1246 samples.</p>
 </div>
 <div id="class-labels" class="section level2">
 <h2>Class labels</h2>
-<div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r">## Select the columns relevant for the Breast cancer study
-immuno.columns &lt;-<span class="st"> </span><span class="kw">c</span>(
-  <span class="dt">PR =</span> <span class="st">&quot;xml_breast_carcinoma_progesterone_receptor_status&quot;</span>,
-  <span class="dt">ER =</span> <span class="st">&quot;xml_breast_carcinoma_estrogen_receptor_status&quot;</span>,
-  <span class="dt">HER2 =</span> <span class="st">&quot;xml_lab_proc_her2_neu_immunohistochemistry_receptor_status&quot;</span>)
-pheno.selection &lt;-<span class="st"> </span>pheno[, immuno.columns]
-<span class="kw">colnames</span>(pheno.selection) &lt;-<span class="st"> </span><span class="kw">names</span>(immuno.columns)</code></pre></div>
 <p>The class of cancer is defined by combining three immunological markers:</p>
 <ul>
 <li>HER2,</li>
 <li>ER (estrogen receptor)</li>
 <li>Pr (progesterone receptor)</li>
 </ul>
-<p>The table below provides a summary of the marker status for all samples.</p>
-<div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r"><span class="kw">summary</span>(pheno.selection[project.samples,])</code></pre></div>
-<pre><code>             PR                  ER                 HER2    
+<p>The tables below provide summaries of the marker status for all samples.</p>
+<div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r">project.markers &lt;-<span class="st"> </span>phenoTable[project.samples, immuno.columns]
+<span class="kw">colnames</span>(project.markers) &lt;-<span class="st"> </span><span class="kw">names</span>(immuno.columns)
+<span class="kw">summary</span>(<span class="kw">as.data.frame</span>(project.markers))</code></pre></div>
+<pre><code>             ER                  PR                 HER2    
               :  0                :  0                :  0  
- Indeterminate:  5   Indeterminate:  3   Equivocal    :201  
- Negative     :387   Negative     :273   Indeterminate: 12  
- Positive     :793   Positive     :910   Negative     :636  
- NA&#39;s         : 62   NA&#39;s         : 61   Positive     :190  
-                                         NA&#39;s         :208  </code></pre>
-<div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r">## Select samples based on project name + values for the three markers 
-## (only accept &quot;Negative&quot; or &quot;Positive&quot;)
-selected.samples &lt;-<span class="st"> </span>project.samples <span class="op">&amp;</span><span class="st"> </span>
-<span class="st">  </span>(<span class="kw">apply</span>(<span class="kw">is.na</span>(pheno[, immuno.columns]), <span class="dv">1</span>, sum) <span class="op">==</span><span class="st"> </span><span class="dv">0</span>) <span class="op">&amp;</span>
-<span class="st">  </span>(<span class="kw">apply</span>(
-    ((pheno[, immuno.columns] <span class="op">==</span><span class="st"> &quot;Negative&quot;</span>) <span class="op">|</span>
-<span class="st">       </span>(pheno[, immuno.columns] <span class="op">==</span><span class="st"> &quot;Positive&quot;</span>)), <span class="dv">1</span>, sum) <span class="op">==</span><span class="st"> </span><span class="dv">3</span>)</code></pre></div>
+ Indeterminate:  3   Indeterminate:  5   Equivocal    :201  
+ Negative     :273   Negative     :387   Indeterminate: 12  
+ Positive     :910   Positive     :793   Negative     :636  
+ NA&#39;s         : 60   NA&#39;s         : 61   Positive     :190  
+                                         NA&#39;s         :207  </code></pre>
+<p>Marker status summary after having discarded invalid values.</p>
+<div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r">valid.markers &lt;-<span class="st"> </span>phenoTable[valid.samples, immuno.columns]
+<span class="kw">colnames</span>(valid.markers) &lt;-<span class="st"> </span><span class="kw">names</span>(immuno.columns)
+<span class="kw">summary</span>(<span class="kw">as.data.frame</span>(valid.markers))</code></pre></div>
+<pre><code>             ER                  PR                 HER2    
+              :  0                :  0                :  0  
+ Indeterminate:  0   Indeterminate:  0   Equivocal    :  0  
+ Negative     :184   Negative     :267   Indeterminate:  0  
+ Positive     :635   Positive     :552   Negative     :631  
+                                         Positive     :188  </code></pre>
 <p>We discard the samples for which any of the markers is undefined (<code>NA</code>), “Indeterminate” or “Equivocal”. In total, this leaves us with 819 samples.</p>
 <p>We then assign a class label to each sample, indicating its cancer subtype, which is assigned based on the combination of the three immunological markers.</p>
 <div class="figure">
 <img src="images/breast_cancer_typology.png" alt="Figure 1. Definition of breast cancer subtypes based on immunological markers HER2, ER (Estrogen Receptor), and PR (Progesterone Receptor)" />
 <p class="caption">Figure 1. <strong>Definition of breast cancer subtypes</strong> based on immunological markers HER2, ER (Estrogen Receptor), and PR (Progesterone Receptor)</p>
 </div>
-<div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r">## Select the pheno table
-<span class="co"># summary(selected.samples)</span>
-selected.pheno &lt;-<span class="st"> </span>pheno[selected.samples, ]
-<span class="co"># View(t(head(selected.pheno)))</span>
-
-## Define sample classes based on the combination of 3 marker values
-selected.pheno<span class="op">$</span>cancer.type &lt;-<span class="st"> </span><span class="kw">rep</span>(<span class="st">&quot;Unclassified&quot;</span>, <span class="dt">length.out =</span> <span class="kw">nrow</span>(selected.pheno))
+<div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r">## Define sample classes based on the combination of 3 marker values
+pheno<span class="op">$</span>cancer.type &lt;-<span class="st"> </span><span class="kw">rep</span>(<span class="st">&quot;Unclassified&quot;</span>, <span class="dt">length.out =</span> <span class="kw">nrow</span>(pheno))
 
 luminal.A &lt;-<span class="st"> </span>
-<span class="st">  </span>selected.pheno[, immuno.columns[<span class="st">&quot;ER&quot;</span>]] <span class="op">==</span><span class="st"> &quot;Positive&quot;</span> <span class="op">&amp;</span>
-<span class="st">  </span>selected.pheno[, immuno.columns[<span class="st">&quot;PR&quot;</span>]] <span class="op">==</span><span class="st"> &quot;Positive&quot;</span> <span class="op">&amp;</span>
-<span class="st">  </span>selected.pheno[, immuno.columns[<span class="st">&quot;HER2&quot;</span>]] <span class="op">==</span><span class="st"> &quot;Negative&quot;</span>
-<span class="co"># table(luminal.A)</span>
-selected.pheno[luminal.A, <span class="st">&quot;cancer.type&quot;</span>] &lt;-<span class="st"> &quot;Luminal A&quot;</span>
+<span class="st">  </span>pheno[, immuno.columns[<span class="st">&quot;ER&quot;</span>]] <span class="op">==</span><span class="st"> &quot;Positive&quot;</span> <span class="op">&amp;</span>
+<span class="st">  </span>pheno[, immuno.columns[<span class="st">&quot;PR&quot;</span>]] <span class="op">==</span><span class="st"> &quot;Positive&quot;</span> <span class="op">&amp;</span>
+<span class="st">  </span>pheno[, immuno.columns[<span class="st">&quot;HER2&quot;</span>]] <span class="op">==</span><span class="st"> &quot;Negative&quot;</span>
+pheno[luminal.A, <span class="st">&quot;cancer.type&quot;</span>] &lt;-<span class="st"> &quot;Luminal A&quot;</span>
 
 luminal.B &lt;-<span class="st"> </span>
-<span class="st">  </span>selected.pheno[, immuno.columns[<span class="st">&quot;ER&quot;</span>]] <span class="op">==</span><span class="st"> &quot;Positive&quot;</span> <span class="op">&amp;</span>
-<span class="st">  </span>selected.pheno[, immuno.columns[<span class="st">&quot;PR&quot;</span>]] <span class="op">==</span><span class="st"> &quot;Positive&quot;</span> <span class="op">&amp;</span>
-<span class="st">  </span>selected.pheno[, immuno.columns[<span class="st">&quot;HER2&quot;</span>]] <span class="op">==</span><span class="st"> &quot;Positive&quot;</span>
-<span class="co"># table(luminal.B)</span>
-selected.pheno[luminal.B, <span class="st">&quot;cancer.type&quot;</span>] &lt;-<span class="st"> &quot;Luminal B&quot;</span>
-
+<span class="st">  </span>pheno[, immuno.columns[<span class="st">&quot;ER&quot;</span>]] <span class="op">==</span><span class="st"> &quot;Positive&quot;</span> <span class="op">&amp;</span>
+<span class="st">  </span>pheno[, immuno.columns[<span class="st">&quot;PR&quot;</span>]] <span class="op">==</span><span class="st"> &quot;Positive&quot;</span> <span class="op">&amp;</span>
+<span class="st">  </span>pheno[, immuno.columns[<span class="st">&quot;HER2&quot;</span>]] <span class="op">==</span><span class="st"> &quot;Positive&quot;</span>
+pheno[luminal.B, <span class="st">&quot;cancer.type&quot;</span>] &lt;-<span class="st"> &quot;Luminal B&quot;</span>
 
 her2plus &lt;-<span class="st"> </span>
-<span class="st">  </span>selected.pheno[, immuno.columns[<span class="st">&quot;ER&quot;</span>]] <span class="op">==</span><span class="st"> &quot;Negative&quot;</span> <span class="op">&amp;</span>
-<span class="st">  </span>selected.pheno[, immuno.columns[<span class="st">&quot;PR&quot;</span>]] <span class="op">==</span><span class="st"> &quot;Negative&quot;</span> <span class="op">&amp;</span>
-<span class="st">  </span>selected.pheno[, immuno.columns[<span class="st">&quot;HER2&quot;</span>]] <span class="op">==</span><span class="st"> &quot;Positive&quot;</span>
-<span class="co"># table(her2plus)</span>
-selected.pheno[her2plus, <span class="st">&quot;cancer.type&quot;</span>] &lt;-<span class="st"> &quot;HER2+&quot;</span>
+<span class="st">  </span>pheno[, immuno.columns[<span class="st">&quot;ER&quot;</span>]] <span class="op">==</span><span class="st"> &quot;Negative&quot;</span> <span class="op">&amp;</span>
+<span class="st">  </span>pheno[, immuno.columns[<span class="st">&quot;PR&quot;</span>]] <span class="op">==</span><span class="st"> &quot;Negative&quot;</span> <span class="op">&amp;</span>
+<span class="st">  </span>pheno[, immuno.columns[<span class="st">&quot;HER2&quot;</span>]] <span class="op">==</span><span class="st"> &quot;Positive&quot;</span>
+pheno[her2plus, <span class="st">&quot;cancer.type&quot;</span>] &lt;-<span class="st"> &quot;HER2+&quot;</span>
 
 basal.like &lt;-<span class="st"> </span>
-<span class="st">  </span>selected.pheno[, immuno.columns[<span class="st">&quot;ER&quot;</span>]] <span class="op">==</span><span class="st"> &quot;Negative&quot;</span> <span class="op">&amp;</span>
-<span class="st">  </span>selected.pheno[, immuno.columns[<span class="st">&quot;PR&quot;</span>]] <span class="op">==</span><span class="st"> &quot;Negative&quot;</span> <span class="op">&amp;</span>
-<span class="st">  </span>selected.pheno[, immuno.columns[<span class="st">&quot;HER2&quot;</span>]] <span class="op">==</span><span class="st"> &quot;Negative&quot;</span>
-<span class="co"># table(basal.like)</span>
-selected.pheno[basal.like, <span class="st">&quot;cancer.type&quot;</span>] &lt;-<span class="st"> &quot;Basal-like&quot;</span>
+<span class="st">  </span>pheno[, immuno.columns[<span class="st">&quot;ER&quot;</span>]] <span class="op">==</span><span class="st"> &quot;Negative&quot;</span> <span class="op">&amp;</span>
+<span class="st">  </span>pheno[, immuno.columns[<span class="st">&quot;PR&quot;</span>]] <span class="op">==</span><span class="st"> &quot;Negative&quot;</span> <span class="op">&amp;</span>
+<span class="st">  </span>pheno[, immuno.columns[<span class="st">&quot;HER2&quot;</span>]] <span class="op">==</span><span class="st"> &quot;Negative&quot;</span>
+pheno[basal.like, <span class="st">&quot;cancer.type&quot;</span>] &lt;-<span class="st"> &quot;Basal-like&quot;</span>
 
-<span class="kw">kable</span>(<span class="kw">sort</span>(<span class="dt">decreasing =</span> <span class="ot">TRUE</span>, <span class="kw">table</span>(selected.pheno[, <span class="st">&quot;cancer.type&quot;</span>])), <span class="dt">useNA =</span> <span class="st">&quot;ifany&quot;</span>, <span class="dt">caption =</span> <span class="st">&quot;Number of samples per cancer subtype. Cancer subtypes were defined based on the combination of HER2, ER and PR markers. &quot;</span>)</code></pre></div>
+<span class="kw">kable</span>(<span class="kw">sort</span>(<span class="dt">decreasing =</span> <span class="ot">TRUE</span>, <span class="kw">table</span>(pheno[, <span class="st">&quot;cancer.type&quot;</span>])), <span class="dt">useNA =</span> <span class="st">&quot;ifany&quot;</span>, <span class="dt">caption =</span> <span class="st">&quot;Number of samples per cancer subtype. Cancer subtypes were defined based on the combination of HER2, ER and PR markers. &quot;</span>)</code></pre></div>
 <table>
 <caption>
 Number of samples per cancer subtype. Cancer subtypes were defined based on the combination of HER2, ER and PR markers.
@@ -918,56 +1003,73 @@ HER2+
 </tbody>
 </table>
 <div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r">## Get the identifiers of the selected samples
-selected.sample.ids &lt;-<span class="st"> </span><span class="kw">toupper</span>(pheno[selected.samples, <span class="st">&quot;gdc_file_id&quot;</span>])
-<span class="co"># summary(selected.sample.ids %in% names(counts.per.gene))</span>
+selected.sample.ids &lt;-<span class="st"> </span><span class="kw">rownames</span>(pheno)
+<span class="co"># summary(selected.sample.ids %in% colnames(counts.per.gene))</span>
+<span class="co"># summary(colnames(counts.per.gene) %in% selected.sample.ids)</span>
 
 ## Get the subset of the big count table corresponding to our selected IDs
 ## Note the special notation due to the specific class of the fread() result.
-selected.counts &lt;-<span class="st"> </span><span class="kw">as.data.frame</span>(counts.per.gene[, ..selected.sample.ids])
-<span class="co"># dim(selected.counts)</span></code></pre></div>
+<span class="co"># if (!loadRdata) {</span>
+<span class="co">#   selected.counts &lt;- as.data.frame(counts.per.gene[, ..selected.sample.ids])</span>
+<span class="co"># }</span>
+<span class="co"># dim(selected.counts)</span>
+<span class="co"># summary(selected.counts[, 1:10])</span>
+<span class="co"># summary(counts.per.gene[, 1:10])</span></code></pre></div>
 <hr />
 </div>
 <div id="gene-filtering" class="section level2">
 <h2>Gene filtering</h2>
 <div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r">## Discard genes having zeros in at least 95% of samples
-gene.filter.percent.zeros &lt;-<span class="st"> </span><span class="dv">95</span>
-percent.zeros &lt;-<span class="st"> </span><span class="dv">100</span><span class="op">*</span><span class="kw">apply</span>(selected.counts <span class="op">==</span><span class="st"> </span><span class="dv">0</span>, <span class="dv">1</span>, sum) <span class="op">/</span><span class="st"> </span><span class="kw">ncol</span>(selected.counts)
+<span class="kw">message</span>(<span class="st">&quot;Applying threshold on the percent of non-zero counts per gene: &quot;</span>, parameters<span class="op">$</span>gene.filter.percent.zeros, <span class="st">&quot;%&quot;</span>)
+percent.zeros &lt;-<span class="st"> </span><span class="dv">100</span><span class="op">*</span><span class="kw">apply</span>(counts.per.gene <span class="op">==</span><span class="st"> </span><span class="dv">0</span>, <span class="dv">1</span>, sum) <span class="op">/</span><span class="st"> </span><span class="kw">ncol</span>(counts.per.gene)
 <span class="kw">hist</span>(percent.zeros, <span class="dt">breaks =</span> <span class="dv">20</span>, <span class="dt">col =</span> <span class="st">&quot;#DDDDDD&quot;</span>, 
      <span class="dt">main =</span> <span class="st">&quot;Filter on the percentage of zero counts&quot;</span>, 
      <span class="dt">xlab =</span> <span class="st">&quot;Percent of samples&quot;</span>, <span class="dt">ylab =</span> <span class="st">&quot;Number of genes&quot;</span>, <span class="dt">las =</span> <span class="dv">1</span>)
-<span class="kw">arrows</span>(<span class="dt">x0 =</span> gene.filter.percent.zeros, 
+<span class="kw">arrows</span>(<span class="dt">x0 =</span> parameters<span class="op">$</span>gene.filter.percent.zeros, 
        <span class="dt">y0 =</span> <span class="dv">10000</span>, 
-       <span class="dt">x1 =</span> gene.filter.percent.zeros, 
+       <span class="dt">x1 =</span> parameters<span class="op">$</span>gene.filter.percent.zeros, 
        <span class="dt">y1 =</span> <span class="dv">6000</span>, 
        <span class="dt">col =</span> <span class="st">&quot;red&quot;</span>, <span class="dt">lwd =</span> <span class="dv">2</span>,
-       <span class="dt">angle =</span> <span class="dv">30</span>, <span class="dt">length =</span> <span class="fl">0.1</span>)</code></pre></div>
+       <span class="dt">angle =</span> <span class="dv">30</span>, <span class="dt">length =</span> <span class="fl">0.1</span>)
+<span class="kw">text</span>(<span class="dt">x =</span> parameters<span class="op">$</span>gene.filter.percent.zeros, 
+     <span class="dt">y =</span> <span class="dv">10000</span>, 
+     <span class="dt">labels =</span> <span class="kw">paste</span>(<span class="dt">sep =</span> <span class="st">&quot;&quot;</span>, parameters<span class="op">$</span>gene.filter.percent.zeros, <span class="st">&quot;%&quot;</span>),
+     <span class="dt">col =</span> <span class="st">&quot;red&quot;</span>, <span class="dt">pos =</span> <span class="dv">3</span>)</code></pre></div>
 <div class="figure" style="text-align: center">
-<img src="figures/TCGA_importgene_filtering_zero_counts-1.png" alt="Frequency of samples with zero counts per gene. Genes exceeding the thresold (red arrow) were filtered out. " width="672" />
+<img src="figures/TCGA_importgene_filtering_zero_counts-1.png" alt="Frequency of samples with zero counts per gene. Genes exceeding the thresold (red arrow) were filtered out. " width="80%" />
 <p class="caption">
 Frequency of samples with zero counts per gene. Genes exceeding the thresold (red arrow) were filtered out.
 </p>
 </div>
-<div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r">gene.filter.min.count &lt;-<span class="st"> </span><span class="dv">10</span>
-
-min.count &lt;-<span class="st"> </span><span class="kw">apply</span>(selected.counts, <span class="dv">1</span>, min)
+<div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r">min.count &lt;-<span class="st"> </span><span class="kw">apply</span>(counts.per.gene, <span class="dv">1</span>, min)
 <span class="kw">summary</span>(min.count)</code></pre></div>
 <pre><code>   Min. 1st Qu.  Median    Mean 3rd Qu.    Max. 
       0       0       0    6824     938 2168821 </code></pre>
-<div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r">epsilon =<span class="st"> </span><span class="fl">0.1</span>
-<span class="kw">hist</span>(<span class="kw">log2</span>(min.count <span class="op">+</span><span class="st"> </span>epsilon), <span class="dt">breaks =</span> <span class="dv">100</span>, <span class="dt">col =</span> <span class="st">&quot;#BBBBFF&quot;</span>,
+<div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r"><span class="kw">hist</span>(<span class="kw">log2</span>(min.count <span class="op">+</span><span class="st"> </span>parameters<span class="op">$</span>epsilon), <span class="dt">breaks =</span> <span class="dv">100</span>, <span class="dt">col =</span> <span class="st">&quot;#BBBBFF&quot;</span>,
      <span class="dt">xlab =</span> <span class="st">&quot;log2(min count per gene)&quot;</span>,
      <span class="dt">ylab =</span> <span class="st">&quot;Number of genes&quot;</span>, <span class="dt">las =</span> <span class="dv">1</span>,
      <span class="dt">main =</span> <span class="st">&quot;Filtering on min count per gene&quot;</span>)
-<span class="kw">arrows</span>(<span class="dt">x0 =</span> <span class="kw">log2</span>(gene.filter.min.count), 
+<span class="kw">arrows</span>(<span class="dt">x0 =</span> <span class="kw">log2</span>(parameters<span class="op">$</span>gene.filter.min.count), 
        <span class="dt">y0 =</span> <span class="dv">3000</span>, 
-       <span class="dt">x1 =</span> <span class="kw">log2</span>(gene.filter.min.count), 
+       <span class="dt">x1 =</span> <span class="kw">log2</span>(parameters<span class="op">$</span>gene.filter.min.count), 
        <span class="dt">y1 =</span> <span class="dv">1000</span>, 
        <span class="dt">col =</span> <span class="st">&quot;red&quot;</span>, <span class="dt">lwd =</span> <span class="dv">2</span>,
-       <span class="dt">angle =</span> <span class="dv">30</span>, <span class="dt">length =</span> <span class="fl">0.1</span>)</code></pre></div>
-<p><img src="figures/TCGA_importgene_filtering_min_count-1.png" width="672" style="display: block; margin: auto;" /></p>
+       <span class="dt">angle =</span> <span class="dv">30</span>, <span class="dt">length =</span> <span class="fl">0.1</span>)
+<span class="kw">text</span>(<span class="dt">x =</span> <span class="kw">log2</span>(parameters<span class="op">$</span>gene.filter.min.count), 
+     <span class="dt">y =</span> <span class="dv">3000</span>, 
+     <span class="dt">labels =</span> <span class="kw">paste</span>(<span class="dt">sep =</span> <span class="st">&quot;&quot;</span>, <span class="st">&quot;log2(&quot;</span>, 
+                    parameters<span class="op">$</span>gene.filter.min.count,
+                    <span class="st">&quot;) = &quot;</span>, <span class="kw">signif</span>(<span class="dt">digits =</span> <span class="dv">3</span>, <span class="kw">log2</span>(parameters<span class="op">$</span>gene.filter.min.count))),
+     <span class="dt">col =</span> <span class="st">&quot;red&quot;</span>, <span class="dt">pos =</span> <span class="dv">3</span>)</code></pre></div>
+<div class="figure" style="text-align: center">
+<img src="figures/TCGA_importgene_filtering_min_count-1.png" alt="Distribution of min counts per gene. Genes below the thresold (red arrow) are filtered out. " width="80%" />
+<p class="caption">
+Distribution of min counts per gene. Genes below the thresold (red arrow) are filtered out.
+</p>
+</div>
 <div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r">filtered.out.genes &lt;-<span class="st"> </span>
-<span class="st">  </span>percent.zeros <span class="op">&gt;</span><span class="st"> </span>gene.filter.percent.zeros <span class="op">|</span>
-<span class="st">  </span>min.count <span class="op">&lt;</span><span class="st"> </span>gene.filter.min.count
+<span class="st">  </span>percent.zeros <span class="op">&gt;</span><span class="st"> </span>parameters<span class="op">$</span>gene.filter.percent.zeros <span class="op">|</span>
+<span class="st">  </span>min.count <span class="op">&lt;</span><span class="st"> </span>parameters<span class="op">$</span>gene.filter.min.count
 <span class="co"># table(kept.genes)</span>
 
 ## Genes passing the filters
@@ -983,24 +1085,25 @@ filtered.genes &lt;-<span class="st"> </span><span class="op">!</span>filtered.o
 <h2>Exported tables</h2>
 <p>The selected counts per gene and pheno table were exported in tab-separated value (TSV) format.</p>
 <div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r">## Export the selected pheno table
-selected.pheno.file &lt;-<span class="st"> </span><span class="kw">paste</span>(<span class="dt">sep =</span> <span class="st">&quot;&quot;</span>, project.acronym, <span class="st">&quot;_pheno.tsv&quot;</span>)
-<span class="kw">write.table</span>(<span class="dt">x =</span> selected.pheno, <span class="dt">file =</span> <span class="kw">file.path</span>(export.dir, selected.pheno.file), 
+pheno.file &lt;-<span class="st"> </span><span class="kw">paste</span>(<span class="dt">sep =</span> <span class="st">&quot;&quot;</span>, project.acronym, <span class="st">&quot;_pheno.tsv&quot;</span>)
+<span class="kw">write.table</span>(<span class="dt">x =</span> pheno, <span class="dt">file =</span> <span class="kw">file.path</span>(export.dir, pheno.file), 
             <span class="dt">sep =</span> <span class="st">&quot;</span><span class="ch">\t</span><span class="st">&quot;</span>, <span class="dt">quote =</span> <span class="ot">FALSE</span>, <span class="dt">row.names =</span> <span class="ot">FALSE</span>)
 
-<span class="co"># View(counts.per.gene[1:100, 1:40])</span>
+## Export counts per gene
+count.file &lt;-<span class="st"> </span><span class="kw">paste</span>(<span class="dt">sep =</span> <span class="st">&quot;&quot;</span>, project.acronym, <span class="st">&quot;_counts_all-genes.tsv&quot;</span>)
+<span class="kw">write.table</span>(<span class="dt">x =</span> counts.per.gene, <span class="dt">file =</span> <span class="kw">file.path</span>(export.dir, count.file),
+            <span class="dt">sep =</span> <span class="st">&quot;</span><span class="ch">\t</span><span class="st">&quot;</span>, <span class="dt">quote =</span> <span class="ot">FALSE</span>, <span class="dt">row.names =</span> <span class="ot">TRUE</span>, <span class="dt">col.names =</span> <span class="ot">NA</span>)
 
 ## Export the selected counts
-selected.count.file &lt;-<span class="st"> </span><span class="kw">paste</span>(<span class="dt">sep =</span> <span class="st">&quot;&quot;</span>, project.acronym, <span class="st">&quot;_counts_all-genes.tsv&quot;</span>)
-<span class="kw">write.table</span>(<span class="dt">x =</span> selected.counts, <span class="dt">file =</span> <span class="kw">file.path</span>(export.dir, selected.count.file),
-            <span class="dt">sep =</span> <span class="st">&quot;</span><span class="ch">\t</span><span class="st">&quot;</span>, <span class="dt">quote =</span> <span class="ot">FALSE</span>, <span class="dt">row.names =</span> <span class="ot">FALSE</span>)
+filtered.count.file &lt;-<span class="st"> </span><span class="kw">paste</span>(<span class="dt">sep =</span> <span class="st">&quot;&quot;</span>, project.acronym, <span class="st">&quot;_counts_filtered-genes.tsv&quot;</span>)
+<span class="kw">write.table</span>(<span class="dt">x =</span> counts.per.gene[filtered.genes, ], <span class="dt">file =</span> <span class="kw">file.path</span>(export.dir, filtered.count.file),
+            <span class="dt">sep =</span> <span class="st">&quot;</span><span class="ch">\t</span><span class="st">&quot;</span>, <span class="dt">quote =</span> <span class="ot">FALSE</span>, <span class="dt">row.names =</span> <span class="ot">TRUE</span>, <span class="dt">col.names =</span> <span class="ot">NA</span>)
 
-## Export the selected counts
-selected.counts.filtered &lt;-<span class="st"> </span><span class="kw">paste</span>(<span class="dt">sep =</span> <span class="st">&quot;&quot;</span>, project.acronym, <span class="st">&quot;_counts_filtered-genes.tsv&quot;</span>)
-<span class="kw">write.table</span>(<span class="dt">x =</span> selected.counts[filtered.genes, ], <span class="dt">file =</span> <span class="kw">file.path</span>(export.dir, selected.counts.filtered),
-            <span class="dt">sep =</span> <span class="st">&quot;</span><span class="ch">\t</span><span class="st">&quot;</span>, <span class="dt">quote =</span> <span class="ot">FALSE</span>, <span class="dt">row.names =</span> <span class="ot">FALSE</span>)</code></pre></div>
+<span class="kw">list.files</span>(export.dir)</code></pre></div>
+<pre><code>[1] &quot;BIC_counts_all-genes.tsv&quot;      &quot;BIC_counts_filtered-genes.tsv&quot; &quot;BIC_pheno.tsv&quot;                </code></pre>
 <ul>
 <li>Export directory: ~/TCGA_import/data/BIC</li>
-<li>Selected pheno table: BIC_pheno.tsv</li>
+<li>Pheno table: BIC_pheno.tsv</li>
 <li>Counts per gene (all genes): BIC_counts_all-genes.tsv</li>
 <li>Counts per gene (filtered genes): BIC_counts_filtered-genes.tsv</li>
 </ul>
