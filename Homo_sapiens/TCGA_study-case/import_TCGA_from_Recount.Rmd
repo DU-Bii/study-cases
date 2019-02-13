@@ -82,7 +82,7 @@ knitr::opts_chunk$set(
   size = "tiny", 
   echo = TRUE, eval = TRUE, 
   warning = FALSE, message = FALSE, 
-  results = FALSE, comment = "")
+  results = TRUE, comment = "")
 
 options(scipen = 12) ## Max number of digits for non-scientific notation
 # knitr::asis_output("\\footnotesize")
@@ -127,6 +127,16 @@ if (!require(recount)) {
 workdir <- "~/TCGA_import"
 dir.create(workdir, recursive = TRUE, showWarnings = FALSE)
 setwd(workdir)
+
+## Select a TCGA project
+selected.project <- "Breast Invasive Carcinoma"
+project.acronym <- "BIC"
+message("\tSelected TCGA project\t", selected.project, " (", project.acronym, ")")
+
+export.dir <- file.path(workdir, "data", project.acronym)
+message("\tExport directory\t", export.dir)
+dir.create(export.dir, recursive = TRUE, showWarnings = FALSE)
+
 ```
 
 
@@ -187,7 +197,7 @@ for (type in download.types) {
 
 We downloaded the following file types from Recount2: `r paste(collapse = ", ", download.types)`.
 
-## Data exploration
+## Data loading
 
 ```{r}
 ## Load the TCGA pheno table
@@ -210,18 +220,23 @@ system.time(counts.per.gene <- fread(file = localFiles["counts-gene"]))
 
 The full TCGA gene count table contains `r ncol(counts.per.gene)` samples (columns) and `r nrow(counts.per.gene)` genes (rows).
 
-For the study case, we select a breast cancer study. 
+```{r samples_per_project}
+kable(sort(summary(pheno$gdc_cases.project.name), decreasing = TRUE), caption = "Number of samples per TGCA project. ")
+```
+
+```{r selected_project}
+project.samples <- pheno$gdc_cases.project.name == selected.project
+# sum(project.samples, na.rm = TRUE)
+```
+
+
+For the study case, we select the project **`r print(selected.project)`**, which contains `r sum(project.samples)` samples.
+
 
 ## Class labels
 
-To classify Breast cancer, the relevant columns should be: 
 
-- xml_lab_proc_her2_neu_immunohistochemistry_receptor_status
-- xml_breast_carcinoma_estrogen_receptor_status
-
-```{r}
-table(pheno[, c("xml_lab_proc_her2_neu_immunohistochemistry_receptor_status", "xml_breast_carcinoma_estrogen_receptor_status")], useNA = "ifany")
-
+```{r marker_columns}
 ## Select the columns relevant for the Breast cancer study
 immuno.columns <- c(
   PR = "xml_breast_carcinoma_progesterone_receptor_status",
@@ -229,12 +244,91 @@ immuno.columns <- c(
   HER2 = "xml_lab_proc_her2_neu_immunohistochemistry_receptor_status")
 pheno.selection <- pheno[, immuno.columns]
 colnames(pheno.selection) <- names(immuno.columns)
-summary(pheno.selection)
 
-## Select samples based on marker values
+```
 
-data.frame(table(pheno$xml_lab_proc_her2_neu_immunohistochemistry_receptor_status, useNA = "ifany"))
-data.frame(table(pheno$xml_lab_proc_her2_neu_immunohistochemistry_receptor_status, useNA = "ifany"))
+The class of cancer is defined by combining three immunological markers:
+
+- HER2, 
+- ER (estrogen receptor)
+- Pr (progesterone receptor)
+
+The table below provides a summary of the marker status for all samples.
+
+```{r marker_summary}
+summary(pheno.selection[project.samples,])
+```
+
+
+![Figure 1. **Definition of breast cancer subtypes** based on immunological markers HER2, ER (Estrogen Receptor), and PR (Progesterone Receptor)](images/breast_cancer_typology.png)
+
+We fuurther discard the samples for which any of the markers is undefined (`NA`), Indeterminate or Equivocal
+
+```{r eval=FALSE}
+
+## Select samples based on project name
+selected.samples <- project.samples & 
+  (apply(is.na(pheno[, immuno.columns]), 1, sum) == 0) &
+  (apply(
+    ((pheno[, immuno.columns] == "Negative") |
+       (pheno[, immuno.columns] == "Positive")), 1, sum) == 3)
+
+## Select the pheno table
+# summary(selected.samples)
+selected.pheno <- pheno[selected.samples, ]
+# View(t(head(selected.pheno)))
+
+## Define sample classes based on the combination of 3 marker values
+selected.pheno$cancer.type <- rep("Unclassified", length.out = nrow(selected.pheno))
+
+luminal.A <- 
+  selected.pheno[, immuno.columns["ER"]] == "Positive" &
+  selected.pheno[, immuno.columns["PR"]] == "Positive" &
+  selected.pheno[, immuno.columns["HER2"]] == "Negative"
+# table(luminal.A)
+selected.pheno[luminal.A, "cancer.type"] <- "Luminal A"
+
+luminal.B <- 
+  selected.pheno[, immuno.columns["ER"]] == "Positive" &
+  selected.pheno[, immuno.columns["PR"]] == "Positive" &
+  selected.pheno[, immuno.columns["HER2"]] == "Positive"
+# table(luminal.B)
+selected.pheno[luminal.B, "cancer.type"] <- "Luminal B"
+
+
+her2plus <- 
+  selected.pheno[, immuno.columns["ER"]] == "Negative" &
+  selected.pheno[, immuno.columns["PR"]] == "Negative" &
+  selected.pheno[, immuno.columns["HER2"]] == "Positive"
+# table(her2plus)
+selected.pheno[her2plus, "cancer.type"] <- "HER2+"
+
+basal.like <- 
+  selected.pheno[, immuno.columns["ER"]] == "Negative" &
+  selected.pheno[, immuno.columns["PR"]] == "Negative" &
+  selected.pheno[, immuno.columns["HER2"]] == "Negative"
+# table(basal.like)
+selected.pheno[basal.like, "cancer.type"] <- "Basal-like"
+
+table(selected.pheno[, "cancer.type"], useNA = "ifany")
+
+## Export the selected pheno table
+selected.pheno.file <- paste(sep = "", project.acronym, "_pheno.tsv")
+write.table(x = selected.counts, file = file.path(export.dir, selected.count.file))
+
+# View(counts.per.gene[1:100, 1:40])
+
+
+## Get the identifiers of the selected samples
+selected.sample.ids <- toupper(pheno[selected.samples, "gdc_file_id"])
+# summary(selected.sample.ids %in% names(counts.per.gene))
+
+## Get the subset of the big count table corresponding to our selected IDs
+## Note the special notation due to the specific class of the fread() result.
+selected.counts <- as.data.frame(counts.per.gene[, ..selected.sample.ids])
+# dim(selected.counts)
+selected.count.file <- paste(sep = "", project.acronym, "_counts-per-gene.tsv")
+write.table(x = selected.counts, file = file.path(export.dir, selected.count.file))
 
 
 ```
