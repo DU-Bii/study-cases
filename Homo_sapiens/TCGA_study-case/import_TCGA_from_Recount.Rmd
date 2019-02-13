@@ -220,8 +220,9 @@ To classify Breast cancer, the relevant columns should be:
 - xml_breast_carcinoma_estrogen_receptor_status
 
 ```{r}
-table(pheno[, c("xml_lab_proc_her2_neu_immunohistochemistry_receptor_status", "xml_breast_carcinoma_estrogen_receptor_status")], useNA = TRUE)
-table(pheno$xml_lab_proc_her2_neu_immunohistochemistry_receptor_status, useNA = TRUE)
+table(pheno[, c("xml_lab_proc_her2_neu_immunohistochemistry_receptor_status", "xml_breast_carcinoma_estrogen_receptor_status")], useNA = "ifany")
+
+table(pheno$xml_lab_proc_her2_neu_immunohistochemistry_receptor_status, useNA = "ifany")
 
 ```
 
