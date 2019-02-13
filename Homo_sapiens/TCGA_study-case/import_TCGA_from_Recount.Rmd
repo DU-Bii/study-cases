@@ -199,7 +199,7 @@ We downloaded the following file types from Recount2: `r paste(collapse = ", ", 
 
 ## Data loading
 
-```{r}
+```{r result=FALSE}
 ## Load the TCGA pheno table
 message("Reading phenotype table")
 pheno <- read.delim(file = localFiles["phenotype"])
@@ -221,7 +221,7 @@ system.time(counts.per.gene <- fread(file = localFiles["counts-gene"]))
 The full TCGA gene count table contains `r ncol(counts.per.gene)` samples (columns) and `r nrow(counts.per.gene)` genes (rows).
 
 ```{r samples_per_project}
-kable(sort(summary(pheno$gdc_cases.project.name), decreasing = TRUE), caption = "Number of samples per TGCA project. ")
+kable(sort(summary(pheno$gdc_cases.project.name), decreasing = TRUE), caption = "Number of samples per TGCA project. ", col.names = "Number of samples")
 ```
 
 ```{r selected_project}
@@ -260,18 +260,27 @@ summary(pheno.selection[project.samples,])
 ```
 
 
-![Figure 1. **Definition of breast cancer subtypes** based on immunological markers HER2, ER (Estrogen Receptor), and PR (Progesterone Receptor)](images/breast_cancer_typology.png)
 
-We fuurther discard the samples for which any of the markers is undefined (`NA`), Indeterminate or Equivocal
+```{r select_samples}
 
-```{r eval=FALSE}
-
-## Select samples based on project name
+## Select samples based on project name + values for the three markers 
+## (only accept "Negative" or "Positive")
 selected.samples <- project.samples & 
   (apply(is.na(pheno[, immuno.columns]), 1, sum) == 0) &
   (apply(
     ((pheno[, immuno.columns] == "Negative") |
        (pheno[, immuno.columns] == "Positive")), 1, sum) == 3)
+
+```
+
+
+We discard the samples for which any of the markers is undefined (`NA`), "Indeterminate" or "Equivocal". In total, this leaves us with `r sum(selected.samples)` samples.
+
+We then assign a class label to each sample, indicating its cancer subtype, which is assigned based on the combination of the three immunological markers. 
+
+![Figure 1. **Definition of breast cancer subtypes** based on immunological markers HER2, ER (Estrogen Receptor), and PR (Progesterone Receptor)](images/breast_cancer_typology.png)
+
+```{r class_labels}
 
 ## Select the pheno table
 # summary(selected.samples)
@@ -310,14 +319,7 @@ basal.like <-
 # table(basal.like)
 selected.pheno[basal.like, "cancer.type"] <- "Basal-like"
 
-table(selected.pheno[, "cancer.type"], useNA = "ifany")
-
-## Export the selected pheno table
-selected.pheno.file <- paste(sep = "", project.acronym, "_pheno.tsv")
-write.table(x = selected.counts, file = file.path(export.dir, selected.count.file))
-
-# View(counts.per.gene[1:100, 1:40])
-
+kable(sort(decreasing = TRUE, table(selected.pheno[, "cancer.type"])), useNA = "ifany", caption = "Number of samples per cancer subtype. Cancer subtypes were defined based on the combination of HER2, ER and PR markers. ")
 
 ## Get the identifiers of the selected samples
 selected.sample.ids <- toupper(pheno[selected.samples, "gdc_file_id"])
@@ -327,9 +329,102 @@ selected.sample.ids <- toupper(pheno[selected.samples, "gdc_file_id"])
 ## Note the special notation due to the specific class of the fread() result.
 selected.counts <- as.data.frame(counts.per.gene[, ..selected.sample.ids])
 # dim(selected.counts)
-selected.count.file <- paste(sep = "", project.acronym, "_counts-per-gene.tsv")
-write.table(x = selected.counts, file = file.path(export.dir, selected.count.file))
-
 
 ```
+
+
+****************************************************************
+
+## Gene filtering
+
+```{r gene_filtering_zero_counts, fig.cap="Frequency of samples with zero counts per gene. Genes exceeding the thresold (red arrow) were filtered out. "}
+
+## Discard genes having zeros in at least 95% of samples
+gene.filter.percent.zeros <- 95
+percent.zeros <- 100*apply(selected.counts == 0, 1, sum) / ncol(selected.counts)
+hist(percent.zeros, breaks = 20, col = "#DDDDDD", 
+     main = "Filter on the percentage of zero counts", 
+     xlab = "Percent of samples", ylab = "Number of genes", las = 1)
+arrows(x0 = gene.filter.percent.zeros, 
+       y0 = 10000, 
+       x1 = gene.filter.percent.zeros, 
+       y1 = 6000, 
+       col = "red", lwd = 2,
+       angle = 30, length = 0.1)
+```
+
+```{r gene_filtering_min_count}
+gene.filter.min.count <- 10
+
+min.count <- apply(selected.counts, 1, min)
+summary(min.count)
+epsilon = 0.1
+hist(log2(min.count + epsilon), breaks = 100, col = "#BBBBFF",
+     xlab = "log2(min count per gene)",
+     ylab = "Number of genes", las = 1,
+     main = "Filtering on min count per gene")
+arrows(x0 = log2(gene.filter.min.count), 
+       y0 = 3000, 
+       x1 = log2(gene.filter.min.count), 
+       y1 = 1000, 
+       col = "red", lwd = 2,
+       angle = 30, length = 0.1)
+
+```
+
+```{r gene_filtering}
+filtered.out.genes <- 
+  percent.zeros > gene.filter.percent.zeros |
+  min.count < gene.filter.min.count
+# table(kept.genes)
+
+## Genes passing the filters
+filtered.genes <- !filtered.out.genes
+
+```
+
+
+We discard "undetected" genes, i.e. those having zero counts in at least `r gene.filter.percent.zeros` percent of the samples, or those with a maximal count inferior to `r gene.filter.min.count`. This led us to discard `r sum (filtered.out.genes)` genes. 
+
+## Differential expression
+
+We select differentially expressed genes in order to produce a file with a restricted number of genes for clustering.
+
+
+
+****
+
+## Exported tables
+
+The selected counts per gene and pheno table were exported in tab-separated value (TSV) format. 
+
+```{r}
+
+## Export the selected pheno table
+selected.pheno.file <- paste(sep = "", project.acronym, "_pheno.tsv")
+write.table(x = selected.pheno, file = file.path(export.dir, selected.pheno.file), 
+            sep = "\t", quote = FALSE, row.names = FALSE)
+
+# View(counts.per.gene[1:100, 1:40])
+
+## Export the selected counts
+selected.count.file <- paste(sep = "", project.acronym, "_counts_all-genes.tsv")
+write.table(x = selected.counts, file = file.path(export.dir, selected.count.file),
+            sep = "\t", quote = FALSE, row.names = FALSE)
+
+## Export the selected counts
+selected.counts.filtered <- paste(sep = "", project.acronym, "_counts_filtered-genes.tsv")
+write.table(x = selected.counts[filtered.genes, ], file = file.path(export.dir, selected.counts.filtered),
+            sep = "\t", quote = FALSE, row.names = FALSE)
+
+```
+
+- Export directory: `r export.dir`
+- Selected pheno table: `r selected.pheno.file`
+- Counts per gene (all genes): `r selected.count.file`
+- Counts per gene (filtered genes): `r selected.counts.filtered`
+
+****************************************************************
+
+Contact: <Jacques.van-Helden@univ-amu.fr>
 
