@@ -418,6 +418,8 @@ selected.sample.ids <- rownames(pheno)
 
 ## Gene filtering
 
+### Percent zero counts
+
 ```{r gene_filtering_zero_counts, out.width = "80%", fig.width=7, fig.height=4.5, fig.cap="Frequency of samples with zero counts per gene. Genes exceeding the thresold (red arrow) were filtered out. "}
 
 
@@ -483,6 +485,7 @@ We select differentially expressed genes in order to produce a file with a restr
 ```{r}
 
 ## Use the DESeqDataSetFromMatrix to create a DESeqDataSet object
+message("Creating DESeq2 dataset")
 dds0 <- DESeqDataSetFromMatrix(
   countData = as.data.frame(counts.per.gene), 
   colData = data.frame(cancer.type = as.factor(pheno[, "cancer.type"])), 
@@ -491,6 +494,7 @@ dds0 <- DESeqDataSetFromMatrix(
 # print(dds0) # Have a look at the short description of the DESeqDataSet
 
 ## Run  differential expression analysis with DESeq2
+message("Running differential expression analysis with DESeq2")
 dds0 <- DESeq(dds0)
 
 # Cast the results from DESeq differential expression analysis
