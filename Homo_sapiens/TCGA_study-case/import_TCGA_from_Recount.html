@@ -371,7 +371,9 @@ parameters &lt;-<span class="st"> </span><span class="kw">list</span>(
   <span class="dt">epsilon =</span> <span class="fl">0.1</span>,
   <span class="dt">gene.filter.min.count =</span> <span class="dv">10</span>,
   <span class="dt">gene.filter.percent.zeros =</span> <span class="dv">95</span>,
-  <span class="dt">gzip.output.files =</span> <span class="ot">TRUE</span>
+  <span class="dt">gzip.output.files =</span> <span class="ot">TRUE</span>,
+  <span class="dt">alpha =</span> <span class="fl">0.01</span>,
+  <span class="dt">p.adjust.method =</span> <span class="st">&quot;fdr&quot;</span>
 )
 
 <span class="kw">kable</span>(<span class="kw">t</span>(<span class="kw">data.frame</span>(parameters)), <span class="dt">col.names =</span> <span class="st">&quot;Parameter value&quot;</span>)</code></pre></div>
@@ -380,7 +382,7 @@ parameters &lt;-<span class="st"> </span><span class="kw">list</span>(
 <tr>
 <th style="text-align:left;">
 </th>
-<th style="text-align:right;">
+<th style="text-align:left;">
 Parameter value
 </th>
 </tr>
@@ -390,7 +392,7 @@ Parameter value
 <td style="text-align:left;">
 epsilon
 </td>
-<td style="text-align:right;">
+<td style="text-align:left;">
 0.1
 </td>
 </tr>
@@ -398,24 +400,40 @@ epsilon
 <td style="text-align:left;">
 gene.filter.min.count
 </td>
-<td style="text-align:right;">
-10.0
+<td style="text-align:left;">
+10
 </td>
 </tr>
 <tr>
 <td style="text-align:left;">
 gene.filter.percent.zeros
 </td>
-<td style="text-align:right;">
-95.0
+<td style="text-align:left;">
+95
 </td>
 </tr>
 <tr>
 <td style="text-align:left;">
 gzip.output.files
 </td>
-<td style="text-align:right;">
-1.0
+<td style="text-align:left;">
+TRUE
+</td>
+</tr>
+<tr>
+<td style="text-align:left;">
+alpha
+</td>
+<td style="text-align:left;">
+0.01
+</td>
+</tr>
+<tr>
+<td style="text-align:left;">
+p.adjust.method
+</td>
+<td style="text-align:left;">
+fdr
 </td>
 </tr>
 </tbody>
@@ -1115,6 +1133,50 @@ dds0 &lt;-<span class="st"> </span><span class="kw">DESeqDataSetFromMatrix</span
 <span class="co"># </span>
 <span class="co"># # Cast the results from DESeq differential expression analysis</span>
 <span class="co"># DEGtable &lt;- results(dds0, independentFiltering = FALSE)</span></code></pre></div>
+<div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r">## Detection of Differentially Expressed Genes (DEG) with edgeR
+<span class="kw">message</span>(<span class="st">&quot;Detecting Differentially Expressed Genes (DEG) with edgeR&quot;</span>)
+
+## Build a &quot;model matrix&quot; from the class labels
+## This matrix contains one row per sample and one column per class
+designMat &lt;-<span class="st"> </span><span class="kw">model.matrix</span>(<span class="op">~</span><span class="st"> </span>pheno<span class="op">$</span>cancer.type)
+<span class="co"># View(designMat)</span>
+
+## Build an edgeR::DGEList object which is required to run edgeR DE analysis
+dgList &lt;-<span class="st"> </span><span class="kw">DGEList</span>(<span class="dt">counts =</span> filtered.counts)
+<span class="co"># class(dgList)</span>
+<span class="co"># is(dgList)</span>
+
+## Estimate the dispersion parameters. 
+<span class="kw">message</span>(<span class="st">&quot;</span><span class="ch">\t</span><span class="st">edgeR</span><span class="ch">\t</span><span class="st">Estimating dispersion&quot;</span>)
+dgList &lt;-<span class="st"> </span><span class="kw">estimateDisp</span>(dgList, <span class="dt">design =</span> designMat)
+
+## Fit edgeR model for differential expression analysis.
+## We chose glmQLFit because it is claimed to offer a more accurate control of type I error. 
+<span class="kw">message</span>(<span class="st">&quot;</span><span class="ch">\t</span><span class="st">edgeR</span><span class="ch">\t</span><span class="st">model fitting with glmQLFit()&quot;</span>)
+fit &lt;-<span class="st"> </span><span class="kw">glmQLFit</span>(dgList, <span class="dt">design =</span> designMat)
+
+## Run test to detect differentially expressed genes
+<span class="kw">message</span>(<span class="st">&quot;</span><span class="ch">\t</span><span class="st">edgeR</span><span class="ch">\t</span><span class="st">detecting differentially expressed genes with glmQLFTest()&quot;</span>)
+qlf &lt;-<span class="st"> </span><span class="kw">glmQLFTest</span>(fit, <span class="dt">coef =</span> <span class="dv">2</span><span class="op">:</span><span class="kw">ncol</span>(designMat))
+<span class="kw">message</span>(<span class="st">&quot;</span><span class="ch">\t</span><span class="st">edgeR</span><span class="ch">\t</span><span class="st">&quot;</span>)
+qlf.TT &lt;-<span class="st"> </span><span class="kw">topTags</span>(qlf, <span class="dt">n =</span> <span class="kw">nrow</span>(qlf<span class="op">$</span>table), <span class="dt">sort.by =</span> <span class="st">&quot;none&quot;</span>,
+                  <span class="dt">adjust.method =</span> parameters<span class="op">$</span>p.adjust.method)
+<span class="co"># class(qlf.TT)</span>
+<span class="co"># Note: the adusted p-values are co-linear with the nominal p-value, </span>
+## which is not supposed to be the case with BH correction. 
+## I should test this. 
+<span class="co"># plot(qlf.TT$table$PValue, qlf.TT$table$FDR, log = &quot;xy&quot;, col = &quot;grey&quot;)</span>
+
+## Select differentially expressed genes
+edgeR.DEG.table &lt;-<span class="st"> </span>qlf.TT<span class="op">$</span>table
+DEG &lt;-<span class="st"> </span>edgeR.DEG.table<span class="op">$</span>FDR <span class="op">&lt;</span><span class="st"> </span>parameters<span class="op">$</span>alpha
+<span class="co"># sum(DEG)</span>
+
+## Awful: almost all genes are declared positive
+## The p-value histogram shows indeed that almost no gene has 
+## a nominal pvalue &gt; 0.5 (typical lambda for Storey-Tibshirani 2003). 
+<span class="kw">hist</span>(edgeR.DEG.table<span class="op">$</span>PValue, <span class="dt">breaks =</span> <span class="dv">20</span>, <span class="dt">col =</span> <span class="st">&quot;grey&quot;</span>)</code></pre></div>
+<p><img src="figures/TCGA_BIC_differential_analysis_edgeR-1.png" width="672" style="display: block; margin: auto;" /></p>
 </div>
 <div id="normalization-of-the-counts-per-gene" class="section level2">
 <h2>Normalization of the counts per gene</h2>
@@ -1135,21 +1197,21 @@ counts.log2.norm &lt;-<span class="st"> </span><span class="kw">log2</span>(coun
 
 <span class="kw">par</span>(<span class="dt">mfrow =</span> <span class="kw">c</span>(<span class="dv">2</span>, <span class="dv">1</span>))
 
-<span class="kw">hist</span>(<span class="kw">unlist</span>(<span class="kw">log2</span>(<span class="kw">unlist</span>(counts.per.gene <span class="op">+</span><span class="st"> </span>parameters<span class="op">$</span>epsilon))), <span class="dt">main =</span> <span class="st">&quot;Distribution of raw counts&quot;</span>,
+<span class="kw">hist</span>(<span class="kw">unlist</span>(<span class="kw">log2</span>(<span class="kw">unlist</span>(counts.per.gene <span class="op">+</span><span class="st"> </span>parameters<span class="op">$</span>epsilon))), <span class="dt">main =</span> <span class="st">&quot;Log2(raw counts)&quot;</span>,
      <span class="dt">xlab =</span> <span class="st">&quot;log2(raw counts + epsilon)&quot;</span>,
      <span class="dt">ylab =</span> <span class="st">&quot;Number of measures&quot;</span>,
      <span class="dt">breaks =</span> log2.count.breaks, 
      <span class="dt">col =</span> <span class="st">&quot;#FFDDBB&quot;</span>)
 
-<span class="kw">hist</span>(<span class="kw">unlist</span>(counts.log2.norm), <span class="dt">main =</span> <span class="st">&quot;Distribution of normalized counts&quot;</span>,
+<span class="kw">hist</span>(<span class="kw">unlist</span>(counts.log2.norm), <span class="dt">main =</span> <span class="st">&quot;Normalized counts&quot;</span>,
      <span class="dt">xlab =</span> <span class="st">&quot;log2(standardized counts)&quot;</span>,
      <span class="dt">ylab =</span> <span class="st">&quot;Number of measures&quot;</span>,
      <span class="dt">breaks =</span> log2.count.breaks, 
      <span class="dt">col =</span> <span class="st">&quot;#DDFFBB&quot;</span>)</code></pre></div>
 <div class="figure" style="text-align: center">
-<img src="figures/TCGA_BIC_norm_count_hist-1.png" alt="**Histogram of all counts.** (a) log2(raw counts + epsilon). The epsilon is added to avoid -Inf values for log2-transformed zeros. (b) Normalised counts. Normalization consists in scaling counts in order to ensure library size standardization, followed by a  log2 transformation. " width="80%" />
+<img src="figures/TCGA_BIC_norm_count_hist-1.png" alt="**Histogram of all counts.** (a) **Before filtering and standardization.** Distribution of log2(raw counts + epsilon). The epsilon is added to avoid -Inf values for log2-transformed zeros. (b) **Normalised counts.** Normalization consists in scaling counts in order to ensure library size standardization, followed by a  log2 transformation. " width="80%" />
 <p class="caption">
-<strong>Histogram of all counts.</strong> (a) log2(raw counts + epsilon). The epsilon is added to avoid -Inf values for log2-transformed zeros. (b) Normalised counts. Normalization consists in scaling counts in order to ensure library size standardization, followed by a log2 transformation.
+<strong>Histogram of all counts.</strong> (a) <strong>Before filtering and standardization.</strong> Distribution of log2(raw counts + epsilon). The epsilon is added to avoid -Inf values for log2-transformed zeros. (b) <strong>Normalised counts.</strong> Normalization consists in scaling counts in order to ensure library size standardization, followed by a log2 transformation.
 </p>
 </div>
 <div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r"><span class="kw">par</span>(<span class="dt">mfrow =</span> <span class="kw">c</span>(<span class="dv">1</span>, <span class="dv">1</span>))</code></pre></div>
@@ -1260,6 +1322,20 @@ filtered.norm.count.path &lt;-<span class="st"> </span><span class="kw">file.pat
             <span class="dt">sep =</span> <span class="st">&quot;</span><span class="ch">\t</span><span class="st">&quot;</span>, <span class="dt">quote =</span> <span class="ot">FALSE</span>, <span class="dt">row.names =</span> <span class="ot">TRUE</span>, <span class="dt">col.names =</span> <span class="ot">NA</span>)
 <span class="cf">if</span> (parameters<span class="op">$</span>gzip.output.files) {
   <span class="kw">close</span>(filtered.norm.count.path)
+}
+
+## Export normalized counts for DEG only
+DEG.norm.count.file &lt;-<span class="st"> </span><span class="kw">paste</span>(<span class="dt">sep =</span> <span class="st">&quot;&quot;</span>, project.acronym, <span class="st">&quot;_log2-norm-counts_DEG_&quot;</span>, parameters<span class="op">$</span>p.adjust.method, <span class="st">&quot;_&quot;</span>, parameters<span class="op">$</span>alpha, <span class="st">&quot;.tsv&quot;</span>)
+DEG.norm.count.path &lt;-<span class="st"> </span><span class="kw">file.path</span>(export.dir, DEG.norm.count.file)
+<span class="cf">if</span> (parameters<span class="op">$</span>gzip.output.files) {
+  DEG.norm.count.path &lt;-<span class="st"> </span><span class="kw">gzfile</span>(DEG.norm.count.path, <span class="st">&quot;w&quot;</span>) ## Compress file
+}
+<span class="co"># dim(counts.log2.norm)</span>
+<span class="kw">write.table</span>(<span class="dt">x =</span> counts.log2.norm[DEG, ], 
+            <span class="dt">file =</span> DEG.norm.count.path,
+            <span class="dt">sep =</span> <span class="st">&quot;</span><span class="ch">\t</span><span class="st">&quot;</span>, <span class="dt">quote =</span> <span class="ot">FALSE</span>, <span class="dt">row.names =</span> <span class="ot">TRUE</span>, <span class="dt">col.names =</span> <span class="ot">NA</span>)
+<span class="cf">if</span> (parameters<span class="op">$</span>gzip.output.files) {
+  <span class="kw">close</span>(DEG.norm.count.path)
 }</code></pre></div>
 <table>
 <colgroup>
@@ -1296,6 +1372,10 @@ filtered.norm.count.path &lt;-<span class="st"> </span><span class="kw">file.pat
 <tr class="even">
 <td>Normalized counts per gene (filtered genes)</td>
 <td><a href="BIC_log2-norm-counts_filtered-genes.tsv" class="uri">BIC_log2-norm-counts_filtered-genes.tsv</a></td>
+</tr>
+<tr class="odd">
+<td>Normalized counts per gene (differentially expressed genes)</td>
+<td><a href="BIC_log2-norm-counts_DEG_fdr_0.01.tsv" class="uri">BIC_log2-norm-counts_DEG_fdr_0.01.tsv</a></td>
 </tr>
 </tbody>
 </table>
