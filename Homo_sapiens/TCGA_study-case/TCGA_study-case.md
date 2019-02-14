@@ -63,7 +63,7 @@ We downloaded the raw counts from TCGA, and applied the following steps
 The preprocessing was done with an R markdown file, which enables anyone to reproduce the results and understand each step. 
 
 - Pre-processing report: [import_TCGA_from_Recount.html](import_TCGA_from_Recount.html)
-- R markdown: [import_TCGA_from_Recount.html](import_TCGA_from_Recount.Rmd)
+- R markdown: [import_TCGA_from_Recount.Rmd](https://raw.githubusercontent.com/DU-Bii/study-cases/master/Homo_sapiens/TCGA_study-case/import_TCGA_from_Recount.Rmd)
 
 ## Use in the different courses
 
