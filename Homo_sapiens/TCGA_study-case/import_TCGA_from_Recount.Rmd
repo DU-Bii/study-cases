@@ -66,10 +66,22 @@ font-family: Garamond
 transition: linear
 ---
 
-```{r settings, include=FALSE, echo=FALSE, eval=TRUE}
+```{r libraries, include=FALSE, echo=FALSE, eval=TRUE}
 library(knitr)
 library(kableExtra)
 library(data.table)
+
+## Install the library if needed then load it
+if (!require("DESeq2")) {
+  source("http://bioconductor.org/biocLite.R")
+  biocLite("DESeq2")
+}
+require("DESeq2")
+
+```
+
+
+```{r settings, include=FALSE, echo=FALSE, eval=TRUE}
 
 # library(formattable)
 
@@ -469,12 +481,6 @@ We discard "undetected" genes, i.e. those having zero counts in at least `r para
 We select differentially expressed genes in order to produce a file with a restricted number of genes for clustering.
 
 ```{r}
-## Install the library if needed then load it
-if (!require("DESeq2")) {
-  source("http://bioconductor.org/biocLite.R")
-  biocLite("DESeq2")
-}
-require("DESeq2")
 
 ## Use the DESeqDataSetFromMatrix to create a DESeqDataSet object
 dds0 <- DESeqDataSetFromMatrix(
@@ -640,12 +646,12 @@ if (parameters$gzip.output.files) {
 
 | Contants | File name |
 |-----------------------------------------|-------------------------------|
-| Export directory | `r export.dir` |
-| Pheno table |`r pheno.file` |
-| Counts per gene (all genes) | `r count.file` |
-| Counts per gene (filtered genes) | `r filtered.count.file` |
-| Normalized counts per gene (all genes) | `r norm.count.file` |
-| Normalized counts per gene (filtered genes) | `r filtered.norm.count.file` |
+| Export directory | [`r export.dir`](`r export.dir`) |
+| Pheno table | [`r export.dir`](`r export.dir`) |
+| Counts per gene (all genes) | [`r count.file`](`r count.file`) |
+| Counts per gene (filtered genes) | [`r filtered.count.file`](`r filtered.count.file`) |
+| Normalized counts per gene (all genes) | [`r norm.count.file`](`r norm.count.file`) |
+| Normalized counts per gene (filtered genes) | [`r filtered.norm.count.file`](`r filtered.norm.count.file`) |
 
 ****************************************************************
 
