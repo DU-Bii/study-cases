@@ -122,7 +122,9 @@ parameters <- list(
   epsilon = 0.1,
   gene.filter.min.count = 10,
   gene.filter.percent.zeros = 95,
-  gzip.output.files = TRUE
+  gzip.output.files = TRUE,
+  alpha = 0.01,
+  p.adjust.method = "fdr"
 )
 
 kable(t(data.frame(parameters)), col.names = "Parameter value")
@@ -526,13 +528,49 @@ dds0 <- DESeqDataSetFromMatrix(
 
 
 ```{r differential_analysis_edgeR}
+## Detection of Differentially Expressed Genes (DEG) with edgeR
+message("Detecting Differentially Expressed Genes (DEG) with edgeR")
+
 ## Build a "model matrix" from the class labels
 ## This matrix contains one row per sample and one column per class
 designMat <- model.matrix(~ pheno$cancer.type)
 # View(designMat)
 
-## Build a DGEList object which is required to run edgeR DE analysis
+## Build an edgeR::DGEList object which is required to run edgeR DE analysis
 dgList <- DGEList(counts = filtered.counts)
+# class(dgList)
+# is(dgList)
+
+## Estimate the dispersion parameters. 
+message("\tedgeR\tEstimating dispersion")
+dgList <- estimateDisp(dgList, design = designMat)
+
+## Fit edgeR model for differential expression analysis.
+## We chose glmQLFit because it is claimed to offer a more accurate control of type I error. 
+message("\tedgeR\tmodel fitting with glmQLFit()")
+fit <- glmQLFit(dgList, design = designMat)
+
+## Run test to detect differentially expressed genes
+message("\tedgeR\tdetecting differentially expressed genes with glmQLFTest()")
+qlf <- glmQLFTest(fit, coef = 2:ncol(designMat))
+message("\tedgeR\t")
+qlf.TT <- topTags(qlf, n = nrow(qlf$table), sort.by = "none",
+                  adjust.method = parameters$p.adjust.method)
+# class(qlf.TT)
+# Note: the adusted p-values are co-linear with the nominal p-value, 
+## which is not supposed to be the case with BH correction. 
+## I should test this. 
+# plot(qlf.TT$table$PValue, qlf.TT$table$FDR, log = "xy", col = "grey")
+
+## Select differentially expressed genes
+edgeR.DEG.table <- qlf.TT$table
+DEG <- edgeR.DEG.table$FDR < parameters$alpha
+# sum(DEG)
+
+## Awful: almost all genes are declared positive
+## The p-value histogram shows indeed that almost no gene has 
+## a nominal pvalue > 0.5 (typical lambda for Storey-Tibshirani 2003). 
+hist(edgeR.DEG.table$PValue, breaks = 20, col = "grey")
 
 ```
 
@@ -693,6 +731,20 @@ if (parameters$gzip.output.files) {
   close(filtered.norm.count.path)
 }
 
+## Export normalized counts for DEG only
+DEG.norm.count.file <- paste(sep = "", project.acronym, "_log2-norm-counts_DEG_", parameters$p.adjust.method, "_", parameters$alpha, ".tsv")
+DEG.norm.count.path <- file.path(export.dir, DEG.norm.count.file)
+if (parameters$gzip.output.files) {
+  DEG.norm.count.path <- gzfile(DEG.norm.count.path, "w") ## Compress file
+}
+# dim(counts.log2.norm)
+write.table(x = counts.log2.norm[DEG, ], 
+            file = DEG.norm.count.path,
+            sep = "\t", quote = FALSE, row.names = TRUE, col.names = NA)
+if (parameters$gzip.output.files) {
+  close(DEG.norm.count.path)
+}
+
 
 ```
 
@@ -705,6 +757,8 @@ if (parameters$gzip.output.files) {
 | Counts per gene (filtered genes) | [`r filtered.count.file`](`r filtered.count.file`) |
 | Normalized counts per gene (all genes) | [`r norm.count.file`](`r norm.count.file`) |
 | Normalized counts per gene (filtered genes) | [`r filtered.norm.count.file`](`r filtered.norm.count.file`) |
+| Normalized counts per gene (differentially expressed genes) | [`r DEG.norm.count.file`](`r DEG.norm.count.file`) |
+
 
 ****************************************************************
 
