@@ -370,7 +370,8 @@ div.tocify {
 parameters &lt;-<span class="st"> </span><span class="kw">list</span>(
   <span class="dt">epsilon =</span> <span class="fl">0.1</span>,
   <span class="dt">gene.filter.min.count =</span> <span class="dv">10</span>,
-  <span class="dt">gene.filter.percent.zeros =</span> <span class="dv">95</span>
+  <span class="dt">gene.filter.percent.zeros =</span> <span class="dv">95</span>,
+  <span class="dt">gzip.output.files =</span> <span class="ot">TRUE</span>
 )
 
 <span class="kw">kable</span>(<span class="kw">t</span>(<span class="kw">data.frame</span>(parameters)), <span class="dt">col.names =</span> <span class="st">&quot;Parameter value&quot;</span>)</code></pre></div>
@@ -407,6 +408,14 @@ gene.filter.percent.zeros
 </td>
 <td style="text-align:right;">
 95.0
+</td>
+</tr>
+<tr>
+<td style="text-align:left;">
+gzip.output.files
+</td>
+<td style="text-align:right;">
+1.0
 </td>
 </tr>
 </tbody>
@@ -465,7 +474,8 @@ download.dir &lt;-<span class="st"> </span><span class="kw">file.path</span>(wor
 
 
 ## Data types to download
-download.types &lt;-<span class="st"> </span><span class="kw">c</span>(<span class="st">&quot;phenotype&quot;</span>, <span class="st">&quot;counts-gene&quot;</span>, <span class="st">&quot;rse-gene&quot;</span>)
+<span class="co">#download.types &lt;- c(&quot;phenotype&quot;, &quot;counts-gene&quot;, &quot;rse-gene&quot;)</span>
+download.types &lt;-<span class="st"> </span><span class="kw">c</span>(<span class="st">&quot;rse-gene&quot;</span>) <span class="co"># the rse-gene object contains both expression and pheno tables</span>
 localFiles &lt;-<span class="st"> </span><span class="kw">c</span>()
 <span class="cf">for</span> (type <span class="cf">in</span> download.types) {
   <span class="kw">message</span>(<span class="st">&quot;Recount data type: &quot;</span>, type)
@@ -500,7 +510,7 @@ localFiles &lt;-<span class="st"> </span><span class="kw">c</span>()
 }
 ## Download the gene-level RangedSummarizedExperiment data
 <span class="co"># download_study(project = &quot;TCGA&quot;, type = &quot;counts-gene&quot;, outdir = download.dir)</span></code></pre></div>
-<p>We downloaded the following file types from Recount2: phenotype, counts-gene, rse-gene.</p>
+<p>We downloaded the following file types from Recount2: rse-gene.</p>
 </div>
 <div id="data-loading" class="section level2">
 <h2>Data loading</h2>
@@ -924,25 +934,25 @@ luminal.A &lt;-<span class="st"> </span>
 <span class="st">  </span>pheno[, immuno.columns[<span class="st">&quot;ER&quot;</span>]] <span class="op">==</span><span class="st"> &quot;Positive&quot;</span> <span class="op">&amp;</span>
 <span class="st">  </span>pheno[, immuno.columns[<span class="st">&quot;PR&quot;</span>]] <span class="op">==</span><span class="st"> &quot;Positive&quot;</span> <span class="op">&amp;</span>
 <span class="st">  </span>pheno[, immuno.columns[<span class="st">&quot;HER2&quot;</span>]] <span class="op">==</span><span class="st"> &quot;Negative&quot;</span>
-pheno[luminal.A, <span class="st">&quot;cancer.type&quot;</span>] &lt;-<span class="st"> &quot;Luminal A&quot;</span>
+pheno[luminal.A, <span class="st">&quot;cancer.type&quot;</span>] &lt;-<span class="st"> &quot;Luminal.A&quot;</span>
 
 luminal.B &lt;-<span class="st"> </span>
 <span class="st">  </span>pheno[, immuno.columns[<span class="st">&quot;ER&quot;</span>]] <span class="op">==</span><span class="st"> &quot;Positive&quot;</span> <span class="op">&amp;</span>
 <span class="st">  </span>pheno[, immuno.columns[<span class="st">&quot;PR&quot;</span>]] <span class="op">==</span><span class="st"> &quot;Positive&quot;</span> <span class="op">&amp;</span>
 <span class="st">  </span>pheno[, immuno.columns[<span class="st">&quot;HER2&quot;</span>]] <span class="op">==</span><span class="st"> &quot;Positive&quot;</span>
-pheno[luminal.B, <span class="st">&quot;cancer.type&quot;</span>] &lt;-<span class="st"> &quot;Luminal B&quot;</span>
+pheno[luminal.B, <span class="st">&quot;cancer.type&quot;</span>] &lt;-<span class="st"> &quot;Luminal.B&quot;</span>
 
 her2plus &lt;-<span class="st"> </span>
 <span class="st">  </span>pheno[, immuno.columns[<span class="st">&quot;ER&quot;</span>]] <span class="op">==</span><span class="st"> &quot;Negative&quot;</span> <span class="op">&amp;</span>
 <span class="st">  </span>pheno[, immuno.columns[<span class="st">&quot;PR&quot;</span>]] <span class="op">==</span><span class="st"> &quot;Negative&quot;</span> <span class="op">&amp;</span>
 <span class="st">  </span>pheno[, immuno.columns[<span class="st">&quot;HER2&quot;</span>]] <span class="op">==</span><span class="st"> &quot;Positive&quot;</span>
-pheno[her2plus, <span class="st">&quot;cancer.type&quot;</span>] &lt;-<span class="st"> &quot;HER2+&quot;</span>
+pheno[her2plus, <span class="st">&quot;cancer.type&quot;</span>] &lt;-<span class="st"> &quot;HER2pos&quot;</span>
 
 basal.like &lt;-<span class="st"> </span>
 <span class="st">  </span>pheno[, immuno.columns[<span class="st">&quot;ER&quot;</span>]] <span class="op">==</span><span class="st"> &quot;Negative&quot;</span> <span class="op">&amp;</span>
 <span class="st">  </span>pheno[, immuno.columns[<span class="st">&quot;PR&quot;</span>]] <span class="op">==</span><span class="st"> &quot;Negative&quot;</span> <span class="op">&amp;</span>
 <span class="st">  </span>pheno[, immuno.columns[<span class="st">&quot;HER2&quot;</span>]] <span class="op">==</span><span class="st"> &quot;Negative&quot;</span>
-pheno[basal.like, <span class="st">&quot;cancer.type&quot;</span>] &lt;-<span class="st"> &quot;Basal-like&quot;</span>
+pheno[basal.like, <span class="st">&quot;cancer.type&quot;</span>] &lt;-<span class="st"> &quot;Basal.like&quot;</span>
 
 <span class="kw">kable</span>(<span class="kw">sort</span>(<span class="dt">decreasing =</span> <span class="ot">TRUE</span>, <span class="kw">table</span>(pheno[, <span class="st">&quot;cancer.type&quot;</span>])), <span class="dt">useNA =</span> <span class="st">&quot;ifany&quot;</span>, <span class="dt">caption =</span> <span class="st">&quot;Number of samples per cancer subtype. Cancer subtypes were defined based on the combination of HER2, ER and PR markers. &quot;</span>)</code></pre></div>
 <table>
@@ -962,7 +972,7 @@ Freq
 <tbody>
 <tr>
 <td style="text-align:left;">
-Luminal A
+Luminal.A
 </td>
 <td style="text-align:right;">
 422
@@ -970,7 +980,7 @@ Luminal A
 </tr>
 <tr>
 <td style="text-align:left;">
-Basal-like
+Basal.like
 </td>
 <td style="text-align:right;">
 131
@@ -978,7 +988,7 @@ Basal-like
 </tr>
 <tr>
 <td style="text-align:left;">
-Luminal B
+Luminal.B
 </td>
 <td style="text-align:right;">
 118
@@ -994,7 +1004,7 @@ Unclassified
 </tr>
 <tr>
 <td style="text-align:left;">
-HER2+
+HER2pos
 </td>
 <td style="text-align:right;">
 41
@@ -1079,33 +1089,158 @@ filtered.genes &lt;-<span class="st"> </span><span class="op">!</span>filtered.o
 <div id="differential-expression" class="section level2">
 <h2>Differential expression</h2>
 <p>We select differentially expressed genes in order to produce a file with a restricted number of genes for clustering.</p>
+<div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r">## Install the library if needed then load it
+<span class="cf">if</span> (<span class="op">!</span><span class="kw">require</span>(<span class="st">&quot;DESeq2&quot;</span>)) {
+  <span class="kw">source</span>(<span class="st">&quot;http://bioconductor.org/biocLite.R&quot;</span>)
+  <span class="kw">biocLite</span>(<span class="st">&quot;DESeq2&quot;</span>)
+}
+<span class="kw">require</span>(<span class="st">&quot;DESeq2&quot;</span>)
+
+## Use the DESeqDataSetFromMatrix to create a DESeqDataSet object
+dds0 &lt;-<span class="st"> </span><span class="kw">DESeqDataSetFromMatrix</span>(
+  <span class="dt">countData =</span> <span class="kw">as.data.frame</span>(counts.per.gene), 
+  <span class="dt">colData =</span> <span class="kw">data.frame</span>(<span class="dt">cancer.type =</span> <span class="kw">as.factor</span>(pheno[, <span class="st">&quot;cancer.type&quot;</span>])), 
+  <span class="dt">design =</span> <span class="op">~</span><span class="st"> </span>cancer.type)
+
+<span class="co"># print(dds0) # Have a look at the short description of the DESeqDataSet</span></code></pre></div>
+</div>
+<div id="normalization-of-the-counts-per-gene" class="section level2">
+<h2>Normalization of the counts per gene</h2>
+<p>We use DESeq2 function <code>estimateSizeFactors()</code> to estimate the library-wise size factors, which will be used to standardize the counts.</p>
+<p>We then apply a log2 transformation in order to normalize these standardized counts.</p>
+<div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r">## Normalizing using the method for an object of class&quot;CountDataSet&quot; 
+dds.norm &lt;-<span class="st">  </span><span class="kw">estimateSizeFactors</span>(dds0)
+<span class="co"># sizeFactors(dds.norm)</span>
+
+counts.norm &lt;-<span class="st"> </span><span class="kw">counts</span>(dds.norm) <span class="op">+</span><span class="st"> </span>parameters<span class="op">$</span>epsilon
+<span class="co"># dim(counts.norm)</span>
+counts.log2.norm &lt;-<span class="st"> </span><span class="kw">log2</span>(counts.norm)
+<span class="co"># dim(counts.log2.norm)</span></code></pre></div>
+<div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r"><span class="kw">hist</span>(<span class="kw">unlist</span>(counts.log2.norm), <span class="dt">main =</span> <span class="st">&quot;Distribution of normalized counts&quot;</span>,
+     <span class="dt">xlab =</span> <span class="st">&quot;log2(standardized counts)&quot;</span>,
+     <span class="dt">ylab =</span> <span class="st">&quot;Number of measures&quot;</span>,
+     <span class="dt">breaks =</span> <span class="dv">100</span>, 
+     <span class="dt">col =</span> <span class="st">&quot;#FFDDBB&quot;</span>)</code></pre></div>
+<div class="figure" style="text-align: center">
+<img src="figures/TCGA_importnorm_count_hist-1.png" alt="**Histogram of the nornmalized counts.** Normalization consists in scaling counts in order to ensure library size standardization, followed by a  log2 transformation. " width="80%" />
+<p class="caption">
+<strong>Histogram of the nornmalized counts.</strong> Normalization consists in scaling counts in order to ensure library size standardization, followed by a log2 transformation.
+</p>
+</div>
 <hr />
 </div>
 <div id="exported-tables" class="section level2">
 <h2>Exported tables</h2>
 <p>The selected counts per gene and pheno table were exported in tab-separated value (TSV) format.</p>
-<div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r">## Export the selected pheno table
-pheno.file &lt;-<span class="st"> </span><span class="kw">paste</span>(<span class="dt">sep =</span> <span class="st">&quot;&quot;</span>, project.acronym, <span class="st">&quot;_pheno.tsv&quot;</span>)
-<span class="kw">write.table</span>(<span class="dt">x =</span> pheno, <span class="dt">file =</span> <span class="kw">file.path</span>(export.dir, pheno.file), 
+<div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r">pheno.export.columns &lt;-<span class="st"> </span><span class="kw">names</span>(pheno)
+<span class="cf">for</span> (col <span class="cf">in</span> pheno.export.columns) {
+  ## Discard columns containing only NA values
+  nona &lt;-<span class="st"> </span><span class="kw">sum</span>(<span class="op">!</span><span class="kw">is.na</span>(pheno[, col]))
+  <span class="cf">if</span> (nona <span class="op">==</span><span class="st"> </span><span class="dv">0</span>) {
+    <span class="co"># message(&quot;\tDiscarding NA-only pheno column\t&quot;, col, &quot;\tnoNA = &quot;, nona)</span>
+    pheno.export.columns &lt;-<span class="st"> </span><span class="kw">setdiff</span>(pheno.export.columns, col)
+  }
+  
+  <span class="co"># Discard columns containing muli-value lists</span>
+  <span class="cf">if</span> (<span class="kw">class</span>(pheno[, col]) <span class="op">==</span><span class="st"> &quot;list&quot;</span>) {
+    <span class="kw">message</span>(<span class="st">&quot;</span><span class="ch">\t</span><span class="st">Discarding list-type pheno column</span><span class="ch">\t</span><span class="st">&quot;</span>, col)
+    pheno.export.columns &lt;-<span class="st"> </span><span class="kw">setdiff</span>(pheno.export.columns, col)
+    
+  }
+}
+<span class="kw">message</span>(<span class="st">&quot;Exporting &quot;</span>, <span class="kw">length</span>(pheno.export.columns), <span class="st">&quot; pheno columns among &quot;</span>, <span class="kw">ncol</span>(pheno))
+
+## Export the non-problematic columns of the pheno table
+pheno.file &lt;-<span class="st"> </span><span class="kw">paste</span>(<span class="dt">sep =</span> <span class="st">&quot;&quot;</span>, project.acronym, <span class="st">&quot;_pheno.tsv.gz&quot;</span>)
+pheno.path &lt;-<span class="st"> </span><span class="kw">file.path</span>(export.dir, pheno.file)
+<span class="cf">if</span> (parameters<span class="op">$</span>gzip.output.files) {
+  pheno.path &lt;-<span class="st"> </span><span class="kw">gzfile</span>(pheno.path, <span class="st">&quot;w&quot;</span>) ## Compress file
+}
+<span class="kw">write.table</span>(<span class="dt">x =</span> <span class="kw">as.data.frame</span>(pheno[, pheno.export.columns]), 
+            <span class="dt">file =</span> pheno.path, 
             <span class="dt">sep =</span> <span class="st">&quot;</span><span class="ch">\t</span><span class="st">&quot;</span>, <span class="dt">quote =</span> <span class="ot">FALSE</span>, <span class="dt">row.names =</span> <span class="ot">FALSE</span>)
+<span class="cf">if</span> (parameters<span class="op">$</span>gzip.output.files) {
+  <span class="kw">close</span>(pheno.path)
+}
+
+## Export a small subset of relevant fields from the pheno table
+pheno.selected.columns &lt;-<span class="st"> </span><span class="kw">c</span>(
+  <span class="st">&quot;cancer.type&quot;</span>,
+  immuno.columns
+)
+sample.class.file &lt;-<span class="st"> </span><span class="kw">paste</span>(<span class="dt">sep =</span> <span class="st">&quot;&quot;</span>, project.acronym, <span class="st">&quot;_sample-classes.tsv.gz&quot;</span>)
+sample.class.path &lt;-<span class="st"> </span><span class="kw">file.path</span>(export.dir, sample.class.file)
+<span class="cf">if</span> (parameters<span class="op">$</span>gzip.output.files) {
+  sample.class.path &lt;-<span class="st"> </span><span class="kw">gzfile</span>(sample.class.path, <span class="st">&quot;w&quot;</span>) ## Compress file
+}
+<span class="kw">write.table</span>(<span class="dt">x =</span> <span class="kw">as.data.frame</span>(pheno[, pheno.selected.columns]), 
+            <span class="dt">file =</span> sample.class.path, 
+            <span class="dt">sep =</span> <span class="st">&quot;</span><span class="ch">\t</span><span class="st">&quot;</span>, <span class="dt">quote =</span> <span class="ot">FALSE</span>, <span class="dt">row.names =</span> <span class="ot">FALSE</span>)
+<span class="cf">if</span> (parameters<span class="op">$</span>gzip.output.files) {
+  <span class="kw">close</span>(sample.class.path)
+}
+
 
 ## Export counts per gene
 count.file &lt;-<span class="st"> </span><span class="kw">paste</span>(<span class="dt">sep =</span> <span class="st">&quot;&quot;</span>, project.acronym, <span class="st">&quot;_counts_all-genes.tsv&quot;</span>)
-<span class="kw">write.table</span>(<span class="dt">x =</span> counts.per.gene, <span class="dt">file =</span> <span class="kw">file.path</span>(export.dir, count.file),
+count.path &lt;-<span class="st"> </span><span class="kw">file.path</span>(export.dir, count.file)
+<span class="cf">if</span> (parameters<span class="op">$</span>gzip.output.files) {
+  count.path &lt;-<span class="st"> </span><span class="kw">gzfile</span>(count.path, <span class="st">&quot;w&quot;</span>) ## Compress file
+}
+<span class="kw">write.table</span>(<span class="dt">x =</span> counts.per.gene, 
+            <span class="dt">file =</span> count.path,
             <span class="dt">sep =</span> <span class="st">&quot;</span><span class="ch">\t</span><span class="st">&quot;</span>, <span class="dt">quote =</span> <span class="ot">FALSE</span>, <span class="dt">row.names =</span> <span class="ot">TRUE</span>, <span class="dt">col.names =</span> <span class="ot">NA</span>)
+<span class="cf">if</span> (parameters<span class="op">$</span>gzip.output.files) {
+  <span class="kw">close</span>(count.path)
+}
 
-## Export the selected counts
+## Export raw counts
 filtered.count.file &lt;-<span class="st"> </span><span class="kw">paste</span>(<span class="dt">sep =</span> <span class="st">&quot;&quot;</span>, project.acronym, <span class="st">&quot;_counts_filtered-genes.tsv&quot;</span>)
-<span class="kw">write.table</span>(<span class="dt">x =</span> counts.per.gene[filtered.genes, ], <span class="dt">file =</span> <span class="kw">file.path</span>(export.dir, filtered.count.file),
+filtered.count.path &lt;-<span class="st"> </span><span class="kw">file.path</span>(export.dir, filtered.count.file)
+<span class="cf">if</span> (parameters<span class="op">$</span>gzip.output.files) {
+  filtered.count.path &lt;-<span class="st"> </span><span class="kw">gzfile</span>(filtered.count.path, <span class="st">&quot;w&quot;</span>) ## Compress file
+}
+<span class="kw">write.table</span>(<span class="dt">x =</span> counts.per.gene[filtered.genes, ], 
+            <span class="dt">file =</span> filtered.count.path,
             <span class="dt">sep =</span> <span class="st">&quot;</span><span class="ch">\t</span><span class="st">&quot;</span>, <span class="dt">quote =</span> <span class="ot">FALSE</span>, <span class="dt">row.names =</span> <span class="ot">TRUE</span>, <span class="dt">col.names =</span> <span class="ot">NA</span>)
+<span class="cf">if</span> (parameters<span class="op">$</span>gzip.output.files) {
+  <span class="kw">close</span>(filtered.count.path)
+}
 
-<span class="kw">list.files</span>(export.dir)</code></pre></div>
-<pre><code>[1] &quot;BIC_counts_all-genes.tsv&quot;      &quot;BIC_counts_filtered-genes.tsv&quot; &quot;BIC_pheno.tsv&quot;                </code></pre>
+<span class="co"># list.files(export.dir)</span>
+
+## Export normalized counts
+norm.count.file &lt;-<span class="st"> </span><span class="kw">paste</span>(<span class="dt">sep =</span> <span class="st">&quot;&quot;</span>, project.acronym, <span class="st">&quot;_log2-norm-counts_all-genes.tsv&quot;</span>)
+norm.count.path &lt;-<span class="st"> </span><span class="kw">file.path</span>(export.dir, norm.count.file)
+<span class="cf">if</span> (parameters<span class="op">$</span>gzip.output.files) {
+  norm.count.path &lt;-<span class="st"> </span><span class="kw">gzfile</span>(norm.count.path, <span class="st">&quot;w&quot;</span>) ## Compress file
+}
+<span class="kw">write.table</span>(<span class="dt">x =</span> counts.log2.norm, 
+            <span class="dt">file =</span> norm.count.path,
+            <span class="dt">sep =</span> <span class="st">&quot;</span><span class="ch">\t</span><span class="st">&quot;</span>, <span class="dt">quote =</span> <span class="ot">FALSE</span>, <span class="dt">row.names =</span> <span class="ot">TRUE</span>, <span class="dt">col.names =</span> <span class="ot">NA</span>)
+<span class="cf">if</span> (parameters<span class="op">$</span>gzip.output.files) {
+  <span class="kw">close</span>(norm.count.path)
+}
+
+## Export normalized counts
+filtered.norm.count.file &lt;-<span class="st"> </span><span class="kw">paste</span>(<span class="dt">sep =</span> <span class="st">&quot;&quot;</span>, project.acronym, <span class="st">&quot;_log2-norm-counts_filtered-genes.tsv&quot;</span>)
+filtered.norm.count.path &lt;-<span class="st"> </span><span class="kw">file.path</span>(export.dir, filtered.norm.count.file)
+<span class="cf">if</span> (parameters<span class="op">$</span>gzip.output.files) {
+  filtered.norm.count.path &lt;-<span class="st"> </span><span class="kw">gzfile</span>(filtered.norm.count.path, <span class="st">&quot;w&quot;</span>) ## Compress file
+}
+<span class="kw">write.table</span>(<span class="dt">x =</span> counts.log2.norm[filtered.genes, ], 
+            <span class="dt">file =</span> filtered.norm.count.path,
+            <span class="dt">sep =</span> <span class="st">&quot;</span><span class="ch">\t</span><span class="st">&quot;</span>, <span class="dt">quote =</span> <span class="ot">FALSE</span>, <span class="dt">row.names =</span> <span class="ot">TRUE</span>, <span class="dt">col.names =</span> <span class="ot">NA</span>)
+<span class="cf">if</span> (parameters<span class="op">$</span>gzip.output.files) {
+  <span class="kw">close</span>(filtered.norm.count.path)
+}</code></pre></div>
 <ul>
 <li>Export directory: ~/TCGA_import/data/BIC</li>
-<li>Pheno table: BIC_pheno.tsv</li>
+<li>Pheno table: BIC_pheno.tsv.gz</li>
 <li>Counts per gene (all genes): BIC_counts_all-genes.tsv</li>
-<li>Counts per gene (filtered genes): BIC_counts_filtered-genes.tsv</li>
+<li><p>Counts per gene (filtered genes): BIC_counts_filtered-genes.tsv</p></li>
+<li>Normalized counts per gene (all genes): BIC_log2-norm-counts_all-genes.tsv</li>
+<li><p>Normalized counts per gene (filtered genes): BIC_log2-norm-counts_filtered-genes.tsv</p></li>
 </ul>
 <hr />
 <p>Contact: <a href="mailto:Jacques.van-Helden@univ-amu.fr">Jacques.van-Helden@univ-amu.fr</a></p>
