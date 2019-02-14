@@ -11,7 +11,7 @@
 
 <meta name="author" content="Jacques van Helden" />
 
-<meta name="date" content="2019-02-13" />
+<meta name="date" content="2019-02-14" />
 
 <title>DU-Bii Study cases - TCGA</title>
 
@@ -361,7 +361,7 @@ div.tocify {
 <h1 class="title toc-ignore">DU-Bii Study cases - TCGA</h1>
 <h3 class="subtitle"><em>DUBii 2019</em></h3>
 <h4 class="author"><em>Jacques van Helden</em></h4>
-<h4 class="date"><em>2019-02-13</em></h4>
+<h4 class="date"><em>2019-02-14</em></h4>
 
 </div>
 
@@ -521,7 +521,7 @@ localFiles &lt;-<span class="st"> </span><span class="kw">c</span>()
 <span class="co"># </span>
 <span class="co"># if (loadRdata) {</span>
 ## Load the RData memory image provided by Recount2, whcih contains the count table + pheno table
-<span class="kw">message</span>(<span class="st">&quot;Loading Recount file for TCGA&quot;</span>)
+<span class="kw">message</span>(<span class="st">&quot;Loading TCGA data from Recount&quot;</span>)
 <span class="kw">load</span>(localFiles[<span class="st">&quot;rse-gene&quot;</span>])
 
 
@@ -1029,6 +1029,8 @@ selected.sample.ids &lt;-<span class="st"> </span><span class="kw">rownames</spa
 </div>
 <div id="gene-filtering" class="section level2">
 <h2>Gene filtering</h2>
+<div id="percent-zero-counts" class="section level3">
+<h3>Percent zero counts</h3>
 <div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r">## Discard genes having zeros in at least 95% of samples
 <span class="kw">message</span>(<span class="st">&quot;Applying threshold on the percent of non-zero counts per gene: &quot;</span>, parameters<span class="op">$</span>gene.filter.percent.zeros, <span class="st">&quot;%&quot;</span>)
 percent.zeros &lt;-<span class="st"> </span><span class="dv">100</span><span class="op">*</span><span class="kw">apply</span>(counts.per.gene <span class="op">==</span><span class="st"> </span><span class="dv">0</span>, <span class="dv">1</span>, sum) <span class="op">/</span><span class="st"> </span><span class="kw">ncol</span>(counts.per.gene)
@@ -1046,7 +1048,7 @@ percent.zeros &lt;-<span class="st"> </span><span class="dv">100</span><span cla
      <span class="dt">labels =</span> <span class="kw">paste</span>(<span class="dt">sep =</span> <span class="st">&quot;&quot;</span>, parameters<span class="op">$</span>gene.filter.percent.zeros, <span class="st">&quot;%&quot;</span>),
      <span class="dt">col =</span> <span class="st">&quot;red&quot;</span>, <span class="dt">pos =</span> <span class="dv">3</span>)</code></pre></div>
 <div class="figure" style="text-align: center">
-<img src="figures/TCGA_importgene_filtering_zero_counts-1.png" alt="Frequency of samples with zero counts per gene. Genes exceeding the thresold (red arrow) were filtered out. " width="80%" />
+<img src="figures/TCGA_BIC_gene_filtering_zero_counts-1.png" alt="Frequency of samples with zero counts per gene. Genes exceeding the thresold (red arrow) were filtered out. " width="80%" />
 <p class="caption">
 Frequency of samples with zero counts per gene. Genes exceeding the thresold (red arrow) were filtered out.
 </p>
@@ -1072,7 +1074,7 @@ Frequency of samples with zero counts per gene. Genes exceeding the thresold (re
                     <span class="st">&quot;) = &quot;</span>, <span class="kw">signif</span>(<span class="dt">digits =</span> <span class="dv">3</span>, <span class="kw">log2</span>(parameters<span class="op">$</span>gene.filter.min.count))),
      <span class="dt">col =</span> <span class="st">&quot;red&quot;</span>, <span class="dt">pos =</span> <span class="dv">3</span>)</code></pre></div>
 <div class="figure" style="text-align: center">
-<img src="figures/TCGA_importgene_filtering_min_count-1.png" alt="Distribution of min counts per gene. Genes below the thresold (red arrow) are filtered out. " width="80%" />
+<img src="figures/TCGA_BIC_gene_filtering_min_count-1.png" alt="Distribution of min counts per gene. Genes below the thresold (red arrow) are filtered out. " width="80%" />
 <p class="caption">
 Distribution of min counts per gene. Genes below the thresold (red arrow) are filtered out.
 </p>
@@ -1083,26 +1085,36 @@ Distribution of min counts per gene. Genes below the thresold (red arrow) are fi
 <span class="co"># table(kept.genes)</span>
 
 ## Genes passing the filters
-filtered.genes &lt;-<span class="st"> </span><span class="op">!</span>filtered.out.genes</code></pre></div>
+filtered.genes &lt;-<span class="st"> </span><span class="op">!</span>filtered.out.genes
+filtered.counts &lt;-<span class="st"> </span>counts.per.gene[filtered.genes, ]</code></pre></div>
 <p>We discard “undetected” genes, i.e. those having zero counts in at least 95 percent of the samples, or those with a maximal count inferior to 10. This led us to discard 37788 genes.</p>
+</div>
 </div>
 <div id="differential-expression" class="section level2">
 <h2>Differential expression</h2>
 <p>We select differentially expressed genes in order to produce a file with a restricted number of genes for clustering.</p>
-<div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r">## Install the library if needed then load it
-<span class="cf">if</span> (<span class="op">!</span><span class="kw">require</span>(<span class="st">&quot;DESeq2&quot;</span>)) {
-  <span class="kw">source</span>(<span class="st">&quot;http://bioconductor.org/biocLite.R&quot;</span>)
-  <span class="kw">biocLite</span>(<span class="st">&quot;DESeq2&quot;</span>)
-}
-<span class="kw">require</span>(<span class="st">&quot;DESeq2&quot;</span>)
-
-## Use the DESeqDataSetFromMatrix to create a DESeqDataSet object
+<div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r">## Use the DESeqDataSetFromMatrix to create a DESeqDataSet object
+<span class="kw">message</span>(<span class="st">&quot;Creating DESeq2 dataset&quot;</span>)
 dds0 &lt;-<span class="st"> </span><span class="kw">DESeqDataSetFromMatrix</span>(
-  <span class="dt">countData =</span> <span class="kw">as.data.frame</span>(counts.per.gene), 
+  <span class="dt">countData =</span> <span class="kw">as.data.frame</span>(filtered.counts), 
   <span class="dt">colData =</span> <span class="kw">data.frame</span>(<span class="dt">cancer.type =</span> <span class="kw">as.factor</span>(pheno[, <span class="st">&quot;cancer.type&quot;</span>])), 
   <span class="dt">design =</span> <span class="op">~</span><span class="st"> </span>cancer.type)
 
-<span class="co"># print(dds0) # Have a look at the short description of the DESeqDataSet</span></code></pre></div>
+<span class="co"># print(dds0) # Have a look at the short description of the DESeqDataSet</span>
+
+## PROBLEM: the differential analysis with DESeq2 is stuck. 
+<span class="co">#@ Probably because there are too many samples ?</span>
+## TO DO: 
+## - test it on IFB cluster
+## - test edgeR as selection method
+## - select a random subset of the samples
+
+<span class="co"># ## Run  differential expression analysis with DESeq2</span>
+<span class="co"># message(&quot;Running differential expression analysis with DESeq2&quot;)</span>
+<span class="co"># dds0 &lt;- DESeq(dds0)</span>
+<span class="co"># </span>
+<span class="co"># # Cast the results from DESeq differential expression analysis</span>
+<span class="co"># DEGtable &lt;- results(dds0, independentFiltering = FALSE)</span></code></pre></div>
 </div>
 <div id="normalization-of-the-counts-per-gene" class="section level2">
 <h2>Normalization of the counts per gene</h2>
@@ -1116,17 +1128,31 @@ counts.norm &lt;-<span class="st"> </span><span class="kw">counts</span>(dds.nor
 <span class="co"># dim(counts.norm)</span>
 counts.log2.norm &lt;-<span class="st"> </span><span class="kw">log2</span>(counts.norm)
 <span class="co"># dim(counts.log2.norm)</span></code></pre></div>
-<div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r"><span class="kw">hist</span>(<span class="kw">unlist</span>(counts.log2.norm), <span class="dt">main =</span> <span class="st">&quot;Distribution of normalized counts&quot;</span>,
+<div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r">log2.count.breaks &lt;-<span class="st"> </span><span class="kw">seq</span>(
+  <span class="dt">from =</span> <span class="kw">log2</span>(parameters<span class="op">$</span>epsilon), 
+  <span class="dt">to =</span> <span class="dv">32</span>, 
+  <span class="dt">by =</span> <span class="fl">0.4</span>)
+
+<span class="kw">par</span>(<span class="dt">mfrow =</span> <span class="kw">c</span>(<span class="dv">2</span>, <span class="dv">1</span>))
+
+<span class="kw">hist</span>(<span class="kw">unlist</span>(<span class="kw">log2</span>(<span class="kw">unlist</span>(counts.per.gene <span class="op">+</span><span class="st"> </span>parameters<span class="op">$</span>epsilon))), <span class="dt">main =</span> <span class="st">&quot;Distribution of raw counts&quot;</span>,
+     <span class="dt">xlab =</span> <span class="st">&quot;log2(raw counts + epsilon)&quot;</span>,
+     <span class="dt">ylab =</span> <span class="st">&quot;Number of measures&quot;</span>,
+     <span class="dt">breaks =</span> log2.count.breaks, 
+     <span class="dt">col =</span> <span class="st">&quot;#FFDDBB&quot;</span>)
+
+<span class="kw">hist</span>(<span class="kw">unlist</span>(counts.log2.norm), <span class="dt">main =</span> <span class="st">&quot;Distribution of normalized counts&quot;</span>,
      <span class="dt">xlab =</span> <span class="st">&quot;log2(standardized counts)&quot;</span>,
      <span class="dt">ylab =</span> <span class="st">&quot;Number of measures&quot;</span>,
-     <span class="dt">breaks =</span> <span class="dv">100</span>, 
-     <span class="dt">col =</span> <span class="st">&quot;#FFDDBB&quot;</span>)</code></pre></div>
+     <span class="dt">breaks =</span> log2.count.breaks, 
+     <span class="dt">col =</span> <span class="st">&quot;#DDFFBB&quot;</span>)</code></pre></div>
 <div class="figure" style="text-align: center">
-<img src="figures/TCGA_importnorm_count_hist-1.png" alt="**Histogram of the nornmalized counts.** Normalization consists in scaling counts in order to ensure library size standardization, followed by a  log2 transformation. " width="80%" />
+<img src="figures/TCGA_BIC_norm_count_hist-1.png" alt="**Histogram of all counts.** (a) log2(raw counts + epsilon). The epsilon is added to avoid -Inf values for log2-transformed zeros. (b) Normalised counts. Normalization consists in scaling counts in order to ensure library size standardization, followed by a  log2 transformation. " width="80%" />
 <p class="caption">
-<strong>Histogram of the nornmalized counts.</strong> Normalization consists in scaling counts in order to ensure library size standardization, followed by a log2 transformation.
+<strong>Histogram of all counts.</strong> (a) log2(raw counts + epsilon). The epsilon is added to avoid -Inf values for log2-transformed zeros. (b) Normalised counts. Normalization consists in scaling counts in order to ensure library size standardization, followed by a log2 transformation.
 </p>
 </div>
+<div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r"><span class="kw">par</span>(<span class="dt">mfrow =</span> <span class="kw">c</span>(<span class="dv">1</span>, <span class="dv">1</span>))</code></pre></div>
 <hr />
 </div>
 <div id="exported-tables" class="section level2">
@@ -1200,7 +1226,7 @@ filtered.count.path &lt;-<span class="st"> </span><span class="kw">file.path</sp
 <span class="cf">if</span> (parameters<span class="op">$</span>gzip.output.files) {
   filtered.count.path &lt;-<span class="st"> </span><span class="kw">gzfile</span>(filtered.count.path, <span class="st">&quot;w&quot;</span>) ## Compress file
 }
-<span class="kw">write.table</span>(<span class="dt">x =</span> counts.per.gene[filtered.genes, ], 
+<span class="kw">write.table</span>(<span class="dt">x =</span> filtered.counts, 
             <span class="dt">file =</span> filtered.count.path,
             <span class="dt">sep =</span> <span class="st">&quot;</span><span class="ch">\t</span><span class="st">&quot;</span>, <span class="dt">quote =</span> <span class="ot">FALSE</span>, <span class="dt">row.names =</span> <span class="ot">TRUE</span>, <span class="dt">col.names =</span> <span class="ot">NA</span>)
 <span class="cf">if</span> (parameters<span class="op">$</span>gzip.output.files) {
@@ -1228,20 +1254,51 @@ filtered.norm.count.path &lt;-<span class="st"> </span><span class="kw">file.pat
 <span class="cf">if</span> (parameters<span class="op">$</span>gzip.output.files) {
   filtered.norm.count.path &lt;-<span class="st"> </span><span class="kw">gzfile</span>(filtered.norm.count.path, <span class="st">&quot;w&quot;</span>) ## Compress file
 }
-<span class="kw">write.table</span>(<span class="dt">x =</span> counts.log2.norm[filtered.genes, ], 
+<span class="co"># dim(counts.log2.norm)</span>
+<span class="kw">write.table</span>(<span class="dt">x =</span> counts.log2.norm, 
             <span class="dt">file =</span> filtered.norm.count.path,
             <span class="dt">sep =</span> <span class="st">&quot;</span><span class="ch">\t</span><span class="st">&quot;</span>, <span class="dt">quote =</span> <span class="ot">FALSE</span>, <span class="dt">row.names =</span> <span class="ot">TRUE</span>, <span class="dt">col.names =</span> <span class="ot">NA</span>)
 <span class="cf">if</span> (parameters<span class="op">$</span>gzip.output.files) {
   <span class="kw">close</span>(filtered.norm.count.path)
 }</code></pre></div>
-<ul>
-<li>Export directory: ~/TCGA_import/data/BIC</li>
-<li>Pheno table: BIC_pheno.tsv.gz</li>
-<li>Counts per gene (all genes): BIC_counts_all-genes.tsv</li>
-<li><p>Counts per gene (filtered genes): BIC_counts_filtered-genes.tsv</p></li>
-<li>Normalized counts per gene (all genes): BIC_log2-norm-counts_all-genes.tsv</li>
-<li><p>Normalized counts per gene (filtered genes): BIC_log2-norm-counts_filtered-genes.tsv</p></li>
-</ul>
+<table>
+<colgroup>
+<col width="56%" />
+<col width="43%" />
+</colgroup>
+<thead>
+<tr class="header">
+<th>Contants</th>
+<th>File name</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td>Export directory</td>
+<td><a href="~/TCGA_import/data/BIC" class="uri">~/TCGA_import/data/BIC</a></td>
+</tr>
+<tr class="even">
+<td>Pheno table</td>
+<td><a href="~/TCGA_import/data/BIC" class="uri">~/TCGA_import/data/BIC</a></td>
+</tr>
+<tr class="odd">
+<td>Counts per gene (all genes)</td>
+<td><a href="BIC_counts_all-genes.tsv" class="uri">BIC_counts_all-genes.tsv</a></td>
+</tr>
+<tr class="even">
+<td>Counts per gene (filtered genes)</td>
+<td><a href="BIC_counts_filtered-genes.tsv" class="uri">BIC_counts_filtered-genes.tsv</a></td>
+</tr>
+<tr class="odd">
+<td>Normalized counts per gene (all genes)</td>
+<td><a href="BIC_log2-norm-counts_all-genes.tsv" class="uri">BIC_log2-norm-counts_all-genes.tsv</a></td>
+</tr>
+<tr class="even">
+<td>Normalized counts per gene (filtered genes)</td>
+<td><a href="BIC_log2-norm-counts_filtered-genes.tsv" class="uri">BIC_log2-norm-counts_filtered-genes.tsv</a></td>
+</tr>
+</tbody>
+</table>
 <hr />
 <p>Contact: <a href="mailto:Jacques.van-Helden@univ-amu.fr">Jacques.van-Helden@univ-amu.fr</a></p>
 </div>

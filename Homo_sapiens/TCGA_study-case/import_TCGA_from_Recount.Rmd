@@ -75,13 +75,17 @@ library(data.table)
 if (!require("DESeq2")) {
   source("http://bioconductor.org/biocLite.R")
   biocLite("DESeq2")
+  require("DESeq2")
 }
-require("DESeq2")
 
 ## Install recount library if required
-if (!requireNamespace("BiocManager", quietly = TRUE))
+if (!require("recount")) {
+  if (!requireNamespace("BiocManager", quietly = TRUE))
     install.packages("BiocManager")
-BiocManager::install("recount", version = "3.8")
+  BiocManager::install("recount", version = "3.8")
+  require(recount)
+}
+
 
 ```
 
@@ -240,7 +244,7 @@ We downloaded the following file types from Recount2: `r paste(collapse = ", ", 
 # 
 # if (loadRdata) {
 ## Load the RData memory image provided by Recount2, whcih contains the count table + pheno table
-message("Loading Recount file for TCGA")
+message("Loading TCGA data from Recount")
 load(localFiles["rse-gene"])
 
 
@@ -477,6 +481,7 @@ filtered.out.genes <-
 
 ## Genes passing the filters
 filtered.genes <- !filtered.out.genes
+filtered.counts <- counts.per.gene[filtered.genes, ]
 
 ```
 
@@ -492,18 +497,25 @@ We select differentially expressed genes in order to produce a file with a restr
 ## Use the DESeqDataSetFromMatrix to create a DESeqDataSet object
 message("Creating DESeq2 dataset")
 dds0 <- DESeqDataSetFromMatrix(
-  countData = as.data.frame(counts.per.gene), 
+  countData = as.data.frame(filtered.counts), 
   colData = data.frame(cancer.type = as.factor(pheno[, "cancer.type"])), 
   design = ~ cancer.type)
 
 # print(dds0) # Have a look at the short description of the DESeqDataSet
 
-## Run  differential expression analysis with DESeq2
-message("Running differential expression analysis with DESeq2")
-dds0 <- DESeq(dds0)
+## PROBLEM: the differential analysis with DESeq2 is stuck. 
+#@ Probably because there are too many samples ?
+## TO DO: 
+## - test it on IFB cluster
+## - test edgeR as selection method
+## - select a random subset of the samples
 
-# Cast the results from DESeq differential expression analysis
-DEGtable <- results(dds0, independentFiltering = FALSE)
+# ## Run  differential expression analysis with DESeq2
+# message("Running differential expression analysis with DESeq2")
+# dds0 <- DESeq(dds0)
+# 
+# # Cast the results from DESeq differential expression analysis
+# DEGtable <- results(dds0, independentFiltering = FALSE)
 
 ```
 
@@ -527,14 +539,28 @@ counts.log2.norm <- log2(counts.norm)
 
 ```
 
-```{r norm_count_hist, out.width="80%", fig.width=7, fig.height=5, fig.cap="**Histogram of the nornmalized counts.** Normalization consists in scaling counts in order to ensure library size standardization, followed by a  log2 transformation. "}
+```{r norm_count_hist, out.width="80%", fig.width=7, fig.height=9, fig.cap="**Histogram of all counts.** (a) log2(raw counts + epsilon). The epsilon is added to avoid -Inf values for log2-transformed zeros. (b) Normalised counts. Normalization consists in scaling counts in order to ensure library size standardization, followed by a  log2 transformation. "}
+
+log2.count.breaks <- seq(
+  from = log2(parameters$epsilon), 
+  to = 32, 
+  by = 0.4)
+
+par(mfrow = c(2, 1))
+
+hist(unlist(log2(unlist(counts.per.gene + parameters$epsilon))), main = "Distribution of raw counts",
+     xlab = "log2(raw counts + epsilon)",
+     ylab = "Number of measures",
+     breaks = log2.count.breaks, 
+     col = "#FFDDBB")
 
 hist(unlist(counts.log2.norm), main = "Distribution of normalized counts",
      xlab = "log2(standardized counts)",
      ylab = "Number of measures",
-     breaks = 100, 
-     col = "#FFDDBB")
+     breaks = log2.count.breaks, 
+     col = "#DDFFBB")
 
+par(mfrow = c(1, 1))
 ```
 
 
@@ -614,7 +640,7 @@ filtered.count.path <- file.path(export.dir, filtered.count.file)
 if (parameters$gzip.output.files) {
   filtered.count.path <- gzfile(filtered.count.path, "w") ## Compress file
 }
-write.table(x = counts.per.gene[filtered.genes, ], 
+write.table(x = filtered.counts, 
             file = filtered.count.path,
             sep = "\t", quote = FALSE, row.names = TRUE, col.names = NA)
 if (parameters$gzip.output.files) {
@@ -642,7 +668,8 @@ filtered.norm.count.path <- file.path(export.dir, filtered.norm.count.file)
 if (parameters$gzip.output.files) {
   filtered.norm.count.path <- gzfile(filtered.norm.count.path, "w") ## Compress file
 }
-write.table(x = counts.log2.norm[filtered.genes, ], 
+# dim(counts.log2.norm)
+write.table(x = counts.log2.norm, 
             file = filtered.norm.count.path,
             sep = "\t", quote = FALSE, row.names = TRUE, col.names = NA)
 if (parameters$gzip.output.files) {
