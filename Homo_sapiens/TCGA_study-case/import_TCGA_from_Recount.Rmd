@@ -539,7 +539,7 @@ counts.log2.norm <- log2(counts.norm)
 
 ```
 
-```{r norm_count_hist, out.width="80%", fig.width=7, fig.height=9, fig.cap="**Histogram of all counts.** (a) log2(raw counts + epsilon). The epsilon is added to avoid -Inf values for log2-transformed zeros. (b) Normalised counts. Normalization consists in scaling counts in order to ensure library size standardization, followed by a  log2 transformation. "}
+```{r norm_count_hist, out.width="80%", fig.width=7, fig.height=9, fig.cap="**Histogram of all counts.** (a) **Before filtering and standardization.** Distribution of log2(raw counts + epsilon). The epsilon is added to avoid -Inf values for log2-transformed zeros. (b) **Normalised counts.** Normalization consists in scaling counts in order to ensure library size standardization, followed by a  log2 transformation. "}
 
 log2.count.breaks <- seq(
   from = log2(parameters$epsilon), 
@@ -548,13 +548,13 @@ log2.count.breaks <- seq(
 
 par(mfrow = c(2, 1))
 
-hist(unlist(log2(unlist(counts.per.gene + parameters$epsilon))), main = "Distribution of raw counts",
+hist(unlist(log2(unlist(counts.per.gene + parameters$epsilon))), main = "Log2(raw counts)",
      xlab = "log2(raw counts + epsilon)",
      ylab = "Number of measures",
      breaks = log2.count.breaks, 
      col = "#FFDDBB")
 
-hist(unlist(counts.log2.norm), main = "Distribution of normalized counts",
+hist(unlist(counts.log2.norm), main = "Normalized counts",
      xlab = "log2(standardized counts)",
      ylab = "Number of measures",
      breaks = log2.count.breaks, 
