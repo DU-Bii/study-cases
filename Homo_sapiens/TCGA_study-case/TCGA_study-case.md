@@ -4,6 +4,7 @@
 
 - [Introduction](#introduction)
 - [Data sources](#data-sources)
+- [Data preprocessing](#data-preprocessing)
 - [Use in the different courses](#use-in-the-different-courses)
 
 ## Introduction
@@ -46,6 +47,23 @@ We provide here
        
        
      - Laura Cantini prepared an additional file with the subtypes (Human/subtypes_annotation.txt) + a script enabling to produce this subtype label based on the combination of these two markers (Human/SubAnnot.R)
+
+## Data preprocessing
+
+We downloaded the raw counts from TCGA, and applied the following steps
+
+- select the samples belonging to the Breast Invasive Cancer (BIC) study;
+- define the cancer type (used as class label for supervised classification) based on the three immuno markers. 
+- filter out genes with zeros in almost all samples
+- standardzie library sizes
+- log2-transform the data
+- STILL TO BE DONE: detect differentially expressed genes for the clustering
+- exported the different results (raw counts, filtered, normalised, differentially expressed) in TSV files
+
+The preprocessing was done with an R markdown file, which enables anyone to reproduce the results and understand each step. 
+
+- Pre-processing report: [import_TCGA_from_Recount.html](import_TCGA_from_Recount.html)
+- R markdown: [import_TCGA_from_Recount.html](import_TCGA_from_Recount.Rmd)
 
 ## Use in the different courses
 

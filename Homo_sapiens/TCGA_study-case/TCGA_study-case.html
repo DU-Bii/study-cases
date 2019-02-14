@@ -194,6 +194,7 @@ $(document).ready(function () {
 <ul>
 <li><a href="#introduction">Introduction</a></li>
 <li><a href="#data-sources">Data sources</a></li>
+<li><a href="#data-preprocessing">Data preprocessing</a></li>
 <li><a href="#use-in-the-different-courses">Use in the different courses</a></li>
 </ul>
 </div>
@@ -216,7 +217,6 @@ $(document).ready(function () {
 </div>
 <div id="recount2" class="section level3">
 <h3>Recount2</h3>
-<p><strong>Recount2</strong> (<a href="https://jhubiostatistics.shinyapps.io/recount/" class="uri">https://jhubiostatistics.shinyapps.io/recount/</a>) is a database rasembling several thousands of human RNA-seq studies, that were all processed with a same workflow in order to ensure the consistency of the transcriptome measurements. Recount2 provides direct access to tables of raw counts per gene, exon or transcript.</p>
 </div>
 <div id="preprocessed-datasets-made-available-by-ron-shamirs-team" class="section level3">
 <h3>Preprocessed datasets made available by Ron Shamir’s team</h3>
@@ -229,13 +229,29 @@ $(document).ready(function () {
 <li><p>Selected study case: Breast cancer dataset</p>
 <ul>
 <li>Data tables: <a href="http://acgt.cs.tau.ac.il/multi_omic_benchmark/data/breast.zip" class="uri">http://acgt.cs.tau.ac.il/multi_omic_benchmark/data/breast.zip</a></li>
-<li><p><strong>Relevant columns for classification</strong>: 2 markers used by clinicians to assign tissues to cancer subtypes</p>
-<pre><code>- ER_Status_nature2012
-- HER2_Final_Status_nature2012</code></pre></li>
+<li><p><strong>Relevant columns for classification</strong>: 2 markers used by clinicians to assign tissues to cancer subtypes: <em>ER_Status_nature2012</em> and <em>HER2_Final_Status_nature2012</em></p></li>
 <li><p>Laura Cantini prepared an additional file with the subtypes (Human/subtypes_annotation.txt) + a script enabling to produce this subtype label based on the combination of these two markers (Human/SubAnnot.R)</p></li>
 </ul></li>
 </ul>
 </div>
+</div>
+<div id="data-preprocessing" class="section level2">
+<h2>Data preprocessing</h2>
+<p>We downloaded the raw counts from TCGA, and applied the following steps</p>
+<ul>
+<li>select the samples belonging to the Breast Invasive Cancer (BIC) study;</li>
+<li>define the cancer type (used as class label for supervised classification) based on the three immuno markers.</li>
+<li>filter out genes with zeros in almost all samples</li>
+<li>standardzie library sizes</li>
+<li>log2-transform the data</li>
+<li>STILL TO BE DONE: detect differentially expressed genes for the clustering</li>
+<li>exported the different results (raw counts, filtered, normalised, differentially expressed) in TSV files</li>
+</ul>
+<p>The preprocessing was done with an R markdown file, which enables anyone to reproduce the results and understand each step.</p>
+<ul>
+<li>Pre-processing report: <a href="import_TCGA_from_Recount.html" class="uri">import_TCGA_from_Recount.html</a></li>
+<li>R markdown: <a href="import_TCGA_from_Recount.Rmd">import_TCGA_from_Recount.html</a></li>
+</ul>
 </div>
 <div id="use-in-the-different-courses" class="section level2">
 <h2>Use in the different courses</h2>
