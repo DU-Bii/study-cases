@@ -72,17 +72,22 @@ library(kableExtra)
 library(data.table)
 
 ## Install the library if needed then load it
-if (!require("DESeq2")) {
-  source("http://bioconductor.org/biocLite.R")
-  biocLite("DESeq2")
-  require("DESeq2")
+required.bioconductor <- c("DESeq2", "edgeR")
+for (pkg in required.bioconductor) {
+  message("Loading bioconductor package\t", pkg)
+  if (!require(pkg, character.only = TRUE)) {
+    message("Installing bioconductor package\t", pkg)
+    source("http://bioconductor.org/biocLite.R")
+    biocLite(pkg)
+    require(pkg, character.only = TRUE)
+  }
 }
 
 ## Install recount library if required
 if (!require("recount")) {
   if (!requireNamespace("BiocManager", quietly = TRUE))
     install.packages("BiocManager")
-  BiocManager::install("recount", version = "3.8")
+  BiocManager::install("recount")
   require(recount)
 }
 
@@ -492,7 +497,7 @@ We discard "undetected" genes, i.e. those having zero counts in at least `r para
 
 We select differentially expressed genes in order to produce a file with a restricted number of genes for clustering.
 
-```{r}
+```{r differential_analysis_deseq2}
 
 ## Use the DESeqDataSetFromMatrix to create a DESeqDataSet object
 message("Creating DESeq2 dataset")
@@ -516,6 +521,18 @@ dds0 <- DESeqDataSetFromMatrix(
 # 
 # # Cast the results from DESeq differential expression analysis
 # DEGtable <- results(dds0, independentFiltering = FALSE)
+
+```
+
+
+```{r differential_analysis_edgeR}
+## Build a "model matrix" from the class labels
+## This matrix contains one row per sample and one column per class
+designMat <- model.matrix(~ pheno$cancer.type)
+# View(designMat)
+
+## Build a DGEList object which is required to run edgeR DE analysis
+dgList <- DGEList(counts = filtered.counts)
 
 ```
 
