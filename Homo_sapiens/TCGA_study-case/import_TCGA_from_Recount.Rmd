@@ -638,14 +638,14 @@ if (parameters$gzip.output.files) {
 ```
 
 
-
-- Export directory: `r export.dir`
-- Pheno table: `r pheno.file`
-- Counts per gene (all genes): `r count.file`
-- Counts per gene (filtered genes): `r filtered.count.file`
-
-- Normalized counts per gene (all genes): `r norm.count.file`
-- Normalized counts per gene (filtered genes): `r filtered.norm.count.file`
+| Contants | File name |
+|-----------------------------------------|-------------------------------|
+| Export directory | `r export.dir` |
+| Pheno table |`r pheno.file` |
+| Counts per gene (all genes) | `r count.file` |
+| Counts per gene (filtered genes) | `r filtered.count.file` |
+| Normalized counts per gene (all genes) | `r norm.count.file` |
+| Normalized counts per gene (filtered genes) | `r filtered.norm.count.file` |
 
 ****************************************************************
 
