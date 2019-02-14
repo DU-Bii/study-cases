@@ -78,6 +78,11 @@ if (!require("DESeq2")) {
 }
 require("DESeq2")
 
+## Install recount library if required
+if (!requireNamespace("BiocManager", quietly = TRUE))
+    install.packages("BiocManager")
+BiocManager::install("recount", version = "3.8")
+
 ```
 
 
