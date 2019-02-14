@@ -637,6 +637,8 @@ if (parameters$gzip.output.files) {
 
 ```
 
+
+
 - Export directory: `r export.dir`
 - Pheno table: `r pheno.file`
 - Counts per gene (all genes): `r count.file`
