@@ -131,7 +131,7 @@ parameters <- list(
   alpha = 0.01, # Significance threshold, applied on the adjusted P-value
   lambda = 0.5, # Lambda parameter for the estimation of H0/H1 proportions following Storey Tibshirani (2003)
   p.adjust.method = "fdr",
-  run.DESeq2 = FALSE, # I set this parameter because DESeq2 takes a huge time to run (although finally succeeds)
+  run.DESeq2 = TRUE, # I set this parameter because DESeq2 takes a huge time to run (although finally succeeds)
   run.edgeR = TRUE
 )
 
@@ -520,19 +520,24 @@ dds0 <- DESeqDataSetFromMatrix(
 
 # print(dds0) # Have a look at the short description of the DESeqDataSet
 
-## PROBLEM: the differential analysis with DESeq2 is stuck. 
-#@ Probably because there are too many samples ?
-## TO DO: 
-## - test it on IFB cluster
-## - select a random subset of the samples
 
-# ## Run  differential expression analysis with DESeq2
-# message("Running differential expression analysis with DESeq2")
-dds0 <- DESeq(dds0)
-
-# Cast the results from DESeq differential expression analysis
-DESeq2.DEGtable <- results(dds0, independentFiltering = FALSE)
-# View(as.data.frame(DESeq2.DEGtable))
+## PROBLEM: the differential analysis with DESeq2 is very slow 
+## Probably because there are too many samples ?
+## Since it finally works, I keep it but condition it to a parameter.
+if (parameters$run.DESeq2) {
+  # ## Run  differential expression analysis with DESeq2
+  # message("Running differential expression analysis with DESeq2")
+  dds0 <- DESeq(dds0)
+  
+  # Cast the results from DESeq differential expression analysis
+  DESeq2.result <- results(dds0, independentFiltering = FALSE)
+  DESeq2.DEG.table <- as.data.frame(DESeq2.result)
+  class(DESeq2.DEG.table)
+  DESeq2.DEG.table$evalue <- DESeq2.DEG.table$pvalue * nrow(DESeq2.DEG.table)
+  # names(DESeq2.DEG.table)
+  # View(DESeq2.DEG.table)
+  
+}
 
 ```
 
@@ -576,9 +581,13 @@ if (parameters$run.edgeR) {
   
   ## Select differentially expressed genes
   edgeR.DEG.table <- as.data.frame(qlf.TT$table)
-  edgeR.DEG.table$EValue <- edgeR.DEG.table$PValue * nrow(edgeR.DEG.table)
+  names(edgeR.DEG.table) <- sub(pattern = "FDR", replacement = "padj", x = names(edgeR.DEG.table))
+  names(edgeR.DEG.table) <- sub(pattern = "PValue", replacement = "pvalue", x = names(edgeR.DEG.table))
+  edgeR.DEG.table$evalue <- edgeR.DEG.table$pvalue * nrow(edgeR.DEG.table)
   edgeR.DEG <- edgeR.DEG.table$FDR < parameters$alpha
-  # sum(DEG)
+  # names(edgeR.DEG.table)
+  # names(DESeq2.DEG.table)
+  # sum(egeR.DEG)
   
 
   
