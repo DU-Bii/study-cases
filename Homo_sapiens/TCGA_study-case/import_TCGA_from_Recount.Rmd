@@ -534,6 +534,7 @@ if (parameters$run.DESeq2) {
   DESeq2.DEG.table <- as.data.frame(DESeq2.result)
   class(DESeq2.DEG.table)
   DESeq2.DEG.table$evalue <- DESeq2.DEG.table$pvalue * nrow(DESeq2.DEG.table)
+  DESeq2.DEG <- DESeq2.DEG.table$padj < parameters$alpha
   # names(DESeq2.DEG.table)
   # View(DESeq2.DEG.table)
   
@@ -542,7 +543,7 @@ if (parameters$run.DESeq2) {
 ```
 
 
-```{r differential_analysis_edgeR, out.width="80%", fig.width=7, fig.height=5, fig.cap="**Histogram of edgeR nominal P-values.** ""}
+```{r differential_analysis_edgeR, out.width="80%", fig.width=7, fig.height=5, fig.cap="**Histogram of edgeR nominal P-values.**"}
 ## Detection of Differentially Expressed Genes (DEG) with edgeR
 
 if (parameters$run.edgeR) {
@@ -584,7 +585,7 @@ if (parameters$run.edgeR) {
   names(edgeR.DEG.table) <- sub(pattern = "FDR", replacement = "padj", x = names(edgeR.DEG.table))
   names(edgeR.DEG.table) <- sub(pattern = "PValue", replacement = "pvalue", x = names(edgeR.DEG.table))
   edgeR.DEG.table$evalue <- edgeR.DEG.table$pvalue * nrow(edgeR.DEG.table)
-  edgeR.DEG <- edgeR.DEG.table$FDR < parameters$alpha
+  edgeR.DEG <- edgeR.DEG.table$padj < parameters$alpha
   # names(edgeR.DEG.table)
   # names(DESeq2.DEG.table)
   # sum(egeR.DEG)
@@ -757,18 +758,65 @@ if (parameters$gzip.output.files) {
   close(filtered.norm.count.path)
 }
 
-## Export normalized counts for DEG only
-edgeR.DEG.norm.count.file <- paste(sep = "", project.acronym, "_log2-norm-counts_edgeR_DEG_", parameters$p.adjust.method, "_", parameters$alpha, ".tsv")
-edgeR.DEG.norm.count.path <- file.path(export.dir, edgeR.DEG.norm.count.file)
-if (parameters$gzip.output.files) {
-  edgeR.DEG.norm.count.path <- gzfile(edgeR.DEG.norm.count.path, "w") ## Compress file
+## Export differential analysis results + normalized counts for DEG only
+if (parameters$run.DESeq2) {
+  ## Export DEG table returned by DESeq2
+  DESeq2.DEG.table.file <- paste(sep = "", project.acronym, "_DESeq2_DEG_table.tsv")
+  DESeq2.DEG.table.path <- file.path(export.dir, DESeq2.DEG.table.file)
+  if (parameters$gzip.output.files) {
+    DESeq2.DEG.table.path <- gzfile(DESeq2.DEG.table.path, "w") ## Compress file
+  }
+  # dim(counts.log2.norm)
+  write.table(x = DESeq2.DEG.table, 
+              file = DESeq2.DEG.table.path,
+              sep = "\t", quote = FALSE, row.names = TRUE, col.names = NA)
+  if (parameters$gzip.output.files) {
+    close(DESeq2.DEG.table.path)
+  }
+  
+  ## Normalized counts for DEG reported by DESeq2
+  DESeq2.DEG.norm.count.file <- paste(sep = "", project.acronym, "_log2-norm-counts_DESeq2_DEG_", parameters$p.adjust.method, "_", parameters$alpha, ".tsv")
+  DESeq2.DEG.norm.count.path <- file.path(export.dir, DESeq2.DEG.norm.count.file)
+  if (parameters$gzip.output.files) {
+    DESeq2.DEG.norm.count.path <- gzfile(DESeq2.DEG.norm.count.path, "w") ## Compress file
+  }
+  # dim(counts.log2.norm)
+  write.table(x = counts.log2.norm[DESeq2.DEG, ], 
+              file = DESeq2.DEG.norm.count.path,
+              sep = "\t", quote = FALSE, row.names = TRUE, col.names = NA)
+  if (parameters$gzip.output.files) {
+    close(DESeq2.DEG.norm.count.path)
+  }
 }
-# dim(counts.log2.norm)
-write.table(x = counts.log2.norm[edgeR.DEG, ], 
-            file = edgeR.DEG.norm.count.path,
-            sep = "\t", quote = FALSE, row.names = TRUE, col.names = NA)
-if (parameters$gzip.output.files) {
-  close(edgeR.DEG.norm.count.path)
+
+if (parameters$run.edgeR) {
+  ## Export DEG table returned by edgeR
+  edgeR.DEG.table.file <- paste(sep = "", project.acronym, "_edgeR_DEG_table.tsv")
+  edgeR.DEG.table.path <- file.path(export.dir, edgeR.DEG.table.file)
+  if (parameters$gzip.output.files) {
+    edgeR.DEG.table.path <- gzfile(edgeR.DEG.table.path, "w") ## Compress file
+  }
+  # dim(counts.log2.norm)
+  write.table(x = edgeR.DEG.table, 
+              file = edgeR.DEG.table.path,
+              sep = "\t", quote = FALSE, row.names = TRUE, col.names = NA)
+  if (parameters$gzip.output.files) {
+    close(edgeR.DEG.table.path)
+  }
+
+  ## Normalized counts for DEG reported by edgeR
+  edgeR.DEG.norm.count.file <- paste(sep = "", project.acronym, "_log2-norm-counts_edgeR_DEG_", parameters$p.adjust.method, "_", parameters$alpha, ".tsv")
+  edgeR.DEG.norm.count.path <- file.path(export.dir, edgeR.DEG.norm.count.file)
+  if (parameters$gzip.output.files) {
+    edgeR.DEG.norm.count.path <- gzfile(edgeR.DEG.norm.count.path, "w") ## Compress file
+  }
+  # dim(counts.log2.norm)
+  write.table(x = counts.log2.norm[edgeR.DEG, ], 
+              file = edgeR.DEG.norm.count.path,
+              sep = "\t", quote = FALSE, row.names = TRUE, col.names = NA)
+  if (parameters$gzip.output.files) {
+    close(edgeR.DEG.norm.count.path)
+  }
 }
 
 
@@ -784,6 +832,8 @@ if (parameters$gzip.output.files) {
 | Normalized counts per gene (all genes) | [`r norm.count.file`](`r norm.count.file`) |
 | Normalized counts per gene (filtered genes) | [`r filtered.norm.count.file`](`r filtered.norm.count.file`) |
 | Normalized counts per gene (edgeR DEG only) | [`r edgeR.DEG.norm.count.file`](`r edgeR.DEG.norm.count.file`) |
+| edgeR DEG table | [`r edgeR.DEG.table.file`](`r edgeR.DEG.table.file`) |
+| DESeq2 DEG table | [`r DESeq2.DEG.table.file`](`r DESeq2.DEG.table.file`) |
 
 
 ****************************************************************
