@@ -64,9 +64,14 @@ font-import: http://fonts.googleapis.com/css?family=Risque
 subtitle: DUBii 2019
 font-family: Garamond
 transition: linear
+editor_options: 
+  chunk_output_type: console
 ---
 
 ```{r libraries, include=FALSE, echo=FALSE, eval=TRUE}
+
+source("R/pvalue_histogram.R")
+
 library(knitr)
 library(kableExtra)
 library(data.table)
@@ -123,8 +128,11 @@ parameters <- list(
   gene.filter.min.count = 10,
   gene.filter.percent.zeros = 95,
   gzip.output.files = TRUE,
-  alpha = 0.01,
-  p.adjust.method = "fdr"
+  alpha = 0.01, # Significance threshold, applied on the adjusted P-value
+  lambda = 0.5, # Lambda parameter for the estimation of H0/H1 proportions following Storey Tibshirani (2003)
+  p.adjust.method = "fdr",
+  run.DESeq2 = TRUE, # I set this parameter because DESeq2 takes a huge time to run (although finally succeeds)
+  run.edgeR = TRUE
 )
 
 kable(t(data.frame(parameters)), col.names = "Parameter value")
@@ -189,7 +197,7 @@ The downloaded and processed data will be saved in a working directory named **T
 
 ```{r download data}
 
-#### Download the TCGA data from Recount2 database ####
+## Download the TCGA data from Recount2 database
 
 ## Set the recoutnID (to "TCGA")
 recountID <- "TCGA"
@@ -457,6 +465,8 @@ text(x = parameters$gene.filter.percent.zeros,
      col = "red", pos = 3)
 ```
 
+### Min counts per gene
+
 ```{r gene_filtering_min_count, out.width = "80%", fig.width=7, fig.height=4.5, fig.cap="Distribution of min counts per gene. Genes below the thresold (red arrow) are filtered out. "}
 
 min.count <- apply(counts.per.gene, 1, min)
@@ -510,67 +520,83 @@ dds0 <- DESeqDataSetFromMatrix(
 
 # print(dds0) # Have a look at the short description of the DESeqDataSet
 
-## PROBLEM: the differential analysis with DESeq2 is stuck. 
-#@ Probably because there are too many samples ?
-## TO DO: 
-## - test it on IFB cluster
-## - test edgeR as selection method
-## - select a random subset of the samples
 
-# ## Run  differential expression analysis with DESeq2
-# message("Running differential expression analysis with DESeq2")
-# dds0 <- DESeq(dds0)
-# 
-# # Cast the results from DESeq differential expression analysis
-# DEGtable <- results(dds0, independentFiltering = FALSE)
+## PROBLEM: the differential analysis with DESeq2 is very slow 
+## Probably because there are too many samples ?
+## Since it finally works, I keep it but condition it to a parameter.
+if (parameters$run.DESeq2) {
+  # ## Run  differential expression analysis with DESeq2
+  # message("Running differential expression analysis with DESeq2")
+  dds0 <- DESeq(dds0)
+  
+  # Cast the results from DESeq differential expression analysis
+  DESeq2.result <- results(dds0, independentFiltering = FALSE)
+  DESeq2.DEG.table <- as.data.frame(DESeq2.result)
+  class(DESeq2.DEG.table)
+  DESeq2.DEG.table$evalue <- DESeq2.DEG.table$pvalue * nrow(DESeq2.DEG.table)
+  DESeq2.DEG <- DESeq2.DEG.table$padj < parameters$alpha
+  # names(DESeq2.DEG.table)
+  # View(DESeq2.DEG.table)
+  
+}
 
 ```
 
 
-```{r differential_analysis_edgeR}
+```{r differential_analysis_edgeR, out.width="80%", fig.width=7, fig.height=5, fig.cap="**Histogram of edgeR nominal P-values.**"}
 ## Detection of Differentially Expressed Genes (DEG) with edgeR
-message("Detecting Differentially Expressed Genes (DEG) with edgeR")
 
-## Build a "model matrix" from the class labels
-## This matrix contains one row per sample and one column per class
-designMat <- model.matrix(~ pheno$cancer.type)
-# View(designMat)
+if (parameters$run.edgeR) {
+  message("Detecting Differentially Expressed Genes (DEG) with edgeR")
+  
+  ## Build a "model matrix" from the class labels
+  ## This matrix contains one row per sample and one column per class
+  designMat <- model.matrix(~ pheno$cancer.type)
+  # View(designMat)
+  
+  ## Build an edgeR::DGEList object which is required to run edgeR DE analysis
+  dgList <- DGEList(counts = filtered.counts)
+  # class(dgList)
+  # is(dgList)
+  
+  ## Estimate the dispersion parameters. 
+  message("\tedgeR\tEstimating dispersion")
+  dgList <- estimateDisp(dgList, design = designMat)
+  
+  ## Fit edgeR model for differential expression analysis.
+  ## We chose glmQLFit because it is claimed to offer a more accurate control of type I error. 
+  message("\tedgeR\tmodel fitting with glmQLFit()")
+  fit <- glmQLFit(dgList, design = designMat)
+  
+  ## Run test to detect differentially expressed genes
+  message("\tedgeR\tdetecting differentially expressed genes with glmQLFTest()")
+  qlf <- glmQLFTest(fit, coef = 2:ncol(designMat))
+  message("\tedgeR\t")
+  qlf.TT <- topTags(qlf, n = nrow(qlf$table), sort.by = "none",
+                    adjust.method = parameters$p.adjust.method)
+  # class(qlf.TT)
+  # Note: the adusted p-values are co-linear with the nominal p-value, 
+  ## which is not supposed to be the case with BH correction. 
+  ## I should test this. 
+  # plot(qlf.TT$table$PValue, qlf.TT$table$FDR, log = "xy", col = "grey")
+  
+  ## Select differentially expressed genes
+  edgeR.DEG.table <- as.data.frame(qlf.TT$table)
+  names(edgeR.DEG.table) <- sub(pattern = "FDR", replacement = "padj", x = names(edgeR.DEG.table))
+  names(edgeR.DEG.table) <- sub(pattern = "PValue", replacement = "pvalue", x = names(edgeR.DEG.table))
+  edgeR.DEG.table$evalue <- edgeR.DEG.table$pvalue * nrow(edgeR.DEG.table)
+  edgeR.DEG <- edgeR.DEG.table$padj < parameters$alpha
+  # names(edgeR.DEG.table)
+  # names(DESeq2.DEG.table)
+  # sum(egeR.DEG)
+  
 
-## Build an edgeR::DGEList object which is required to run edgeR DE analysis
-dgList <- DGEList(counts = filtered.counts)
-# class(dgList)
-# is(dgList)
-
-## Estimate the dispersion parameters. 
-message("\tedgeR\tEstimating dispersion")
-dgList <- estimateDisp(dgList, design = designMat)
-
-## Fit edgeR model for differential expression analysis.
-## We chose glmQLFit because it is claimed to offer a more accurate control of type I error. 
-message("\tedgeR\tmodel fitting with glmQLFit()")
-fit <- glmQLFit(dgList, design = designMat)
-
-## Run test to detect differentially expressed genes
-message("\tedgeR\tdetecting differentially expressed genes with glmQLFTest()")
-qlf <- glmQLFTest(fit, coef = 2:ncol(designMat))
-message("\tedgeR\t")
-qlf.TT <- topTags(qlf, n = nrow(qlf$table), sort.by = "none",
-                  adjust.method = parameters$p.adjust.method)
-# class(qlf.TT)
-# Note: the adusted p-values are co-linear with the nominal p-value, 
-## which is not supposed to be the case with BH correction. 
-## I should test this. 
-# plot(qlf.TT$table$PValue, qlf.TT$table$FDR, log = "xy", col = "grey")
-
-## Select differentially expressed genes
-edgeR.DEG.table <- qlf.TT$table
-DEG <- edgeR.DEG.table$FDR < parameters$alpha
-# sum(DEG)
-
-## Awful: almost all genes are declared positive
-## The p-value histogram shows indeed that almost no gene has 
-## a nominal pvalue > 0.5 (typical lambda for Storey-Tibshirani 2003). 
-hist(edgeR.DEG.table$PValue, breaks = 20, col = "grey")
+  
+  ## Awful: almost all genes are declared positive. 
+  ## The p-value histogram shows indeed that 90% of the genes are under H1 (method from Storey-Tibshirani, 2003). 
+  PvalueHistogram(Pvalues = edgeR.DEG.table$PValue, main = "edgeR - Distribution of P-values")
+  
+}
 
 ```
 
@@ -584,6 +610,7 @@ We then apply a log2 transformation in order to normalize these standardized cou
 ```{r count_normalisation}
 
 ## Normalizing using the method for an object of class"CountDataSet" 
+message("Normalizing count with DESeq2")
 dds.norm <-  estimateSizeFactors(dds0)
 # sizeFactors(dds.norm)
 
@@ -731,18 +758,65 @@ if (parameters$gzip.output.files) {
   close(filtered.norm.count.path)
 }
 
-## Export normalized counts for DEG only
-DEG.norm.count.file <- paste(sep = "", project.acronym, "_log2-norm-counts_DEG_", parameters$p.adjust.method, "_", parameters$alpha, ".tsv")
-DEG.norm.count.path <- file.path(export.dir, DEG.norm.count.file)
-if (parameters$gzip.output.files) {
-  DEG.norm.count.path <- gzfile(DEG.norm.count.path, "w") ## Compress file
+## Export differential analysis results + normalized counts for DEG only
+if (parameters$run.DESeq2) {
+  ## Export DEG table returned by DESeq2
+  DESeq2.DEG.table.file <- paste(sep = "", project.acronym, "_DESeq2_DEG_table.tsv")
+  DESeq2.DEG.table.path <- file.path(export.dir, DESeq2.DEG.table.file)
+  if (parameters$gzip.output.files) {
+    DESeq2.DEG.table.path <- gzfile(DESeq2.DEG.table.path, "w") ## Compress file
+  }
+  # dim(counts.log2.norm)
+  write.table(x = DESeq2.DEG.table, 
+              file = DESeq2.DEG.table.path,
+              sep = "\t", quote = FALSE, row.names = TRUE, col.names = NA)
+  if (parameters$gzip.output.files) {
+    close(DESeq2.DEG.table.path)
+  }
+  
+  ## Normalized counts for DEG reported by DESeq2
+  DESeq2.DEG.norm.count.file <- paste(sep = "", project.acronym, "_log2-norm-counts_DESeq2_DEG_", parameters$p.adjust.method, "_", parameters$alpha, ".tsv")
+  DESeq2.DEG.norm.count.path <- file.path(export.dir, DESeq2.DEG.norm.count.file)
+  if (parameters$gzip.output.files) {
+    DESeq2.DEG.norm.count.path <- gzfile(DESeq2.DEG.norm.count.path, "w") ## Compress file
+  }
+  # dim(counts.log2.norm)
+  write.table(x = counts.log2.norm[DESeq2.DEG, ], 
+              file = DESeq2.DEG.norm.count.path,
+              sep = "\t", quote = FALSE, row.names = TRUE, col.names = NA)
+  if (parameters$gzip.output.files) {
+    close(DESeq2.DEG.norm.count.path)
+  }
 }
-# dim(counts.log2.norm)
-write.table(x = counts.log2.norm[DEG, ], 
-            file = DEG.norm.count.path,
-            sep = "\t", quote = FALSE, row.names = TRUE, col.names = NA)
-if (parameters$gzip.output.files) {
-  close(DEG.norm.count.path)
+
+if (parameters$run.edgeR) {
+  ## Export DEG table returned by edgeR
+  edgeR.DEG.table.file <- paste(sep = "", project.acronym, "_edgeR_DEG_table.tsv")
+  edgeR.DEG.table.path <- file.path(export.dir, edgeR.DEG.table.file)
+  if (parameters$gzip.output.files) {
+    edgeR.DEG.table.path <- gzfile(edgeR.DEG.table.path, "w") ## Compress file
+  }
+  # dim(counts.log2.norm)
+  write.table(x = edgeR.DEG.table, 
+              file = edgeR.DEG.table.path,
+              sep = "\t", quote = FALSE, row.names = TRUE, col.names = NA)
+  if (parameters$gzip.output.files) {
+    close(edgeR.DEG.table.path)
+  }
+
+  ## Normalized counts for DEG reported by edgeR
+  edgeR.DEG.norm.count.file <- paste(sep = "", project.acronym, "_log2-norm-counts_edgeR_DEG_", parameters$p.adjust.method, "_", parameters$alpha, ".tsv")
+  edgeR.DEG.norm.count.path <- file.path(export.dir, edgeR.DEG.norm.count.file)
+  if (parameters$gzip.output.files) {
+    edgeR.DEG.norm.count.path <- gzfile(edgeR.DEG.norm.count.path, "w") ## Compress file
+  }
+  # dim(counts.log2.norm)
+  write.table(x = counts.log2.norm[edgeR.DEG, ], 
+              file = edgeR.DEG.norm.count.path,
+              sep = "\t", quote = FALSE, row.names = TRUE, col.names = NA)
+  if (parameters$gzip.output.files) {
+    close(edgeR.DEG.norm.count.path)
+  }
 }
 
 
@@ -757,7 +831,9 @@ if (parameters$gzip.output.files) {
 | Counts per gene (filtered genes) | [`r filtered.count.file`](`r filtered.count.file`) |
 | Normalized counts per gene (all genes) | [`r norm.count.file`](`r norm.count.file`) |
 | Normalized counts per gene (filtered genes) | [`r filtered.norm.count.file`](`r filtered.norm.count.file`) |
-| Normalized counts per gene (differentially expressed genes) | [`r DEG.norm.count.file`](`r DEG.norm.count.file`) |
+| Normalized counts per gene (edgeR DEG only) | [`r edgeR.DEG.norm.count.file`](`r edgeR.DEG.norm.count.file`) |
+| edgeR DEG table | [`r edgeR.DEG.table.file`](`r edgeR.DEG.table.file`) |
+| DESeq2 DEG table | [`r DESeq2.DEG.table.file`](`r DESeq2.DEG.table.file`) |
 
 
 ****************************************************************

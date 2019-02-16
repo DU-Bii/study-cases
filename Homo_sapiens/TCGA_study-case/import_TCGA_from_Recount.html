@@ -11,7 +11,7 @@
 
 <meta name="author" content="Jacques van Helden" />
 
-<meta name="date" content="2019-02-14" />
+<meta name="date" content="2019-02-16" />
 
 <title>DU-Bii Study cases - TCGA</title>
 
@@ -361,7 +361,7 @@ div.tocify {
 <h1 class="title toc-ignore">DU-Bii Study cases - TCGA</h1>
 <h3 class="subtitle"><em>DUBii 2019</em></h3>
 <h4 class="author"><em>Jacques van Helden</em></h4>
-<h4 class="date"><em>2019-02-14</em></h4>
+<h4 class="date"><em>2019-02-16</em></h4>
 
 </div>
 
@@ -481,7 +481,7 @@ export.dir &lt;-<span class="st"> </span><span class="kw">file.path</span>(workd
 </div>
 <div id="data-source-1" class="section level2">
 <h2>Data source</h2>
-<div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r">#### Download the TCGA data from Recount2 database ####
+<div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r">## Download the TCGA data from Recount2 database
 
 ## Set the recoutnID (to &quot;TCGA&quot;)
 recountID &lt;-<span class="st"> &quot;TCGA&quot;</span>
@@ -1071,6 +1071,9 @@ percent.zeros &lt;-<span class="st"> </span><span class="dv">100</span><span cla
 Frequency of samples with zero counts per gene. Genes exceeding the thresold (red arrow) were filtered out.
 </p>
 </div>
+</div>
+<div id="min-counts-per-gene" class="section level3">
+<h3>Min counts per gene</h3>
 <div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r">min.count &lt;-<span class="st"> </span><span class="kw">apply</span>(counts.per.gene, <span class="dv">1</span>, min)
 <span class="kw">summary</span>(min.count)</code></pre></div>
 <pre><code>   Min. 1st Qu.  Median    Mean 3rd Qu.    Max. 
@@ -1183,6 +1186,7 @@ DEG &lt;-<span class="st"> </span>edgeR.DEG.table<span class="op">$</span>FDR <s
 <p>We use DESeq2 function <code>estimateSizeFactors()</code> to estimate the library-wise size factors, which will be used to standardize the counts.</p>
 <p>We then apply a log2 transformation in order to normalize these standardized counts.</p>
 <div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r">## Normalizing using the method for an object of class&quot;CountDataSet&quot; 
+<span class="kw">message</span>(<span class="st">&quot;Normalizing count with DESeq2&quot;</span>)
 dds.norm &lt;-<span class="st">  </span><span class="kw">estimateSizeFactors</span>(dds0)
 <span class="co"># sizeFactors(dds.norm)</span>
 
