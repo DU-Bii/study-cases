@@ -131,7 +131,7 @@ parameters <- list(
   alpha = 0.01, # Significance threshold, applied on the adjusted P-value
   lambda = 0.5, # Lambda parameter for the estimation of H0/H1 proportions following Storey Tibshirani (2003)
   p.adjust.method = "fdr",
-  run.DESeq2 = FALSE, # I set this parameter because DESeq2 takes a huge time to run (although finally succeeds)
+  run.DESeq2 = TRUE, # I set this parameter because DESeq2 takes a huge time to run (although finally succeeds)
   run.edgeR = TRUE
 )
 
@@ -516,14 +516,14 @@ We then apply a log2 transformation in order to normalize these standardized cou
 
 ## Use the DESeqDataSetFromMatrix to create a DESeqDataSet object
 message("Creating DESeq2 dataset")
-dds0 <- DESeqDataSetFromMatrix(
+dds <- DESeqDataSetFromMatrix(
   countData = as.data.frame(filtered.counts), 
   colData = data.frame(cancer.type = as.factor(pheno[, "cancer.type"])), 
   design = ~ cancer.type)
 
 ## Normalizing using the method for an object of class"CountDataSet" 
 message("Normalizing count with DESeq2")
-dds.norm <-  estimateSizeFactors(dds0)
+dds.norm <-  estimateSizeFactors(dds)
 # sizeFactors(dds.norm)
 
 ## Compute log2-transformed counts from the normalized counts
@@ -535,11 +535,11 @@ counts.log2.norm <- log2(counts.norm)
 
 ## Compute quick estimation of dispersion trend + apply variance-stabilizing transformation
 message("\tDESeq2::vst()\tQuickly estimate dispersion trend and apply variance-stabilizing transformation")
-system.time(dds.vst <- vst(dds0))
+system.time(dds.vst <- vst(dds))
 
-## Compute regularized log transformation (takes time)
-message("\tDESeq2::rlog()\tComputing regularized log transformation")
-system.time(rld <- rlog(dds0)) ## Takes a long time with large number of samples
+## DO NOT compute regularized log transformation (takes ages)
+# message("\tDESeq2::rlog()\tComputing regularized log transformation")
+# system.time(rld <- rlog(dds)) ## Takes a long time with large number of samples
 
 
 ```
@@ -571,7 +571,7 @@ par(mfrow = c(1, 1))
 
 ## PCA of the samples
 
-```{r plot_pca}
+```{r plot_pca, out.width="95%", fig.width=12, fig.height=6,  fig.cap="**PC plots. **"}
 ## Assign a color to each sample according to its class
 sample.classes <- pheno$cancer.type
 classes <- unique(sample.classes)
@@ -581,6 +581,8 @@ sample.colors <- class.colors[sample.classes]
 
 ## Manual plot of PC1 and PC2
 dds.prcomp <- prcomp(counts.log2.norm)
+
+par(mfrow = c(1,2))
 plot(dds.prcomp$rotation[,1], dds.prcomp$rotation[,2],
      col = sample.colors,
      main = "Principal components - PC1/PC2",
@@ -595,26 +597,29 @@ plot(dds.prcomp$rotation[,3], dds.prcomp$rotation[,4],
      ylab = "PC4",
      panel.first = grid(),
      las = 1)
-plot(dds.prcomp$rotation[,5], dds.prcomp$rotation[,6],
-     col = sample.colors,
-     main = "Principal components - PC3/PC4",
-     xlab = "PC3",
-     ylab = "PC4",
-     panel.first = grid(),
-     las = 1)
+# plot(dds.prcomp$rotation[,5], dds.prcomp$rotation[,6],
+#      col = sample.colors,
+#      main = "Principal components - PC5/PC6",
+#      xlab = "PC5",
+#      ylab = "PC6",
+#      panel.first = grid(),
+#      las = 1)
+par(mfrow = c(1,1))
 
 # dim(dds.prcomp$)
 # View(dds.prcomp$x)
 
+## THIS IS NOT WORKING !
+## TO DO: TEST THE EQUIVALENT FUNCTION IN EDGER
 ## PC plot of the samples
-message("PC plot of the samples")
-se <- SummarizedExperiment(counts.log2.norm, colData = colData(dds0))
-plotPCA(DESeqTransform(se))
+# message("PC plot of the samples")
+# se <- SummarizedExperiment(counts.log2.norm, colData = colData(dds))
+# plotPCA(DESeqTransform(se))
 
 # shifted log of normalized counts
 # se <- SummarizedExperiment(
 #   log2(counts(dds.norm, normalized = TRUE) + parameters$epsilon),
-#   colData = colData(dds0))
+#   colData = colData(dds))
 # # the call to DESeqTransform() is needed to
 # # trigger our plotPCA method.
 # plotPCA(DESeqTransform(se))
@@ -630,7 +635,7 @@ We select differentially expressed genes in order to produce a file with a restr
 
 ```{r differential_analysis_deseq2}
 
-# print(dds0) # Have a look at the short description of the DESeqDataSet
+# print(dds) # Have a look at the short description of the DESeqDataSet
 
 
 ## PROBLEM: the differential analysis with DESeq2 is very slow 
@@ -639,10 +644,10 @@ We select differentially expressed genes in order to produce a file with a restr
 if (parameters$run.DESeq2) {
   # ## Run  differential expression analysis with DESeq2
   # message("Running differential expression analysis with DESeq2")
-  system.time(dds0 <- DESeq(dds0))
+  system.time(dds <- DESeq(dds))
   
   # Cast the results from DESeq differential expression analysis
-  DESeq2.result <- results(dds0, independentFiltering = FALSE)
+  DESeq2.result <- results(dds, independentFiltering = FALSE)
   DESeq2.DEG.table <- as.data.frame(DESeq2.result)
   class(DESeq2.DEG.table)
   DESeq2.DEG.table$evalue <- DESeq2.DEG.table$pvalue * nrow(DESeq2.DEG.table)
@@ -706,7 +711,7 @@ if (parameters$run.edgeR) {
   
   ## Awful: almost all genes are declared positive. 
   ## The p-value histogram shows indeed that 90% of the genes are under H1 (method from Storey-Tibshirani, 2003). 
-  PvalueHistogram(Pvalues = edgeR.DEG.table$PValue, main = "edgeR - Distribution of P-values")
+  PvalueHistogram(Pvalues = edgeR.DEG.table$pvalue, main = "edgeR - Distribution of P-values")
   
 }
 
