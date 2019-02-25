@@ -71,6 +71,7 @@ editor_options:
 ```{r libraries, include=FALSE, echo=FALSE, eval=TRUE}
 
 source("R/pvalue_histogram.R")
+source("R/export_table.R")
 
 library(knitr)
 library(kableExtra)
@@ -111,9 +112,12 @@ knitr::opts_chunk$set(
   fig.path = 'figures/TCGA_BIC_',
   fig.align = "center", 
   size = "tiny", 
-  echo = TRUE, eval = TRUE, 
-  warning = FALSE, message = FALSE, 
-  results = TRUE, comment = "")
+  echo = TRUE, 
+  eval = TRUE, 
+  warning = FALSE, 
+  message = FALSE, 
+  results = TRUE, 
+  comment = "")
 
 options(scipen = 12) ## Max number of digits for non-scientific notation
 # knitr::asis_output("\\footnotesize")
@@ -129,9 +133,10 @@ parameters <- list(
   gene.filter.percent.zeros = 95,
   gzip.output.files = TRUE,
   alpha = 0.01, # Significance threshold, applied on the adjusted P-value
+  top.genes = 1000, # export a separate flie with top genes for the practical on clustering
   lambda = 0.5, # Lambda parameter for the estimation of H0/H1 proportions following Storey Tibshirani (2003)
   p.adjust.method = "fdr",
-  run.DESeq2 = TRUE, # I set this parameter because DESeq2 takes a huge time to run (although finally succeeds)
+  run.DESeq2 = FALSE, # I set this parameter because DESeq2 takes a huge time to run (although finally succeeds)
   run.edgeR = TRUE
 )
 
@@ -228,7 +233,6 @@ for (type in download.types) {
 
   ## Index local file for later use
   localFiles[type] <- localFile
-
   
   ## Download the data only if required
   if (!file.exists(localFile)) {
@@ -490,20 +494,21 @@ text(x = log2(parameters$gene.filter.min.count),
 
 ```
 
+
 ```{r gene_filtering}
-filtered.out.genes <- 
+discarded.genes <- 
   percent.zeros > parameters$gene.filter.percent.zeros |
   min.count < parameters$gene.filter.min.count
 # table(kept.genes)
 
 ## Genes passing the filters
-filtered.genes <- !filtered.out.genes
+filtered.genes <- !discarded.genes
 filtered.counts <- counts.per.gene[filtered.genes, ]
 
 ```
 
 
-We discard "undetected" genes, i.e. those having zero counts in at least `r parameters$gene.filter.percent.zeros` percent of the samples, or those with a maximal count inferior to `r parameters$gene.filter.min.count`. This led us to discard `r sum(filtered.out.genes)` genes. 
+We discard "undetected" genes, i.e. those having zero counts in at least `r parameters$gene.filter.percent.zeros` percent of the samples, or those with a maximal count inferior to `r parameters$gene.filter.min.count`. This led us to discard `r sum(discarded.genes)` genes. 
 
 
 ## Normalization of the counts per gene
@@ -518,11 +523,11 @@ We then apply a log2 transformation in order to normalize these standardized cou
 message("Creating DESeq2 dataset")
 dds <- DESeqDataSetFromMatrix(
   countData = as.data.frame(filtered.counts), 
-  colData = data.frame(cancer.type = as.factor(pheno[, "cancer.type"])), 
+  colData = DataFrame(cancer.type = as.factor(pheno[, "cancer.type"])), 
   design = ~ cancer.type)
 
 ## Normalizing using the method for an object of class"CountDataSet" 
-message("Normalizing count with DESeq2")
+message("Normalizing raw counts with DESeq2")
 dds.norm <-  estimateSizeFactors(dds)
 # sizeFactors(dds.norm)
 
@@ -582,7 +587,7 @@ sample.colors <- class.colors[sample.classes]
 ## Manual plot of PC1 and PC2
 dds.prcomp <- prcomp(counts.log2.norm)
 
-par(mfrow = c(1,2))
+par(mfrow = c(2,2))
 plot(dds.prcomp$rotation[,1], dds.prcomp$rotation[,2],
      col = sample.colors,
      main = "Principal components - PC1/PC2",
@@ -597,13 +602,20 @@ plot(dds.prcomp$rotation[,3], dds.prcomp$rotation[,4],
      ylab = "PC4",
      panel.first = grid(),
      las = 1)
-# plot(dds.prcomp$rotation[,5], dds.prcomp$rotation[,6],
-#      col = sample.colors,
-#      main = "Principal components - PC5/PC6",
-#      xlab = "PC5",
-#      ylab = "PC6",
-#      panel.first = grid(),
-#      las = 1)
+plot(dds.prcomp$rotation[,5], dds.prcomp$rotation[,6],
+     col = sample.colors,
+     main = "Principal components - PC5/PC6",
+     xlab = "PC5",
+     ylab = "PC6",
+     panel.first = grid(),
+     las = 1)
+plot(dds.prcomp$rotation[,7], dds.prcomp$rotation[,8],
+     col = sample.colors,
+     main = "Principal components - PC7/PC8",
+     xlab = "PC7",
+     ylab = "PC8",
+     panel.first = grid(),
+     las = 1)
 par(mfrow = c(1,1))
 
 # dim(dds.prcomp$)
@@ -624,6 +636,10 @@ par(mfrow = c(1,1))
 # # trigger our plotPCA method.
 # plotPCA(DESeqTransform(se))
 # plotPCA(dds.vst, intgroup = colData(dds.vst))
+#### ERROR ####
+## Error in .local(object, ...) : 
+##  the argument 'intgroup' should specify columns of colData(dds)
+
 
 
 ```
@@ -632,6 +648,10 @@ par(mfrow = c(1,1))
 ## Differential expression
 
 We select differentially expressed genes in order to produce a file with a restricted number of genes for clustering.
+
+We usually use both DESeq2 and edgeR, which return slightly different lists of genes (due to differences in their way to model gene-wise variance).
+
+However, with the TCGA dataset, DESeq2 takes several hours to proceed the 819 samples of the BIC study. We this inactivated DESeq2 analysis by default (this can however be restored by changing the parameters at trhe beginning of this R markdown file). 
 
 ```{r differential_analysis_deseq2}
 
@@ -702,6 +722,7 @@ if (parameters$run.edgeR) {
   names(edgeR.DEG.table) <- sub(pattern = "FDR", replacement = "padj", x = names(edgeR.DEG.table))
   names(edgeR.DEG.table) <- sub(pattern = "PValue", replacement = "pvalue", x = names(edgeR.DEG.table))
   edgeR.DEG.table$evalue <- edgeR.DEG.table$pvalue * nrow(edgeR.DEG.table)
+  edgeR.DEG.table$rank <- rank(edgeR.DEG.table$padj, ties.method = "average")
   edgeR.DEG <- edgeR.DEG.table$padj < parameters$alpha
   # names(edgeR.DEG.table)
   # names(DESeq2.DEG.table)
@@ -711,7 +732,7 @@ if (parameters$run.edgeR) {
   
   ## Awful: almost all genes are declared positive. 
   ## The p-value histogram shows indeed that 90% of the genes are under H1 (method from Storey-Tibshirani, 2003). 
-  PvalueHistogram(Pvalues = edgeR.DEG.table$pvalue, main = "edgeR - Distribution of P-values")
+  PvalueHistogram(Pvalues = edgeR.DEG.table$pvalue, main = "edgeR - Distribution of P-values", alpha = parameters$alpha)
   
 }
 
@@ -725,6 +746,8 @@ if (parameters$run.edgeR) {
 The selected counts per gene and pheno table were exported in tab-separated value (TSV) format. 
 
 ```{r}
+## Prepare a list with all the exported files. 
+exported <- list()
 
 pheno.export.columns <- names(pheno)
 for (col in pheno.export.columns) {
@@ -742,153 +765,162 @@ for (col in pheno.export.columns) {
     
   }
 }
-message("Exporting ", length(pheno.export.columns), " pheno columns among ", ncol(pheno))
 
 ## Export the non-problematic columns of the pheno table
-pheno.file <- paste(sep = "", project.acronym, "_pheno.tsv.gz")
-pheno.path <- file.path(export.dir, pheno.file)
-if (parameters$gzip.output.files) {
-  pheno.path <- gzfile(pheno.path, "w") ## Compress file
-}
-write.table(x = as.data.frame(pheno[, pheno.export.columns]), 
-            file = pheno.path, 
-            sep = "\t", quote = FALSE, row.names = FALSE)
-if (parameters$gzip.output.files) {
-  close(pheno.path)
-}
+message("Exporting ", length(pheno.export.columns), " pheno columns among ", ncol(pheno))
+pheno.file <- paste(sep = "", project.acronym, "_pheno.tsv")
+exported$pheno <- ExportTable(
+  x = as.data.frame(pheno[, pheno.export.columns]),
+  filename = pheno.file, 
+  outdir = export.dir, gzip = parameters$gzip.output.files)
+
+
 
 ## Export a small subset of relevant fields from the pheno table
 pheno.selected.columns <- c(
   "cancer.type",
   immuno.columns
 )
-sample.class.file <- paste(sep = "", project.acronym, "_sample-classes.tsv.gz")
+sample.class.file <- paste(sep = "", project.acronym, "_sample-classes.tsv")
 sample.class.path <- file.path(export.dir, sample.class.file)
-if (parameters$gzip.output.files) {
-  sample.class.path <- gzfile(sample.class.path, "w") ## Compress file
-}
-write.table(x = as.data.frame(pheno[, pheno.selected.columns]), 
-            file = sample.class.path, 
-            sep = "\t", quote = FALSE, row.names = FALSE)
-if (parameters$gzip.output.files) {
-  close(sample.class.path)
-}
+
+exported$sample.classes <- ExportTable(
+  x = as.data.frame(pheno[, pheno.selected.columns]),
+  filename = sample.class.file, 
+  outdir = export.dir, gzip = parameters$gzip.output.files)
 
 
 ## Export counts per gene
 count.file <- paste(sep = "", project.acronym, "_counts_all-genes.tsv")
-count.path <- file.path(export.dir, count.file)
-if (parameters$gzip.output.files) {
-  count.path <- gzfile(count.path, "w") ## Compress file
-}
-write.table(x = counts.per.gene, 
-            file = count.path,
-            sep = "\t", quote = FALSE, row.names = TRUE, col.names = NA)
-if (parameters$gzip.output.files) {
-  close(count.path)
-}
+exported$counts <- ExportTable(
+  x = counts.per.gene,
+  filename = count.file, 
+  outdir = export.dir, gzip = parameters$gzip.output.files)
 
-## Export raw counts
+## Export filtered counts
 filtered.count.file <- paste(sep = "", project.acronym, "_counts_filtered-genes.tsv")
-filtered.count.path <- file.path(export.dir, filtered.count.file)
-if (parameters$gzip.output.files) {
-  filtered.count.path <- gzfile(filtered.count.path, "w") ## Compress file
-}
-write.table(x = filtered.counts, 
-            file = filtered.count.path,
-            sep = "\t", quote = FALSE, row.names = TRUE, col.names = NA)
-if (parameters$gzip.output.files) {
-  close(filtered.count.path)
-}
+
+exported$counts <- ExportTable(
+  x = filtered.counts,
+  filename = filtered.count.file, 
+  outdir = export.dir,
+  gzip = parameters$gzip.output.files)
+
+
 
 # list.files(export.dir)
 
 ## Export normalized counts
 norm.count.file <- paste(sep = "", project.acronym, "_log2-norm-counts_all-genes.tsv")
-norm.count.path <- file.path(export.dir, norm.count.file)
-if (parameters$gzip.output.files) {
-  norm.count.path <- gzfile(norm.count.path, "w") ## Compress file
-}
-write.table(x = counts.log2.norm, 
-            file = norm.count.path,
-            sep = "\t", quote = FALSE, row.names = TRUE, col.names = NA)
-if (parameters$gzip.output.files) {
-  close(norm.count.path)
-}
+
+exported$counts <- ExportTable(
+  x = counts.log2.norm,
+  filename = norm.count.file, 
+  outdir = export.dir, 
+  gzip = parameters$gzip.output.files)
+
+
 
 ## Export normalized counts
 filtered.norm.count.file <- paste(sep = "", project.acronym, "_log2-norm-counts_filtered-genes.tsv")
-filtered.norm.count.path <- file.path(export.dir, filtered.norm.count.file)
-if (parameters$gzip.output.files) {
-  filtered.norm.count.path <- gzfile(filtered.norm.count.path, "w") ## Compress file
-}
-# dim(counts.log2.norm)
-write.table(x = counts.log2.norm, 
-            file = filtered.norm.count.path,
-            sep = "\t", quote = FALSE, row.names = TRUE, col.names = NA)
-if (parameters$gzip.output.files) {
-  close(filtered.norm.count.path)
-}
+
+exported$filtered.counts <- ExportTable(
+  x = counts.log2.norm, 
+  filename = filtered.norm.count.file,
+  outdir = export.dir, 
+  gzip = parameters$gzip.output.files)
+
+
+# filtered.norm.count.path <- file.path(export.dir, filtered.norm.count.file)
+# if (parameters$gzip.output.files) {
+#   filtered.norm.count.path <- gzfile(filtered.norm.count.path, "w") ## Compress file
+# }
+# # dim(counts.log2.norm)
+# write.table(x = counts.log2.norm, 
+#             file = filtered.norm.count.path,
+#             sep = "\t", quote = FALSE, row.names = TRUE, col.names = NA)
+# if (parameters$gzip.output.files) {
+#   close(filtered.norm.count.path)
+# }
 
 ## Export differential analysis results + normalized counts for DEG only
 if (parameters$run.DESeq2) {
+  
   ## Export DEG table returned by DESeq2
   DESeq2.DEG.table.file <- paste(sep = "", project.acronym, "_DESeq2_DEG_table.tsv")
-  DESeq2.DEG.table.path <- file.path(export.dir, DESeq2.DEG.table.file)
-  if (parameters$gzip.output.files) {
-    DESeq2.DEG.table.path <- gzfile(DESeq2.DEG.table.path, "w") ## Compress file
-  }
-  # dim(counts.log2.norm)
-  write.table(x = DESeq2.DEG.table, 
-              file = DESeq2.DEG.table.path,
-              sep = "\t", quote = FALSE, row.names = TRUE, col.names = NA)
-  if (parameters$gzip.output.files) {
-    close(DESeq2.DEG.table.path)
-  }
+  exported$counts <- ExportTable(
+    x = DESeq2.DEG.table, 
+    filename = DESeq2.DEG.table.file,
+    outdir = export.dir, 
+    gzip = parameters$gzip.output.files)
+
   
   ## Normalized counts for DEG reported by DESeq2
   DESeq2.DEG.norm.count.file <- paste(sep = "", project.acronym, "_log2-norm-counts_DESeq2_DEG_", parameters$p.adjust.method, "_", parameters$alpha, ".tsv")
-  DESeq2.DEG.norm.count.path <- file.path(export.dir, DESeq2.DEG.norm.count.file)
-  if (parameters$gzip.output.files) {
-    DESeq2.DEG.norm.count.path <- gzfile(DESeq2.DEG.norm.count.path, "w") ## Compress file
-  }
-  # dim(counts.log2.norm)
-  write.table(x = counts.log2.norm[DESeq2.DEG, ], 
-              file = DESeq2.DEG.norm.count.path,
-              sep = "\t", quote = FALSE, row.names = TRUE, col.names = NA)
-  if (parameters$gzip.output.files) {
-    close(DESeq2.DEG.norm.count.path)
-  }
+  exported$counts <- ExportTable(
+    x = counts.log2.norm[DESeq2.DEG, ], 
+    filename = DESeq2.DEG.norm.count.file,
+    outdir = export.dir, 
+    gzip = parameters$gzip.output.files)
 }
+
+  ## Normalized counts for a user-specified number of 
+  ## top significant DEG reported by DESeq2
+  DESeq2.top.DEG.norm.count.file <- paste(sep = "", project.acronym, "_log2-norm-counts_DESeq2_DEG_top_", parameters$top.genes, ".tsv")
+  
+  exported$counts <- ExportTable(
+    x = counts.log2.norm[DESeq2.DEG.table$rank <= parameters$top.genes, ], 
+    filename = DESeq2.top.DEG.norm.count.file,
+    outdir = export.dir, 
+    gzip = parameters$gzip.output.files,
+    row.names = TRUE, col.names = NA)
+  
 
 if (parameters$run.edgeR) {
   ## Export DEG table returned by edgeR
   edgeR.DEG.table.file <- paste(sep = "", project.acronym, "_edgeR_DEG_table.tsv")
-  edgeR.DEG.table.path <- file.path(export.dir, edgeR.DEG.table.file)
-  if (parameters$gzip.output.files) {
-    edgeR.DEG.table.path <- gzfile(edgeR.DEG.table.path, "w") ## Compress file
-  }
-  # dim(counts.log2.norm)
-  write.table(x = edgeR.DEG.table, 
-              file = edgeR.DEG.table.path,
-              sep = "\t", quote = FALSE, row.names = TRUE, col.names = NA)
-  if (parameters$gzip.output.files) {
-    close(edgeR.DEG.table.path)
-  }
+  
+  exported$counts <- ExportTable(
+    x = edgeR.DEG.table, 
+    filename = edgeR.DEG.table.file,
+    outdir = export.dir, 
+    gzip = parameters$gzip.output.files,
+    row.names = TRUE, col.names = NA)
 
   ## Normalized counts for DEG reported by edgeR
   edgeR.DEG.norm.count.file <- paste(sep = "", project.acronym, "_log2-norm-counts_edgeR_DEG_", parameters$p.adjust.method, "_", parameters$alpha, ".tsv")
-  edgeR.DEG.norm.count.path <- file.path(export.dir, edgeR.DEG.norm.count.file)
-  if (parameters$gzip.output.files) {
-    edgeR.DEG.norm.count.path <- gzfile(edgeR.DEG.norm.count.path, "w") ## Compress file
-  }
-  # dim(counts.log2.norm)
-  write.table(x = counts.log2.norm[edgeR.DEG, ], 
-              file = edgeR.DEG.norm.count.path,
-              sep = "\t", quote = FALSE, row.names = TRUE, col.names = NA)
-  if (parameters$gzip.output.files) {
-    close(edgeR.DEG.norm.count.path)
-  }
+  
+  exported$counts <- ExportTable(
+    x = counts.log2.norm[edgeR.DEG, ], 
+    filename = edgeR.DEG.norm.count.file,
+    outdir = export.dir, 
+    gzip = parameters$gzip.output.files,
+    row.names = TRUE, col.names = NA)
+  
+  ## Normalized counts for a user-specified number of 
+  ## top significant DEG reported by edgeR
+  edgeR.top.DEG.norm.count.file <- paste(sep = "", project.acronym, "_log2-norm-counts_edgeR_DEG_top_", parameters$top.genes, ".tsv")
+  
+  exported$counts <- ExportTable(
+    x = counts.log2.norm[edgeR.DEG.table$rank <= parameters$top.genes, ], 
+    filename = edgeR.top.DEG.norm.count.file,
+    outdir = export.dir, 
+    gzip = parameters$gzip.output.files,
+    row.names = TRUE, col.names = NA)
+  
+  
+  # edgeR.DEG.norm.count.path <- file.path(
+  #   export.dir, edgeR.DEG.norm.count.file)
+  # if (parameters$gzip.output.files) {
+  #   edgeR.DEG.norm.count.path <- gzfile(edgeR.DEG.norm.count.path, "w") ## Compress file
+  # }
+  # # dim(counts.log2.norm)
+  # write.table(x = counts.log2.norm[edgeR.DEG, ], 
+  #             file = edgeR.DEG.norm.count.path,
+  #             sep = "\t", quote = FALSE, row.names = TRUE, col.names = NA)
+  # if (parameters$gzip.output.files) {
+  #   close(edgeR.DEG.norm.count.path)
+  # }
 }
 
 
@@ -905,7 +937,7 @@ if (parameters$run.edgeR) {
 | Normalized counts per gene (filtered genes) | [`r filtered.norm.count.file`](`r filtered.norm.count.file`) |
 | Normalized counts per gene (edgeR DEG only) | [`r edgeR.DEG.norm.count.file`](`r edgeR.DEG.norm.count.file`) |
 | edgeR DEG table | [`r edgeR.DEG.table.file`](`r edgeR.DEG.table.file`) |
-| DESeq2 DEG table | [`r DESeq2.DEG.table.file`](`r DESeq2.DEG.table.file`) |
+<!--| DESeq2 DEG table | [`r DESeq2.DEG.table.file`](`r DESeq2.DEG.table.file`) |-->
 
 
 ****************************************************************
