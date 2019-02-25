@@ -4,11 +4,13 @@
 #' Must include all the p-values computed during a multiple testing, 
 #' and can by no way be restricted to a selection of the significant ones.
 #' @param main="Distribution of P-values" main title for the histogram
+#' @param alpha=NULL if speficied, indicate the number of genes passing this p-value threshold
 #' @param bins=20 number of class intervals in the histogram
 #' @param ... other parameters are passed to hist()
 #' @export
 PvalueHistogram <- function(Pvalues, 
                             main = "Distribution of P-values", 
+                            alpha = NULL,
                             lambda = 0.5,
                             bins = 20,
                             ...) {
@@ -28,15 +30,25 @@ PvalueHistogram <- function(Pvalues,
   pval.stat$pi1 <- 1 - pval.stat$pi0
   # t(as.data.frame(pval.stat))
   
+  
   ## Display the indicators
-  legend("topright", 
-         legend = c(
-           paste("N = ", prettyNum(big.mark = ",", pval.stat$N)),
-           paste("m0 = ", prettyNum(big.mark = ",", pval.stat$m0)),
-           paste("m1 = ", prettyNum(big.mark = ",", pval.stat$m1)),
-           paste("pi0 = ", signif(digits = 2, pval.stat$pi0)),
-           paste("pi1 = ", signif(digits = 2, pval.stat$pi1))
-         ))
+  legend.text <- c(
+    paste("N = ", prettyNum(big.mark = ",", pval.stat$N)),
+    paste("m0 = ", prettyNum(big.mark = ",", pval.stat$m0)),
+    paste("m1 = ", prettyNum(big.mark = ",", pval.stat$m1)),
+    paste("pi0 = ", signif(digits = 2, pval.stat$pi0)),
+    paste("pi1 = ", signif(digits = 2, pval.stat$pi1))
+  )
+  if (!is.null(alpha)) {
+    pval.stat$alpha <- alpha
+    pval.stat$positives <- sum(Pvalues < alpha)
+    legend.text <- append(
+      legend.text, 
+      c(paste("alpha = ", signif(digits = 2, pval.stat$alpha)),
+        paste("positives = ", pval.stat$positives)))
+  }  
+  
+  legend("topright", legend = legend.text)
   
   ## Draw horizontal line to denote cases under H1
   abline(h = pval.stat$m0 / bins, col="blue")
