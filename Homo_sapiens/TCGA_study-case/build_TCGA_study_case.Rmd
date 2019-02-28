@@ -297,7 +297,7 @@ phenoTable <- colData(rse_gene) ## phenotype per run
 ```
 
 
-```{r extract_study}
+```{r extract_study_case}
 ## Exctract subset of the TCGA data that corresponds to the selected study
 message("Identifying valid samples for TCGA study ", parameters$project.name)
 
@@ -323,7 +323,7 @@ for (column in pheno.columns) {
   valid.samples[is.na(phenoTable[, column])] <- FALSE 
   
   # Discard samples having invalid values in the select pheno columns
-  !(phenoTable[, column] %in% valid.pheno.values)  <- FALSE
+  valid.samples[!(phenoTable[, column] %in% valid.pheno.values)]  <- FALSE
 }
 
 message("\tvalid samples: ", sum(valid.samples))
@@ -379,15 +379,15 @@ The class of cancer is defined by combining three immunological markers:
 The tables below provide summaries of the values in the selected pheno columns. 
 
 ```{r marker_summary}
-pheno..values <- phenoTable[project.samples, pheno.columns]
-colnames(pheno..values) <- names(pheno.columns)
-summary(as.data.frame(pheno..values))
+pheno.values <- data.frame(phenoTable[project.samples, pheno.columns])
+colnames(pheno.values) <- names(pheno.columns)
+summary(as.data.frame(pheno.values))
 ```
 
 Remaining samples after having discarded invalid values. 
 
 ```{r valid_marker_summary}
-valid.pheno <- phenoTable[valid.samples, pheno.columns]
+valid.pheno <- data.frame(phenoTable[valid.samples, pheno.columns])
 colnames(valid.pheno) <- names(pheno.columns)
 summary(as.data.frame(valid.pheno))
 ```
@@ -483,7 +483,7 @@ We apply a filter on the mininmum count per gene in the following way.
 - On this value, we apply a lower threshold: it the maximal count per gene (across all samples) is lower than a user-specified threshold, this gene is discarded. 
 
 ```{r gene_filtering_min_count, out.width = "80%", fig.width=7, fig.height=4.5, fig.cap="Distribution of min counts per gene. Genes below the thresold (red arrow) are filtered out. "}
-
+message("Applying filter on the min counts per gene")
 max.per.gene <-  apply(counts, 1, max)
 summary(max.per.gene)
 
@@ -517,6 +517,7 @@ text(x = log2(parameters$gene.filter.min.count),
 
 
 ```{r gene_filtering}
+## Discarding genes that  did not pass the filters
 discarded.genes <- data.frame(
   too.many.zeros = percent.zeros > parameters$gene.filter.percent.zeros,
   too.small.counts = max.per.gene < parameters$gene.filter.min.count
@@ -545,7 +546,7 @@ message("Filtered counts contain ",
 ```
 
 
-We discard "undetected" genes, i.e. those having zero counts in at least `r parameters$gene.filter.percent.zeros` percent of the samples, or those with a maximal count inferior to `r parameters$gene.filter.min.count`. This led us to discard `r sum(discarded.genes)` genes. 
+We discard "undetected" genes, i.e. those having zero counts in at least `r parameters$gene.filter.percent.zeros` percent of the samples, or those with a maximal count inferior to `r parameters$gene.filter.min.count`. This led us to keep `r sum(filtered.genes)` genes. 
 
 
 ## Normalization of the counts per gene
@@ -588,6 +589,7 @@ system.time(dds.vst <- vst(dds))
 
 ```{r norm_count_hist, out.width="80%", fig.width=7, fig.height=9, fig.cap="**Histogram of all counts.** (a) **Before filtering and standardization.** Distribution of log2(raw counts + epsilon). The epsilon is added to avoid -Inf values for log2-transformed zeros. (b) **Normalised counts.** Normalization consists in scaling counts in order to ensure library size standardization, followed by a  log2 transformation. "}
 
+message("Normalized count histogram")
 log2.count.breaks <- seq(
   from = log2(parameters$epsilon), 
   to = 32, 
@@ -614,7 +616,9 @@ par(mfrow = c(1, 1))
 ## PCA of the samples
 
 ```{r plot_pca, out.width="95%", fig.width=12, fig.height=6,  fig.cap="**PC plots. **"}
+
 ## Assign a color to each sample according to its class
+message("Assigning colors to samples according to their class")
 sample.classes <- pheno$sample.class
 classes <- unique(sample.classes)
 class.colors <- rainbow(n = length(classes))
@@ -622,6 +626,7 @@ names(class.colors) <- classes
 sample.colors <- class.colors[sample.classes]
 
 ## Manual plot of PC1 and PC2
+message("Computing principal components")
 dds.prcomp <- prcomp(counts.log2.norm)
 
 par(mfrow = c(2,2))
@@ -701,7 +706,7 @@ However, with the TCGA dataset, DESeq2 takes several hours to proceed the 819 sa
 ## Since it finally works, I keep it but condition it to a parameter.
 if (parameters$run.DESeq2) {
   # ## Run  differential expression analysis with DESeq2
-  # message("Running differential expression analysis with DESeq2")
+  message("Running differential expression analysis with DESeq2")
   system.time(dds <- DESeq(dds))
   
   # Cast the results from DESeq differential expression analysis
