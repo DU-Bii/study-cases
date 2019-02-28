@@ -1,0 +1,1470 @@
+<!DOCTYPE html>
+
+<html xmlns="http://www.w3.org/1999/xhtml">
+
+<head>
+
+<meta charset="utf-8" />
+<meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+<meta name="generator" content="pandoc" />
+
+
+<meta name="author" content="Jacques van Helden" />
+
+<meta name="date" content="2019-02-28" />
+
+<title>DU-Bii Study cases - TCGA Acute Myeloid Leukemia study</title>
+
+<script src="build_TCGA_study_case_files/jquery-1.11.3/jquery.min.js"></script>
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<link href="build_TCGA_study_case_files/bootstrap-3.3.5/css/cerulean.min.css" rel="stylesheet" />
+<script src="build_TCGA_study_case_files/bootstrap-3.3.5/js/bootstrap.min.js"></script>
+<script src="build_TCGA_study_case_files/bootstrap-3.3.5/shim/html5shiv.min.js"></script>
+<script src="build_TCGA_study_case_files/bootstrap-3.3.5/shim/respond.min.js"></script>
+<script src="build_TCGA_study_case_files/jqueryui-1.11.4/jquery-ui.min.js"></script>
+<link href="build_TCGA_study_case_files/tocify-1.9.1/jquery.tocify.css" rel="stylesheet" />
+<script src="build_TCGA_study_case_files/tocify-1.9.1/jquery.tocify.js"></script>
+<script src="build_TCGA_study_case_files/navigation-1.1/tabsets.js"></script>
+<script src="build_TCGA_study_case_files/navigation-1.1/codefolding.js"></script>
+
+
+<style type="text/css">code{white-space: pre;}</style>
+<style type="text/css" data-origin="pandoc">
+div.sourceCode { overflow-x: auto; }
+table.sourceCode, tr.sourceCode, td.lineNumbers, td.sourceCode {
+  margin: 0; padding: 0; vertical-align: baseline; border: none; }
+table.sourceCode { width: 100%; line-height: 100%; background-color: #303030; color: #cccccc; }
+td.lineNumbers { text-align: right; padding-right: 4px; padding-left: 4px; }
+td.sourceCode { padding-left: 5px; }
+pre, code { color: #cccccc; background-color: #303030; }
+code > span.kw { color: #f0dfaf; } /* Keyword */
+code > span.dt { color: #dfdfbf; } /* DataType */
+code > span.dv { color: #dcdccc; } /* DecVal */
+code > span.bn { color: #dca3a3; } /* BaseN */
+code > span.fl { color: #c0bed1; } /* Float */
+code > span.ch { color: #dca3a3; } /* Char */
+code > span.st { color: #cc9393; } /* String */
+code > span.co { color: #7f9f7f; } /* Comment */
+code > span.ot { color: #efef8f; } /* Other */
+code > span.al { color: #ffcfaf; } /* Alert */
+code > span.fu { color: #efef8f; } /* Function */
+code > span.er { color: #c3bf9f; } /* Error */
+code > span.wa { color: #7f9f7f; font-weight: bold; } /* Warning */
+code > span.cn { color: #dca3a3; font-weight: bold; } /* Constant */
+code > span.sc { color: #dca3a3; } /* SpecialChar */
+code > span.vs { color: #cc9393; } /* VerbatimString */
+code > span.ss { color: #cc9393; } /* SpecialString */
+code > span.im { } /* Import */
+code > span.va { } /* Variable */
+code > span.cf { color: #f0dfaf; } /* ControlFlow */
+code > span.op { color: #f0efd0; } /* Operator */
+code > span.bu { } /* BuiltIn */
+code > span.ex { } /* Extension */
+code > span.pp { color: #ffcfaf; font-weight: bold; } /* Preprocessor */
+code > span.at { } /* Attribute */
+code > span.do { color: #7f9f7f; } /* Documentation */
+code > span.an { color: #7f9f7f; font-weight: bold; } /* Annotation */
+code > span.cv { color: #7f9f7f; font-weight: bold; } /* CommentVar */
+code > span.in { color: #7f9f7f; font-weight: bold; } /* Information */
+
+.sourceCode .row {
+  width: 100%;
+}
+.sourceCode {
+  overflow-x: auto;
+}
+.code-folding-btn {
+  margin-right: -30px;
+}
+</style>
+<script>
+// apply pandoc div.sourceCode style to pre.sourceCode instead
+(function() {
+  var sheets = document.styleSheets;
+  for (var i = 0; i < sheets.length; i++) {
+    if (sheets[i].ownerNode.dataset["origin"] !== "pandoc") continue;
+    try { var rules = sheets[i].cssRules; } catch (e) { continue; }
+    for (var j = 0; j < rules.length; j++) {
+      var rule = rules[j];
+      // check if there is a div.sourceCode rule
+      if (rule.type !== rule.STYLE_RULE || rule.selectorText !== "div.sourceCode") continue;
+      var style = rule.style.cssText;
+      // check if color or background-color is set
+      if (rule.style.color === '' || rule.style.backgroundColor === '') continue;
+      // replace div.sourceCode by a pre.sourceCode rule
+      sheets[i].deleteRule(j);
+      sheets[i].insertRule('pre.sourceCode{' + style + '}', j);
+    }
+  }
+})();
+</script>
+<style type="text/css">
+  pre:not([class]) {
+    background-color: white;
+  }
+</style>
+
+
+<style type="text/css">
+h1 {
+  font-size: 34px;
+}
+h1.title {
+  font-size: 38px;
+}
+h2 {
+  font-size: 30px;
+}
+h3 {
+  font-size: 24px;
+}
+h4 {
+  font-size: 18px;
+}
+h5 {
+  font-size: 16px;
+}
+h6 {
+  font-size: 12px;
+}
+.table th:not([align]) {
+  text-align: left;
+}
+</style>
+
+
+</head>
+
+<body>
+
+<style type = "text/css">
+.main-container {
+  max-width: 940px;
+  margin-left: auto;
+  margin-right: auto;
+}
+code {
+  color: inherit;
+  background-color: rgba(0, 0, 0, 0.04);
+}
+img {
+  max-width:100%;
+  height: auto;
+}
+.tabbed-pane {
+  padding-top: 12px;
+}
+.html-widget {
+  margin-bottom: 20px;
+}
+button.code-folding-btn:focus {
+  outline: none;
+}
+summary {
+  display: list-item;
+}
+</style>
+
+
+
+<div class="container-fluid main-container">
+
+<!-- tabsets -->
+
+<style type="text/css">
+.tabset-dropdown > .nav-tabs {
+  display: inline-table;
+  max-height: 500px;
+  min-height: 44px;
+  overflow-y: auto;
+  background: white;
+  border: 1px solid #ddd;
+  border-radius: 4px;
+}
+
+.tabset-dropdown > .nav-tabs > li.active:before {
+  content: "";
+  font-family: 'Glyphicons Halflings';
+  display: inline-block;
+  padding: 10px;
+  border-right: 1px solid #ddd;
+}
+
+.tabset-dropdown > .nav-tabs.nav-tabs-open > li.active:before {
+  content: "&#xe258;";
+  border: none;
+}
+
+.tabset-dropdown > .nav-tabs.nav-tabs-open:before {
+  content: "";
+  font-family: 'Glyphicons Halflings';
+  display: inline-block;
+  padding: 10px;
+  border-right: 1px solid #ddd;
+}
+
+.tabset-dropdown > .nav-tabs > li.active {
+  display: block;
+}
+
+.tabset-dropdown > .nav-tabs > li > a,
+.tabset-dropdown > .nav-tabs > li > a:focus,
+.tabset-dropdown > .nav-tabs > li > a:hover {
+  border: none;
+  display: inline-block;
+  border-radius: 4px;
+}
+
+.tabset-dropdown > .nav-tabs.nav-tabs-open > li {
+  display: block;
+  float: none;
+}
+
+.tabset-dropdown > .nav-tabs > li {
+  display: none;
+}
+</style>
+
+<script>
+$(document).ready(function () {
+  window.buildTabsets("TOC");
+});
+
+$(document).ready(function () {
+  $('.tabset-dropdown > .nav-tabs > li').click(function () {
+    $(this).parent().toggleClass('nav-tabs-open')
+  });
+});
+</script>
+
+<!-- code folding -->
+<style type="text/css">
+.code-folding-btn { margin-bottom: 4px; }
+</style>
+<script>
+$(document).ready(function () {
+  window.initializeCodeFolding("hide" === "show");
+});
+</script>
+
+
+
+<script>
+$(document).ready(function ()  {
+
+    // move toc-ignore selectors from section div to header
+    $('div.section.toc-ignore')
+        .removeClass('toc-ignore')
+        .children('h1,h2,h3,h4,h5').addClass('toc-ignore');
+
+    // establish options
+    var options = {
+      selectors: "h1,h2,h3",
+      theme: "bootstrap3",
+      context: '.toc-content',
+      hashGenerator: function (text) {
+        return text.replace(/[.\\/?&!#<>]/g, '').replace(/\s/g, '_').toLowerCase();
+      },
+      ignoreSelector: ".toc-ignore",
+      scrollTo: 0
+    };
+    options.showAndHide = true;
+    options.smoothScroll = true;
+
+    // tocify
+    var toc = $("#TOC").tocify(options).data("toc-tocify");
+});
+</script>
+
+<style type="text/css">
+
+#TOC {
+  margin: 25px 0px 20px 0px;
+}
+@media (max-width: 768px) {
+#TOC {
+  position: relative;
+  width: 100%;
+}
+}
+
+
+.toc-content {
+  padding-left: 30px;
+  padding-right: 40px;
+}
+
+div.main-container {
+  max-width: 1200px;
+}
+
+div.tocify {
+  width: 20%;
+  max-width: 260px;
+  max-height: 85%;
+}
+
+@media (min-width: 768px) and (max-width: 991px) {
+  div.tocify {
+    width: 25%;
+  }
+}
+
+@media (max-width: 767px) {
+  div.tocify {
+    width: 100%;
+    max-width: none;
+  }
+}
+
+.tocify ul, .tocify li {
+  line-height: 20px;
+}
+
+.tocify-subheader .tocify-item {
+  font-size: 0.90em;
+  padding-left: 25px;
+  text-indent: 0;
+}
+
+.tocify .list-group-item {
+  border-radius: 0px;
+}
+
+
+</style>
+
+<!-- setup 3col/9col grid for toc_float and main content  -->
+<div class="row-fluid">
+<div class="col-xs-12 col-sm-4 col-md-3">
+<div id="TOC" class="tocify">
+</div>
+</div>
+
+<div class="toc-content col-xs-12 col-sm-8 col-md-9">
+
+
+
+
+<div class="fluid-row" id="header">
+
+<div class="btn-group pull-right">
+<button type="button" class="btn btn-default btn-xs dropdown-toggle" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false"><span>Code</span> <span class="caret"></span></button>
+<ul class="dropdown-menu" style="min-width: 50px;">
+<li><a id="rmd-show-all-code" href="#">Show All Code</a></li>
+<li><a id="rmd-hide-all-code" href="#">Hide All Code</a></li>
+</ul>
+</div>
+
+
+
+<h1 class="title toc-ignore">DU-Bii Study cases - TCGA Acute Myeloid Leukemia study</h1>
+<h3 class="subtitle"><em>DUBii 2019</em></h3>
+<h4 class="author"><em>Jacques van Helden</em></h4>
+<h4 class="date"><em>2019-02-28</em></h4>
+
+</div>
+
+
+<div id="parameters-for-this-analysis" class="section level2">
+<h2>Parameters for this analysis</h2>
+<div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r">## Define parameters for the analysis
+parameters &lt;-<span class="st"> </span><span class="kw">list</span>(
+  ## Select a TCGA project
+<span class="co">#  study = &quot;BIC&quot;,</span>
+<span class="co">#  project.name = &quot;Breast Invasive Carcinoma&quot;,</span>
+  <span class="dt">study =</span> <span class="st">&quot;AML&quot;</span>,
+  <span class="dt">project.name =</span> <span class="st">&quot;Acute Myeloid Leukemia&quot;</span>,
+  <span class="dt">epsilon =</span> <span class="fl">0.1</span>,
+  <span class="dt">gene.filter.min.count =</span> <span class="dv">10</span>,
+  <span class="dt">gene.filter.percent.zeros =</span> <span class="dv">95</span>,
+  <span class="dt">gzip.output.files =</span> <span class="ot">TRUE</span>,
+  <span class="dt">alpha =</span> <span class="fl">0.01</span>, <span class="co"># Significance threshold, applied on the adjusted P-value</span>
+  <span class="dt">top.genes =</span> <span class="dv">1000</span>, <span class="co"># export a separate file with top genes for the practical on clustering</span>
+  <span class="dt">lambda =</span> <span class="fl">0.5</span>, <span class="co"># Lambda parameter for the estimation of H0/H1 proportions following Storey Tibshirani (2003)</span>
+  <span class="dt">p.adjust.method =</span> <span class="st">&quot;fdr&quot;</span>,
+  <span class="dt">run.DESeq2 =</span> <span class="ot">FALSE</span>, <span class="co"># I set this parameter because DESeq2 takes a huge time to run (although finally succeeds)</span>
+  <span class="dt">run.edgeR =</span> <span class="ot">TRUE</span>
+)
+
+## Select relevant columns from the pheno table depending on project acronyum
+<span class="cf">if</span> (parameters<span class="op">$</span>study <span class="op">==</span><span class="st"> &quot;BIC&quot;</span>) {
+  pheno.columns &lt;-<span class="st"> </span><span class="kw">c</span>(
+    <span class="dt">ER =</span> <span class="st">&quot;xml_breast_carcinoma_estrogen_receptor_status&quot;</span>,
+    <span class="dt">PR =</span> <span class="st">&quot;xml_breast_carcinoma_progesterone_receptor_status&quot;</span>,
+    <span class="dt">HER2 =</span> <span class="st">&quot;xml_lab_proc_her2_neu_immunohistochemistry_receptor_status&quot;</span>)
+  valid.pheno.values &lt;-<span class="st"> </span><span class="kw">c</span>(<span class="st">&quot;Negative&quot;</span>, <span class="st">&quot;Positive&quot;</span>)
+
+} <span class="cf">else</span> <span class="cf">if</span>  (parameters<span class="op">$</span>study <span class="op">==</span><span class="st"> &quot;AML&quot;</span>) {
+  pheno.columns &lt;-<span class="st"> </span><span class="kw">c</span>(
+    <span class="dt">risk.category =</span> <span class="st">&quot;xml_acute_myeloid_leukemia_calgb_cytogenetics_risk_category&quot;</span>)
+  valid.pheno.values &lt;-<span class="st"> </span><span class="kw">c</span>(<span class="st">&quot;Poor&quot;</span>, <span class="st">&quot;Favorable&quot;</span>, <span class="st">&quot;Intermediate/Normal&quot;</span>)
+
+} <span class="cf">else</span> {
+  <span class="kw">stop</span>(<span class="st">&quot;Invalid project acronym: &quot;</span>, parameters<span class="op">$</span>study)
+}
+
+
+<span class="kw">kable</span>(<span class="kw">t</span>(<span class="kw">data.frame</span>(parameters)), <span class="dt">col.names =</span> <span class="st">&quot;Parameter value&quot;</span>)</code></pre></div>
+<table>
+<thead>
+<tr class="header">
+<th></th>
+<th align="left">Parameter value</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td>study</td>
+<td align="left">AML</td>
+</tr>
+<tr class="even">
+<td>project.name</td>
+<td align="left">Acute Myeloid Leukemia</td>
+</tr>
+<tr class="odd">
+<td>epsilon</td>
+<td align="left">0.1</td>
+</tr>
+<tr class="even">
+<td>gene.filter.min.count</td>
+<td align="left">10</td>
+</tr>
+<tr class="odd">
+<td>gene.filter.percent.zeros</td>
+<td align="left">95</td>
+</tr>
+<tr class="even">
+<td>gzip.output.files</td>
+<td align="left">TRUE</td>
+</tr>
+<tr class="odd">
+<td>alpha</td>
+<td align="left">0.01</td>
+</tr>
+<tr class="even">
+<td>top.genes</td>
+<td align="left">1000</td>
+</tr>
+<tr class="odd">
+<td>lambda</td>
+<td align="left">0.5</td>
+</tr>
+<tr class="even">
+<td>p.adjust.method</td>
+<td align="left">fdr</td>
+</tr>
+<tr class="odd">
+<td>run.DESeq2</td>
+<td align="left">FALSE</td>
+</tr>
+<tr class="even">
+<td>run.edgeR</td>
+<td align="left">TRUE</td>
+</tr>
+</tbody>
+</table>
+<div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r"><span class="kw">message</span>(<span class="st">&quot;Selected columns from pheno table:</span><span class="ch">\n\t</span><span class="st">&quot;</span>, 
+        <span class="kw">paste</span>(<span class="dt">collapse =</span> <span class="st">&quot;</span><span class="ch">\n\t</span><span class="st">&quot;</span>, pheno.columns))
+<span class="kw">kable</span>(pheno.columns, <span class="dt">col.names =</span> <span class="st">&quot;Pheno column&quot;</span>, <span class="dt">caption =</span> <span class="st">&quot;Columns from the phenoTable&quot;</span>)</code></pre></div>
+<table>
+<caption>Columns from the phenoTable</caption>
+<thead>
+<tr class="header">
+<th></th>
+<th align="left">Pheno column</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td>risk.category</td>
+<td align="left">xml_acute_myeloid_leukemia_calgb_cytogenetics_risk_category</td>
+</tr>
+</tbody>
+</table>
+<div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r"><span class="kw">message</span>(<span class="st">&quot;Valid values for hte selected pheno columns:</span><span class="ch">\n\t</span><span class="st">&quot;</span>, 
+        <span class="kw">paste</span>(<span class="dt">collapse =</span> <span class="st">&quot;</span><span class="ch">\n\t</span><span class="st">&quot;</span>, valid.pheno.values))
+<span class="kw">kable</span>(valid.pheno.values, <span class="dt">col.names =</span> <span class="st">&quot;Value&quot;</span>, <span class="dt">caption =</span> <span class="st">&quot;Valid values for the pheno column(s)&quot;</span>)</code></pre></div>
+<table>
+<caption>Valid values for the pheno column(s)</caption>
+<thead>
+<tr class="header">
+<th align="left">Value</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td align="left">Poor</td>
+</tr>
+<tr class="even">
+<td align="left">Favorable</td>
+</tr>
+<tr class="odd">
+<td align="left">Intermediate/Normal</td>
+</tr>
+</tbody>
+</table>
+</div>
+<div id="introduction" class="section level2">
+<h2>Introduction</h2>
+</div>
+<div id="data-source" class="section level2">
+<h2>Data source</h2>
+<p><strong>Recount2</strong> (<a href="https://jhubiostatistics.shinyapps.io/recount/" class="uri">https://jhubiostatistics.shinyapps.io/recount/</a>) is a database rasembling several thousands of human RNA-seq studies, that were all processed with a same workflow in order to ensure the consistency of the transcriptome measurements. Recount2 provides direct access to tables of raw counts per gene, exon or transcript.</p>
+</div>
+<div id="requirements" class="section level2">
+<h2>Requirements</h2>
+<ul>
+<li>Recount library: <a href="https://bioconductor.org/packages/release/bioc/html/recount.html" class="uri">https://bioconductor.org/packages/release/bioc/html/recount.html</a></li>
+</ul>
+<div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r"><span class="co"># Install BiocManager if required</span>
+<span class="cf">if</span> (<span class="op">!</span><span class="kw">requireNamespace</span>(<span class="st">&quot;BiocManager&quot;</span>, <span class="dt">quietly =</span> <span class="ot">TRUE</span>))
+    <span class="kw">install.packages</span>(<span class="st">&quot;BiocManager&quot;</span>)
+
+<span class="co"># Install recount if required</span>
+<span class="cf">if</span> (<span class="op">!</span><span class="kw">require</span>(recount)) {
+  BiocManager<span class="op">::</span><span class="kw">install</span>(<span class="st">&quot;recount&quot;</span>, <span class="dt">version =</span> <span class="st">&quot;3.8&quot;</span>)
+  <span class="kw">require</span>(recount)
+}
+
+<span class="co"># BiocManager::valid()</span></code></pre></div>
+</div>
+<div id="working-directory" class="section level2">
+<h2>Working directory</h2>
+<div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r">## Set the working directory
+workdir &lt;-<span class="st"> &quot;~/TCGA_import/&quot;</span>
+<span class="kw">dir.create</span>(workdir, <span class="dt">recursive =</span> <span class="ot">TRUE</span>, <span class="dt">showWarnings =</span> <span class="ot">FALSE</span>)
+<span class="kw">setwd</span>(workdir)
+
+<span class="kw">message</span>(<span class="st">&quot;</span><span class="ch">\t</span><span class="st">Selected TCGA project</span><span class="ch">\t</span><span class="st">&quot;</span>, parameters<span class="op">$</span>project.name, <span class="st">&quot; (&quot;</span>, parameters<span class="op">$</span>study, <span class="st">&quot;)&quot;</span>)
+
+export.dir &lt;-<span class="st"> </span><span class="kw">file.path</span>(workdir, <span class="st">&quot;data&quot;</span>, parameters<span class="op">$</span>study)
+<span class="kw">message</span>(<span class="st">&quot;</span><span class="ch">\t</span><span class="st">Export directory</span><span class="ch">\t</span><span class="st">&quot;</span>, export.dir)
+<span class="kw">dir.create</span>(export.dir, <span class="dt">recursive =</span> <span class="ot">TRUE</span>, <span class="dt">showWarnings =</span> <span class="ot">FALSE</span>)</code></pre></div>
+<p>The downloaded and processed data will be saved in a working directory named <strong>TCGA_import</strong> in the user home folder (``r workdir). If required this directory is created automatically.</p>
+</div>
+<div id="data-source-1" class="section level2">
+<h2>Data source</h2>
+<div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r">## Download the TCGA data from Recount2 database
+
+## Set the recoutnID (to &quot;TCGA&quot;)
+recountID &lt;-<span class="st"> &quot;TCGA&quot;</span>
+
+<span class="co"># Specify the download directory</span>
+download.dir &lt;-<span class="st"> </span><span class="kw">file.path</span>(workdir, <span class="st">&quot;downloads&quot;</span>, recountID)
+<span class="kw">dir.create</span>(download.dir, <span class="dt">recursive =</span> <span class="ot">TRUE</span>, <span class="dt">showWarnings =</span> <span class="ot">FALSE</span>)
+
+
+## Data types to download
+<span class="co">#download.types &lt;- c(&quot;phenotype&quot;, &quot;counts-gene&quot;, &quot;rse-gene&quot;)</span>
+download.types &lt;-<span class="st"> </span><span class="kw">c</span>(<span class="st">&quot;rse-gene&quot;</span>) <span class="co"># the rse-gene object contains both expression and pheno tables</span>
+localFiles &lt;-<span class="st"> </span><span class="kw">c</span>()
+<span class="cf">for</span> (type <span class="cf">in</span> download.types) {
+  <span class="kw">message</span>(<span class="st">&quot;Recount data type: &quot;</span>, type)
+  ## Get the URL of the recount file 
+  ## (its extension will depend on the data type)
+  recountURL &lt;-<span class="st"> </span><span class="kw">download_study</span>(
+    recountID, 
+    <span class="dt">outdir =</span> download.dir, 
+    <span class="dt">type =</span> type, 
+    <span class="dt">download =</span> <span class="ot">FALSE</span>)
+  <span class="kw">message</span>(<span class="st">&quot;</span><span class="ch">\t</span><span class="st">recountURLL: &quot;</span>, recountURL)
+  
+  ## Define the local file name
+  localFile &lt;-<span class="st"> </span><span class="kw">file.path</span>(download.dir, <span class="kw">basename</span>(recountURL))
+  <span class="kw">message</span>(<span class="st">&quot;</span><span class="ch">\t</span><span class="st">localFile: &quot;</span>, localFile)
+
+  ## Index local file for later use
+  localFiles[type] &lt;-<span class="st"> </span>localFile
+  
+  ## Download the data only if required
+  <span class="cf">if</span> (<span class="op">!</span><span class="kw">file.exists</span>(localFile)) {
+    <span class="kw">message</span>(<span class="st">&quot;</span><span class="ch">\t</span><span class="st">Dowloading &quot;</span>, type, <span class="st">&quot; from ReCount for study &quot;</span>, recountID)
+    url &lt;-<span class="st"> </span><span class="kw">download_study</span>(
+      recountID, 
+      <span class="dt">outdir =</span> download.dir, 
+      <span class="dt">type =</span> type)
+  } <span class="cf">else</span> {
+    <span class="kw">message</span>(<span class="st">&quot;</span><span class="ch">\t</span><span class="st">file already there: &quot;</span>, localFile)
+    
+  }
+}</code></pre></div>
+<p>We downloaded the following file types from Recount2: rse-gene.</p>
+</div>
+<div id="data-loading" class="section level2">
+<h2>Data loading</h2>
+<div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r">## Load the RData memory image provided by Recount2, whcih contains the count table + pheno table
+<span class="kw">message</span>(<span class="st">&quot;Loading TCGA counts&quot;</span>)
+<span class="kw">system.time</span>(<span class="kw">load</span>(localFiles[<span class="st">&quot;rse-gene&quot;</span>]))</code></pre></div>
+<pre><code>   user  system elapsed 
+ 28.887   1.848  30.764 </code></pre>
+<div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r">## Extract the pheno table from the rse-gene object
+phenoTable &lt;-<span class="st"> </span><span class="kw">colData</span>(rse_gene) ## phenotype per run</code></pre></div>
+<div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r">## Exctract subset of the TCGA data that corresponds to the selected study
+<span class="kw">message</span>(<span class="st">&quot;Identifying valid samples for TCGA study &quot;</span>, parameters<span class="op">$</span>project.name)
+
+## Initialise a Boolean vector for valid samples
+## We will then discard all samples that fail on some criterion
+valid.samples &lt;-<span class="st"> </span><span class="kw">rep</span>(<span class="dt">x =</span> <span class="ot">TRUE</span>, <span class="dt">times =</span> <span class="kw">nrow</span>(phenoTable))
+
+## Only keep samples from the selected TCGA study
+project.samples &lt;-<span class="st"> </span>phenoTable<span class="op">$</span>gdc_cases.tissue_source_site.project <span class="op">==</span><span class="st"> </span>parameters<span class="op">$</span>project.name
+valid.samples[<span class="op">!</span>project.samples] &lt;-<span class="st"> </span><span class="ot">FALSE</span>
+<span class="kw">message</span>(<span class="st">&quot;</span><span class="ch">\t</span><span class="st">Number of project samples: &quot;</span>, <span class="kw">sum</span>(project.samples))
+
+
+## Only keep project samples with valid markers (i.e. Negative or Positive), discard Undertermined, Equivocal and  NA
+<span class="kw">message</span>(<span class="st">&quot;Selecting samples&quot;</span>, 
+        <span class="st">&quot;</span><span class="ch">\n\t</span><span class="st">pheno columns</span><span class="ch">\t</span><span class="st">&quot;</span>, <span class="kw">paste</span>(<span class="dt">collapse =</span> <span class="st">&quot;, &quot;</span>, pheno.columns),
+        <span class="st">&quot;</span><span class="ch">\n\t</span><span class="st">Valid values:</span><span class="ch">\t</span><span class="st">&quot;</span>, <span class="kw">paste</span>(<span class="dt">collapse =</span> <span class="st">&quot;, &quot;</span>, valid.pheno.values)
+        )
+
+
+<span class="cf">for</span> (column <span class="cf">in</span> pheno.columns) {
+  <span class="co"># Discard samples having NA values in the selected pheno column</span>
+  valid.samples[<span class="kw">is.na</span>(phenoTable[, column])] &lt;-<span class="st"> </span><span class="ot">FALSE</span> 
+  
+  <span class="co"># Discard samples having invalid values in the select pheno columns</span>
+  valid.samples[<span class="op">!</span>(phenoTable[, column] <span class="op">%in%</span><span class="st"> </span>valid.pheno.values)]  &lt;-<span class="st"> </span><span class="ot">FALSE</span>
+}
+
+<span class="kw">message</span>(<span class="st">&quot;</span><span class="ch">\t</span><span class="st">valid samples: &quot;</span>, <span class="kw">sum</span>(valid.samples))
+
+## Subset the expression data by selecting the valid samples
+<span class="kw">message</span>(<span class="st">&quot;Extracting expression data for valid samples&quot;</span>)
+rse.valid.samples &lt;-<span class="st"> </span><span class="kw">subset</span>(rse_gene, <span class="dt">select =</span> valid.samples)  
+<span class="co"># dim(rse.valid.samples)</span>
+
+## Extract a pheno table for the subset
+pheno &lt;-<span class="st"> </span><span class="kw">colData</span>(rse.valid.samples)
+<span class="co"># dim(pheno.valid.samples)</span>
+
+
+
+## Extract the count table from the rse-gene object
+<span class="kw">message</span>(<span class="st">&quot;Extracting counts per gene&quot;</span>)
+counts &lt;-<span class="st"> </span><span class="kw">assay</span>(rse.valid.samples)
+<span class="co"># summary(counts[, 1:10])</span>
+<span class="co"># dim(counts)</span>
+
+
+  
+<span class="kw">message</span>(<span class="st">&quot;Selected &quot;</span>, parameters<span class="op">$</span>study, <span class="st">&quot; dataset (project and valid markers)&quot;</span>)
+<span class="kw">message</span>(<span class="st">&quot;</span><span class="ch">\t</span><span class="st">Read count table contains &quot;</span>, <span class="kw">nrow</span>(counts), <span class="st">&quot; rows (genes) x &quot;</span>, <span class="kw">ncol</span>(counts), <span class="st">&quot; columns (samples). &quot;</span>)
+<span class="kw">message</span>(<span class="st">&quot;</span><span class="ch">\t</span><span class="st">Pheno table contains &quot;</span>, <span class="kw">nrow</span>(pheno), <span class="st">&quot; rows (samples) x &quot;</span>, <span class="kw">ncol</span>(pheno), <span class="st">&quot; columns (sample attributes). &quot;</span>)</code></pre></div>
+<p>The full TCGA gene count table contains 125 samples (columns) and 58037 genes (rows).</p>
+<div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r"><span class="kw">kable</span>(<span class="kw">sort</span>(<span class="kw">table</span>(phenoTable<span class="op">$</span>gdc_cases.project.name), 
+           <span class="dt">decreasing =</span> <span class="ot">TRUE</span>),
+      <span class="dt">caption =</span> <span class="st">&quot;Number of samples per TGCA project. &quot;</span>, 
+      <span class="dt">col.names =</span> <span class="kw">c</span>(<span class="st">&quot;Project&quot;</span>,<span class="st">&quot;samples&quot;</span>))</code></pre></div>
+<table>
+<caption>Number of samples per TGCA project.</caption>
+<thead>
+<tr class="header">
+<th align="left">Project</th>
+<th align="right">samples</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td align="left">Breast Invasive Carcinoma</td>
+<td align="right">1246</td>
+</tr>
+<tr class="even">
+<td align="left">Kidney Renal Clear Cell Carcinoma</td>
+<td align="right">616</td>
+</tr>
+<tr class="odd">
+<td align="left">Lung Adenocarcinoma</td>
+<td align="right">601</td>
+</tr>
+<tr class="even">
+<td align="left">Uterine Corpus Endometrial Carcinoma</td>
+<td align="right">589</td>
+</tr>
+<tr class="odd">
+<td align="left">Thyroid Carcinoma</td>
+<td align="right">572</td>
+</tr>
+<tr class="even">
+<td align="left">Prostate Adenocarcinoma</td>
+<td align="right">558</td>
+</tr>
+<tr class="odd">
+<td align="left">Lung Squamous Cell Carcinoma</td>
+<td align="right">555</td>
+</tr>
+<tr class="even">
+<td align="left">Head and Neck Squamous Cell Carcinoma</td>
+<td align="right">548</td>
+</tr>
+<tr class="odd">
+<td align="left">Colon Adenocarcinoma</td>
+<td align="right">546</td>
+</tr>
+<tr class="even">
+<td align="left">Brain Lower Grade Glioma</td>
+<td align="right">532</td>
+</tr>
+<tr class="odd">
+<td align="left">Skin Cutaneous Melanoma</td>
+<td align="right">473</td>
+</tr>
+<tr class="even">
+<td align="left">Stomach Adenocarcinoma</td>
+<td align="right">453</td>
+</tr>
+<tr class="odd">
+<td align="left">Bladder Urothelial Carcinoma</td>
+<td align="right">433</td>
+</tr>
+<tr class="even">
+<td align="left">Ovarian Serous Cystadenocarcinoma</td>
+<td align="right">430</td>
+</tr>
+<tr class="odd">
+<td align="left">Liver Hepatocellular Carcinoma</td>
+<td align="right">424</td>
+</tr>
+<tr class="even">
+<td align="left">Kidney Renal Papillary Cell Carcinoma</td>
+<td align="right">323</td>
+</tr>
+<tr class="odd">
+<td align="left">Cervical Squamous Cell Carcinoma and Endocervical Adenocarcinoma</td>
+<td align="right">309</td>
+</tr>
+<tr class="even">
+<td align="left">Sarcoma</td>
+<td align="right">265</td>
+</tr>
+<tr class="odd">
+<td align="left">Esophageal Carcinoma</td>
+<td align="right">198</td>
+</tr>
+<tr class="even">
+<td align="left">Pheochromocytoma and Paraganglioma</td>
+<td align="right">187</td>
+</tr>
+<tr class="odd">
+<td align="left">Pancreatic Adenocarcinoma</td>
+<td align="right">183</td>
+</tr>
+<tr class="even">
+<td align="left">Rectum Adenocarcinoma</td>
+<td align="right">177</td>
+</tr>
+<tr class="odd">
+<td align="left">Glioblastoma Multiforme</td>
+<td align="right">175</td>
+</tr>
+<tr class="even">
+<td align="left">Testicular Germ Cell Tumors</td>
+<td align="right">156</td>
+</tr>
+<tr class="odd">
+<td align="left">Acute Myeloid Leukemia</td>
+<td align="right">126</td>
+</tr>
+<tr class="even">
+<td align="left">Thymoma</td>
+<td align="right">122</td>
+</tr>
+<tr class="odd">
+<td align="left">Kidney Chromophobe</td>
+<td align="right">91</td>
+</tr>
+<tr class="even">
+<td align="left">Mesothelioma</td>
+<td align="right">87</td>
+</tr>
+<tr class="odd">
+<td align="left">Uveal Melanoma</td>
+<td align="right">80</td>
+</tr>
+<tr class="even">
+<td align="left">Adrenocortical Carcinoma</td>
+<td align="right">79</td>
+</tr>
+<tr class="odd">
+<td align="left">Uterine Carcinosarcoma</td>
+<td align="right">57</td>
+</tr>
+<tr class="even">
+<td align="left">Lymphoid Neoplasm Diffuse Large B-cell Lymphoma</td>
+<td align="right">48</td>
+</tr>
+<tr class="odd">
+<td align="left">Cholangiocarcinoma</td>
+<td align="right">45</td>
+</tr>
+</tbody>
+</table>
+<p>For the study case, we select the project <strong>126</strong>, which contains 126 samples.</p>
+</div>
+<div id="class-labels" class="section level2">
+<h2>Class labels</h2>
+<p>The class of cancer is defined by combining three immunological markers:</p>
+<ul>
+<li>HER2,</li>
+<li>ER (estrogen receptor)</li>
+<li>Pr (progesterone receptor)</li>
+</ul>
+<p>The tables below provide summaries of the values in the selected pheno columns.</p>
+<div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r">pheno.values &lt;-<span class="st"> </span><span class="kw">data.frame</span>(phenoTable[project.samples, pheno.columns])
+<span class="kw">colnames</span>(pheno.values) &lt;-<span class="st"> </span><span class="kw">names</span>(pheno.columns)
+<span class="kw">summary</span>(<span class="kw">as.data.frame</span>(pheno.values))</code></pre></div>
+<pre><code>             risk.category
+                    : 0   
+ Favorable          :25   
+ Intermediate/Normal:70   
+ Poor               :30   
+ NA&#39;s               : 1   </code></pre>
+<p>Remaining samples after having discarded invalid values.</p>
+<div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r">valid.pheno &lt;-<span class="st"> </span><span class="kw">data.frame</span>(phenoTable[valid.samples, pheno.columns])
+<span class="kw">colnames</span>(valid.pheno) &lt;-<span class="st"> </span><span class="kw">names</span>(pheno.columns)
+<span class="kw">summary</span>(<span class="kw">as.data.frame</span>(valid.pheno))</code></pre></div>
+<pre><code>             risk.category
+                    : 0   
+ Favorable          :25   
+ Intermediate/Normal:70   
+ Poor               :30   </code></pre>
+<p>We discard the samples for which any of the pheno values is undefined (<code>NA</code>), or does not match the values defined as valid (Poor, Favorable, Intermediate/Normal). In total, this leaves us with 125 samples.</p>
+<p>We then assign a class label to each samplebased on the values in the selected pheno column(s).</p>
+<div class="figure">
+<img src="images/breast_cancer_typology.png" alt="Figure 1. Definition of breast cancer subtypes based on immunological markers HER2, ER (Estrogen Receptor), and PR (Progesterone Receptor)" />
+<p class="caption">Figure 1. <strong>Definition of breast cancer subtypes</strong> based on immunological markers HER2, ER (Estrogen Receptor), and PR (Progesterone Receptor)</p>
+</div>
+<div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r"><span class="cf">if</span> (parameters<span class="op">$</span>study <span class="op">==</span><span class="st"> &quot;BIC&quot;</span>) {
+  
+  ## Define sample classes based on the combination of 3 marker values
+  pheno<span class="op">$</span>sample.class &lt;-<span class="st"> </span><span class="kw">rep</span>(<span class="st">&quot;Unclassified&quot;</span>, <span class="dt">length.out =</span> <span class="kw">nrow</span>(pheno))
+  
+  luminal.A &lt;-<span class="st"> </span>
+<span class="st">    </span>pheno[, pheno.columns[<span class="st">&quot;ER&quot;</span>]] <span class="op">==</span><span class="st"> &quot;Positive&quot;</span> <span class="op">&amp;</span>
+<span class="st">    </span>pheno[, pheno.columns[<span class="st">&quot;PR&quot;</span>]] <span class="op">==</span><span class="st"> &quot;Positive&quot;</span> <span class="op">&amp;</span>
+<span class="st">    </span>pheno[, pheno.columns[<span class="st">&quot;HER2&quot;</span>]] <span class="op">==</span><span class="st"> &quot;Negative&quot;</span>
+  pheno[luminal.A, <span class="st">&quot;sample.class&quot;</span>] &lt;-<span class="st"> &quot;Luminal.A&quot;</span>
+  
+  luminal.B &lt;-<span class="st"> </span>
+<span class="st">    </span>pheno[, pheno.columns[<span class="st">&quot;ER&quot;</span>]] <span class="op">==</span><span class="st"> &quot;Positive&quot;</span> <span class="op">&amp;</span>
+<span class="st">    </span>pheno[, pheno.columns[<span class="st">&quot;PR&quot;</span>]] <span class="op">==</span><span class="st"> &quot;Positive&quot;</span> <span class="op">&amp;</span>
+<span class="st">    </span>pheno[, pheno.columns[<span class="st">&quot;HER2&quot;</span>]] <span class="op">==</span><span class="st"> &quot;Positive&quot;</span>
+  pheno[luminal.B, <span class="st">&quot;sample.class&quot;</span>] &lt;-<span class="st"> &quot;Luminal.B&quot;</span>
+  
+  her2plus &lt;-<span class="st"> </span>
+<span class="st">    </span>pheno[, pheno.columns[<span class="st">&quot;ER&quot;</span>]] <span class="op">==</span><span class="st"> &quot;Negative&quot;</span> <span class="op">&amp;</span>
+<span class="st">    </span>pheno[, pheno.columns[<span class="st">&quot;PR&quot;</span>]] <span class="op">==</span><span class="st"> &quot;Negative&quot;</span> <span class="op">&amp;</span>
+<span class="st">    </span>pheno[, pheno.columns[<span class="st">&quot;HER2&quot;</span>]] <span class="op">==</span><span class="st"> &quot;Positive&quot;</span>
+  pheno[her2plus, <span class="st">&quot;sample.class&quot;</span>] &lt;-<span class="st"> &quot;HER2pos&quot;</span>
+  
+  basal.like &lt;-<span class="st"> </span>
+<span class="st">    </span>pheno[, pheno.columns[<span class="st">&quot;ER&quot;</span>]] <span class="op">==</span><span class="st"> &quot;Negative&quot;</span> <span class="op">&amp;</span>
+<span class="st">    </span>pheno[, pheno.columns[<span class="st">&quot;PR&quot;</span>]] <span class="op">==</span><span class="st"> &quot;Negative&quot;</span> <span class="op">&amp;</span>
+<span class="st">    </span>pheno[, pheno.columns[<span class="st">&quot;HER2&quot;</span>]] <span class="op">==</span><span class="st"> &quot;Negative&quot;</span>
+  pheno[basal.like, <span class="st">&quot;sample.class&quot;</span>] &lt;-<span class="st"> &quot;Basal.like&quot;</span>
+} <span class="cf">else</span> <span class="cf">if</span> (parameters<span class="op">$</span>study <span class="op">==</span><span class="st"> &quot;AML&quot;</span>) {
+  pheno<span class="op">$</span>sample.class &lt;-<span class="st"> </span><span class="kw">as.vector</span>(pheno[, pheno.columns])
+}
+
+<span class="kw">kable</span>(<span class="kw">sort</span>(<span class="dt">decreasing =</span> <span class="ot">TRUE</span>, <span class="kw">table</span>(pheno<span class="op">$</span>sample.class)), 
+      <span class="dt">useNA =</span> <span class="st">&quot;ifany&quot;</span>, 
+      <span class="dt">caption =</span> <span class="st">&quot;Number of samples per class&quot;</span>)</code></pre></div>
+<table>
+<caption>Number of samples per class</caption>
+<thead>
+<tr class="header">
+<th align="left">Var1</th>
+<th align="right">Freq</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td align="left">Intermediate/Normal</td>
+<td align="right">70</td>
+</tr>
+<tr class="even">
+<td align="left">Poor</td>
+<td align="right">30</td>
+</tr>
+<tr class="odd">
+<td align="left">Favorable</td>
+<td align="right">25</td>
+</tr>
+</tbody>
+</table>
+<div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r">## Get the identifiers of the selected samples
+selected.sample.ids &lt;-<span class="st"> </span><span class="kw">rownames</span>(pheno)
+<span class="co"># summary(selected.sample.ids %in% colnames(counts))</span>
+<span class="co"># summary(colnames(counts) %in% selected.sample.ids)</span></code></pre></div>
+<hr />
+</div>
+<div id="gene-filtering" class="section level2">
+<h2>Gene filtering</h2>
+<div id="percent-zero-counts" class="section level3">
+<h3>Percent zero counts</h3>
+<div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r">## Discard genes having zeros in at least 95% of samples
+<span class="kw">message</span>(<span class="st">&quot;Applying threshold on the percent of non-zero counts per gene: &quot;</span>, parameters<span class="op">$</span>gene.filter.percent.zeros, <span class="st">&quot;%&quot;</span>)
+percent.zeros &lt;-<span class="st"> </span><span class="dv">100</span><span class="op">*</span><span class="kw">apply</span>(counts <span class="op">==</span><span class="st"> </span><span class="dv">0</span>, <span class="dv">1</span>, sum) <span class="op">/</span><span class="st"> </span><span class="kw">ncol</span>(counts)
+<span class="kw">hist</span>(percent.zeros, <span class="dt">breaks =</span> <span class="dv">20</span>, <span class="dt">col =</span> <span class="st">&quot;#DDDDDD&quot;</span>, 
+     <span class="dt">main =</span> <span class="st">&quot;Filter on the percentage of zero counts&quot;</span>, 
+     <span class="dt">xlab =</span> <span class="st">&quot;Percent of samples&quot;</span>, <span class="dt">ylab =</span> <span class="st">&quot;Number of genes&quot;</span>, <span class="dt">las =</span> <span class="dv">1</span>)
+<span class="kw">arrows</span>(<span class="dt">x0 =</span> parameters<span class="op">$</span>gene.filter.percent.zeros, 
+       <span class="dt">y0 =</span> <span class="dv">10000</span>, 
+       <span class="dt">x1 =</span> parameters<span class="op">$</span>gene.filter.percent.zeros, 
+       <span class="dt">y1 =</span> <span class="dv">6000</span>, 
+       <span class="dt">col =</span> <span class="st">&quot;red&quot;</span>, <span class="dt">lwd =</span> <span class="dv">2</span>,
+       <span class="dt">angle =</span> <span class="dv">30</span>, <span class="dt">length =</span> <span class="fl">0.1</span>)
+<span class="kw">text</span>(<span class="dt">x =</span> parameters<span class="op">$</span>gene.filter.percent.zeros, 
+     <span class="dt">y =</span> <span class="dv">10000</span>, 
+     <span class="dt">labels =</span> <span class="kw">paste</span>(<span class="dt">sep =</span> <span class="st">&quot;&quot;</span>, parameters<span class="op">$</span>gene.filter.percent.zeros, <span class="st">&quot;%&quot;</span>),
+     <span class="dt">col =</span> <span class="st">&quot;red&quot;</span>, <span class="dt">pos =</span> <span class="dv">3</span>)</code></pre></div>
+<div class="figure" style="text-align: center">
+<img src="figures/TCGA_BIC_gene_filtering_zero_counts-1.png" alt="Frequency of samples with zero counts per gene. Genes exceeding the thresold (red arrow) were filtered out. " width="80%" />
+<p class="caption">
+Frequency of samples with zero counts per gene. Genes exceeding the thresold (red arrow) were filtered out.
+</p>
+</div>
+</div>
+<div id="min-counts-per-gene" class="section level3">
+<h3>Min counts per gene</h3>
+<p>We apply a filter on the mininmum count per gene in the following way.</p>
+<ul>
+<li>For each gene, we compute its maximal count value across all samples (max count per gene)</li>
+<li>On this value, we apply a lower threshold: it the maximal count per gene (across all samples) is lower than a user-specified threshold, this gene is discarded.</li>
+</ul>
+<div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r"><span class="kw">message</span>(<span class="st">&quot;Applying filter on the min counts per gene&quot;</span>)
+max.per.gene &lt;-<span class="st">  </span><span class="kw">apply</span>(counts, <span class="dv">1</span>, max)
+<span class="kw">summary</span>(max.per.gene)</code></pre></div>
+<pre><code>     Min.   1st Qu.    Median      Mean   3rd Qu.      Max. 
+        0       547      5168    226795     83150 372052787 </code></pre>
+<div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r"><span class="co"># View(summary(min.count))</span>
+h &lt;-<span class="st"> </span><span class="kw">hist</span>(<span class="kw">log2</span>(max.per.gene <span class="op">+</span><span class="st"> </span>parameters<span class="op">$</span>epsilon), <span class="dt">breaks =</span> <span class="dv">100</span>, <span class="dt">col =</span> <span class="st">&quot;#BBBBFF&quot;</span>,
+          <span class="dt">xlab =</span> <span class="st">&quot;log2(max count per gene)&quot;</span>,
+          <span class="dt">ylab =</span> <span class="st">&quot;Number of genes&quot;</span>, <span class="dt">las =</span> <span class="dv">1</span>,
+          <span class="dt">main =</span> <span class="st">&quot;Filtering on min count per gene&quot;</span>)
+h.max &lt;-<span class="st"> </span><span class="kw">max</span>(h<span class="op">$</span>counts)
+<span class="kw">arrows</span>(<span class="dt">x0 =</span> <span class="kw">log2</span>(parameters<span class="op">$</span>gene.filter.min.count), 
+       <span class="dt">y0 =</span> h.max <span class="op">*</span><span class="st"> </span><span class="fl">0.5</span>, 
+       <span class="dt">x1 =</span> <span class="kw">log2</span>(parameters<span class="op">$</span>gene.filter.min.count), 
+       <span class="dt">y1 =</span> h.max <span class="op">*</span><span class="st"> </span><span class="fl">0.3</span>, 
+       <span class="dt">col =</span> <span class="st">&quot;red&quot;</span>, <span class="dt">lwd =</span> <span class="dv">2</span>,
+       <span class="dt">angle =</span> <span class="dv">30</span>, <span class="dt">length =</span> <span class="fl">0.1</span>)
+<span class="kw">arrows</span>(<span class="dt">x0 =</span> <span class="kw">log2</span>(parameters<span class="op">$</span>epsilon), 
+       <span class="dt">y0 =</span> h.max <span class="op">*</span><span class="st"> </span><span class="fl">0.5</span>, 
+       <span class="dt">x1 =</span> <span class="kw">log2</span>(parameters<span class="op">$</span>gene.filter.min.count), 
+       <span class="dt">y1 =</span> h.max <span class="op">*</span><span class="st"> </span><span class="fl">0.5</span>, 
+       <span class="dt">col =</span> <span class="st">&quot;red&quot;</span>, <span class="dt">lwd =</span> <span class="dv">4</span>, <span class="dt">code =</span> <span class="dv">0</span>,
+       <span class="dt">angle =</span> <span class="dv">30</span>, <span class="dt">length =</span> <span class="fl">0.1</span>)
+<span class="kw">text</span>(<span class="dt">x =</span> <span class="kw">log2</span>(parameters<span class="op">$</span>gene.filter.min.count), 
+     <span class="dt">y =</span> h.max <span class="op">*</span><span class="st"> </span><span class="fl">0.5</span>, 
+     <span class="dt">labels =</span> <span class="kw">paste</span>(<span class="dt">sep =</span> <span class="st">&quot;&quot;</span>, <span class="st">&quot;log2(&quot;</span>, 
+                    parameters<span class="op">$</span>gene.filter.min.count,
+                    <span class="st">&quot;) = &quot;</span>, <span class="kw">signif</span>(<span class="dt">digits =</span> <span class="dv">3</span>, <span class="kw">log2</span>(parameters<span class="op">$</span>gene.filter.min.count))),
+     <span class="dt">col =</span> <span class="st">&quot;red&quot;</span>, <span class="dt">pos =</span> <span class="dv">3</span>)</code></pre></div>
+<div class="figure" style="text-align: center">
+<img src="figures/TCGA_BIC_gene_filtering_min_count-1.png" alt="Distribution of min counts per gene. Genes below the thresold (red arrow) are filtered out. " width="80%" />
+<p class="caption">
+Distribution of min counts per gene. Genes below the thresold (red arrow) are filtered out.
+</p>
+</div>
+<div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r">## Discarding genes that  did not pass the filters
+discarded.genes &lt;-<span class="st"> </span><span class="kw">data.frame</span>(
+  <span class="dt">too.many.zeros =</span> percent.zeros <span class="op">&gt;</span><span class="st"> </span>parameters<span class="op">$</span>gene.filter.percent.zeros,
+  <span class="dt">too.small.counts =</span> max.per.gene <span class="op">&lt;</span><span class="st"> </span>parameters<span class="op">$</span>gene.filter.min.count
+)
+
+
+## Draw a venn diagram indicating the number of genes 
+## discarded by the different criteria. 
+venn.counts &lt;-<span class="st"> </span><span class="kw">vennCounts</span>(discarded.genes)
+<span class="kw">vennDiagram</span>(venn.counts, <span class="dt">cex =</span> <span class="fl">0.8</span>,
+            <span class="dt">main =</span> <span class="st">&quot;Genes discarded by different criteria&quot;</span>)</code></pre></div>
+<p><img src="figures/TCGA_BIC_gene_filtering-1.png" width="672" style="display: block; margin: auto;" /></p>
+<div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r">## Genes passing the filters are those for which 
+## all the discarding criteria are FALSE, 
+## i.e. the sum of the row is 0
+filtered.genes &lt;-<span class="st"> </span><span class="kw">apply</span>(discarded.genes, <span class="dv">1</span>, sum) <span class="op">==</span><span class="st"> </span><span class="dv">0</span>
+
+## Select a matrix with the filtered genes, 
+## i.e. those not discarded by any criterion
+filtered.counts &lt;-<span class="st"> </span>counts[filtered.genes, ]
+<span class="kw">message</span>(<span class="st">&quot;Filtered counts contain &quot;</span>, 
+        <span class="kw">nrow</span>(filtered.counts), <span class="st">&quot; rows x &quot;</span>, 
+        <span class="kw">ncol</span>(filtered.counts), <span class="st">&quot; columns&quot;</span>)</code></pre></div>
+<p>We discard “undetected” genes, i.e. those having zero counts in at least 95 percent of the samples, or those with a maximal count inferior to 10. This led us to keep 56735 genes.</p>
+</div>
+</div>
+<div id="normalization-of-the-counts-per-gene" class="section level2">
+<h2>Normalization of the counts per gene</h2>
+<p>We use DESeq2 function <code>estimateSizeFactors()</code> to estimate the library-wise size factors, which will be used to standardize the counts.</p>
+<p>We then apply a log2 transformation in order to normalize these standardized counts.</p>
+<div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r">## Use the DESeqDataSetFromMatrix to create a DESeqDataSet object
+<span class="kw">message</span>(<span class="st">&quot;Creating DESeq2 dataset&quot;</span>)
+dds &lt;-<span class="st"> </span><span class="kw">DESeqDataSetFromMatrix</span>(
+  <span class="dt">countData =</span> <span class="kw">as.data.frame</span>(filtered.counts), 
+  <span class="dt">colData =</span> <span class="kw">DataFrame</span>(<span class="dt">sample.class =</span> <span class="kw">as.factor</span>(pheno[, <span class="st">&quot;sample.class&quot;</span>])), 
+  <span class="dt">design =</span> <span class="op">~</span><span class="st"> </span>sample.class)
+
+## Normalizing using the method for an object of class&quot;CountDataSet&quot; 
+<span class="kw">message</span>(<span class="st">&quot;Normalizing raw counts with DESeq2&quot;</span>)
+dds.norm &lt;-<span class="st">  </span><span class="kw">estimateSizeFactors</span>(dds)
+<span class="co"># sizeFactors(dds.norm)</span>
+
+## Compute log2-transformed counts from the normalized counts
+counts.norm &lt;-<span class="st"> </span><span class="kw">counts</span>(dds.norm, <span class="dt">normalized =</span> <span class="ot">TRUE</span>) <span class="op">+</span><span class="st"> </span>parameters<span class="op">$</span>epsilon
+<span class="co"># dim(counts.norm)</span>
+counts.log2.norm &lt;-<span class="st"> </span><span class="kw">log2</span>(counts.norm)
+<span class="co"># dim(counts.log2.norm)</span>
+
+
+## Compute quick estimation of dispersion trend + apply variance-stabilizing transformation
+<span class="kw">message</span>(<span class="st">&quot;</span><span class="ch">\t</span><span class="st">DESeq2::vst()</span><span class="ch">\t</span><span class="st">Quickly estimate dispersion trend and apply variance-stabilizing transformation&quot;</span>)
+<span class="kw">system.time</span>(dds.vst &lt;-<span class="st"> </span><span class="kw">vst</span>(dds))</code></pre></div>
+<pre><code>   user  system elapsed 
+  3.550   0.531   4.096 </code></pre>
+<div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r">## DO NOT compute regularized log transformation (takes ages)
+<span class="co"># message(&quot;\tDESeq2::rlog()\tComputing regularized log transformation&quot;)</span>
+<span class="co"># system.time(rld &lt;- rlog(dds)) ## Takes a long time with large number of samples</span></code></pre></div>
+<div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r"><span class="kw">message</span>(<span class="st">&quot;Normalized count histogram&quot;</span>)
+log2.count.breaks &lt;-<span class="st"> </span><span class="kw">seq</span>(
+  <span class="dt">from =</span> <span class="kw">log2</span>(parameters<span class="op">$</span>epsilon), 
+  <span class="dt">to =</span> <span class="dv">32</span>, 
+  <span class="dt">by =</span> <span class="fl">0.4</span>)
+
+<span class="kw">par</span>(<span class="dt">mfrow =</span> <span class="kw">c</span>(<span class="dv">2</span>, <span class="dv">1</span>))
+
+<span class="kw">hist</span>(<span class="kw">unlist</span>(<span class="kw">log2</span>(<span class="kw">unlist</span>(counts <span class="op">+</span><span class="st"> </span>parameters<span class="op">$</span>epsilon))), <span class="dt">main =</span> <span class="st">&quot;Log2(raw counts)&quot;</span>,
+     <span class="dt">xlab =</span> <span class="st">&quot;log2(raw counts + epsilon)&quot;</span>,
+     <span class="dt">ylab =</span> <span class="st">&quot;Number of measures&quot;</span>,
+     <span class="dt">breaks =</span> log2.count.breaks, 
+     <span class="dt">col =</span> <span class="st">&quot;#FFDDBB&quot;</span>)
+
+<span class="kw">hist</span>(<span class="kw">unlist</span>(counts.log2.norm), <span class="dt">main =</span> <span class="st">&quot;Normalized counts&quot;</span>,
+     <span class="dt">xlab =</span> <span class="st">&quot;log2(standardized counts)&quot;</span>,
+     <span class="dt">ylab =</span> <span class="st">&quot;Number of measures&quot;</span>,
+     <span class="dt">breaks =</span> log2.count.breaks, 
+     <span class="dt">col =</span> <span class="st">&quot;#DDFFBB&quot;</span>)</code></pre></div>
+<div class="figure" style="text-align: center">
+<img src="figures/TCGA_BIC_norm_count_hist-1.png" alt="**Histogram of all counts.** (a) **Before filtering and standardization.** Distribution of log2(raw counts + epsilon). The epsilon is added to avoid -Inf values for log2-transformed zeros. (b) **Normalised counts.** Normalization consists in scaling counts in order to ensure library size standardization, followed by a  log2 transformation. " width="80%" />
+<p class="caption">
+<strong>Histogram of all counts.</strong> (a) <strong>Before filtering and standardization.</strong> Distribution of log2(raw counts + epsilon). The epsilon is added to avoid -Inf values for log2-transformed zeros. (b) <strong>Normalised counts.</strong> Normalization consists in scaling counts in order to ensure library size standardization, followed by a log2 transformation.
+</p>
+</div>
+<div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r"><span class="kw">par</span>(<span class="dt">mfrow =</span> <span class="kw">c</span>(<span class="dv">1</span>, <span class="dv">1</span>))</code></pre></div>
+</div>
+<div id="pca-of-the-samples" class="section level2">
+<h2>PCA of the samples</h2>
+<div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r">## Assign a color to each sample according to its class
+<span class="kw">message</span>(<span class="st">&quot;Assigning colors to samples according to their class&quot;</span>)
+sample.classes &lt;-<span class="st"> </span>pheno<span class="op">$</span>sample.class
+classes &lt;-<span class="st"> </span><span class="kw">unique</span>(sample.classes)
+class.colors &lt;-<span class="st"> </span><span class="kw">rainbow</span>(<span class="dt">n =</span> <span class="kw">length</span>(classes))
+<span class="kw">names</span>(class.colors) &lt;-<span class="st"> </span>classes
+sample.colors &lt;-<span class="st"> </span>class.colors[sample.classes]
+
+## Manual plot of PC1 and PC2
+<span class="kw">message</span>(<span class="st">&quot;Computing principal components&quot;</span>)
+dds.prcomp &lt;-<span class="st"> </span><span class="kw">prcomp</span>(counts.log2.norm)
+
+<span class="kw">par</span>(<span class="dt">mfrow =</span> <span class="kw">c</span>(<span class="dv">2</span>,<span class="dv">2</span>))
+<span class="kw">plot</span>(dds.prcomp<span class="op">$</span>rotation[,<span class="dv">1</span>], dds.prcomp<span class="op">$</span>rotation[,<span class="dv">2</span>],
+     <span class="dt">col =</span> sample.colors,
+     <span class="dt">main =</span> <span class="st">&quot;Principal components - PC1/PC2&quot;</span>,
+     <span class="dt">xlab =</span> <span class="st">&quot;PC1&quot;</span>,
+     <span class="dt">ylab =</span> <span class="st">&quot;PC2&quot;</span>,
+     <span class="dt">panel.first =</span> <span class="kw">grid</span>(),
+     <span class="dt">las =</span> <span class="dv">1</span>)
+<span class="kw">plot</span>(dds.prcomp<span class="op">$</span>rotation[,<span class="dv">3</span>], dds.prcomp<span class="op">$</span>rotation[,<span class="dv">4</span>],
+     <span class="dt">col =</span> sample.colors,
+     <span class="dt">main =</span> <span class="st">&quot;Principal components - PC3/PC4&quot;</span>,
+     <span class="dt">xlab =</span> <span class="st">&quot;PC3&quot;</span>,
+     <span class="dt">ylab =</span> <span class="st">&quot;PC4&quot;</span>,
+     <span class="dt">panel.first =</span> <span class="kw">grid</span>(),
+     <span class="dt">las =</span> <span class="dv">1</span>)
+<span class="kw">plot</span>(dds.prcomp<span class="op">$</span>rotation[,<span class="dv">5</span>], dds.prcomp<span class="op">$</span>rotation[,<span class="dv">6</span>],
+     <span class="dt">col =</span> sample.colors,
+     <span class="dt">main =</span> <span class="st">&quot;Principal components - PC5/PC6&quot;</span>,
+     <span class="dt">xlab =</span> <span class="st">&quot;PC5&quot;</span>,
+     <span class="dt">ylab =</span> <span class="st">&quot;PC6&quot;</span>,
+     <span class="dt">panel.first =</span> <span class="kw">grid</span>(),
+     <span class="dt">las =</span> <span class="dv">1</span>)
+<span class="kw">plot</span>(dds.prcomp<span class="op">$</span>rotation[,<span class="dv">7</span>], dds.prcomp<span class="op">$</span>rotation[,<span class="dv">8</span>],
+     <span class="dt">col =</span> sample.colors,
+     <span class="dt">main =</span> <span class="st">&quot;Principal components - PC7/PC8&quot;</span>,
+     <span class="dt">xlab =</span> <span class="st">&quot;PC7&quot;</span>,
+     <span class="dt">ylab =</span> <span class="st">&quot;PC8&quot;</span>,
+     <span class="dt">panel.first =</span> <span class="kw">grid</span>(),
+     <span class="dt">las =</span> <span class="dv">1</span>)</code></pre></div>
+<div class="figure" style="text-align: center">
+<img src="figures/TCGA_BIC_plot_pca-1.png" alt="**PC plots. **" width="95%" />
+<p class="caption">
+<strong>PC plots. </strong>
+</p>
+</div>
+<div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r"><span class="kw">par</span>(<span class="dt">mfrow =</span> <span class="kw">c</span>(<span class="dv">1</span>,<span class="dv">1</span>))
+
+<span class="co"># dim(dds.prcomp$rotation)</span>
+<span class="co"># dim(dds.prcomp$x)</span>
+<span class="co"># View(dds.prcomp$x)</span>
+
+## THIS IS NOT WORKING !
+## TO DO: <span class="al">TEST</span> THE EQUIVALENT FUNCTION IN EDGER
+## PC plot of the samples
+<span class="co"># message(&quot;PC plot of the samples&quot;)</span>
+<span class="co"># se &lt;- SummarizedExperiment(counts.log2.norm, colData = colData(dds))</span>
+<span class="co"># plotPCA(DESeqTransform(se))</span>
+
+<span class="co"># shifted log of normalized counts</span>
+<span class="co"># se &lt;- SummarizedExperiment(</span>
+<span class="co">#   log2(counts(dds.norm, normalized = TRUE) + parameters$epsilon),</span>
+<span class="co">#   colData = colData(dds))</span>
+<span class="co"># # the call to DESeqTransform() is needed to</span>
+<span class="co"># # trigger our plotPCA method.</span>
+<span class="co"># plotPCA(DESeqTransform(se))</span>
+<span class="co"># plotPCA(dds.vst, intgroup = colData(dds.vst))</span>
+#### ERROR ####
+## Error in .local(object, ...) : 
+##  the argument &#39;intgroup&#39; should specify columns of colData(dds)</code></pre></div>
+</div>
+<div id="differential-expression" class="section level2">
+<h2>Differential expression</h2>
+<p>We select differentially expressed genes in order to produce a file with a restricted number of genes for clustering.</p>
+<p>We usually use both DESeq2 and edgeR, which return slightly different lists of genes (due to differences in their way to model gene-wise variance).</p>
+<p>However, with the TCGA dataset, DESeq2 takes several hours to proceed the 819 samples of the BIC study. We this inactivated DESeq2 analysis by default (this can however be restored by changing the parameters at trhe beginning of this R markdown file).</p>
+<div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r"><span class="co"># print(dds) # Have a look at the short description of the DESeqDataSet</span>
+
+
+## PROBLEM: the differential analysis with DESeq2 is very slow 
+## Probably because there are too many samples ?
+## Since it finally works, I keep it but condition it to a parameter.
+<span class="cf">if</span> (parameters<span class="op">$</span>run.DESeq2) {
+  <span class="co"># ## Run  differential expression analysis with DESeq2</span>
+  <span class="kw">message</span>(<span class="st">&quot;Running differential expression analysis with DESeq2&quot;</span>)
+  <span class="kw">system.time</span>(dds &lt;-<span class="st"> </span><span class="kw">DESeq</span>(dds))
+  
+  <span class="co"># Cast the results from DESeq differential expression analysis</span>
+  DESeq2.result &lt;-<span class="st"> </span><span class="kw">results</span>(dds, <span class="dt">independentFiltering =</span> <span class="ot">FALSE</span>)
+  DESeq2.DEG.table &lt;-<span class="st"> </span><span class="kw">as.data.frame</span>(DESeq2.result)
+  <span class="kw">class</span>(DESeq2.DEG.table)
+  DESeq2.DEG.table<span class="op">$</span>evalue &lt;-<span class="st"> </span>DESeq2.DEG.table<span class="op">$</span>pvalue <span class="op">*</span><span class="st"> </span><span class="kw">nrow</span>(DESeq2.DEG.table)
+  DESeq2.DEG &lt;-<span class="st"> </span>DESeq2.DEG.table<span class="op">$</span>padj <span class="op">&lt;</span><span class="st"> </span>parameters<span class="op">$</span>alpha
+  <span class="co"># names(DESeq2.DEG.table)</span>
+  <span class="co"># View(DESeq2.DEG.table)</span>
+  
+}</code></pre></div>
+<div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r">## Detection of Differentially Expressed Genes (DEG) with edgeR
+
+<span class="cf">if</span> (parameters<span class="op">$</span>run.edgeR) {
+  <span class="kw">message</span>(<span class="st">&quot;Detecting Differentially Expressed Genes (DEG) with edgeR&quot;</span>)
+  
+  ## Build a &quot;model matrix&quot; from the class labels
+  ## This matrix contains one row per sample and one column per class
+  designMat &lt;-<span class="st"> </span><span class="kw">model.matrix</span>(<span class="op">~</span><span class="st"> </span><span class="kw">as.vector</span>(pheno<span class="op">$</span>sample.class))
+  <span class="co"># View(designMat)</span>
+  
+  ## Build an edgeR::DGEList object which is required to run edgeR DE analysis
+  dgList &lt;-<span class="st"> </span><span class="kw">DGEList</span>(<span class="dt">counts =</span> filtered.counts)
+  <span class="co"># class(dgList)</span>
+  <span class="co"># is(dgList)</span>
+  
+  ## Estimate the dispersion parameters. 
+  <span class="kw">message</span>(<span class="st">&quot;</span><span class="ch">\t</span><span class="st">edgeR</span><span class="ch">\t</span><span class="st">Estimating dispersion&quot;</span>)
+  <span class="kw">system.time</span>(dgList &lt;-<span class="st"> </span><span class="kw">estimateDisp</span>(dgList, <span class="dt">design =</span> designMat))
+  
+  ## Fit edgeR model for differential expression analysis.
+  ## We chose glmQLFit because it is claimed to offer a more accurate control of type I error. 
+  <span class="kw">message</span>(<span class="st">&quot;</span><span class="ch">\t</span><span class="st">edgeR</span><span class="ch">\t</span><span class="st">model fitting with glmQLFit()&quot;</span>)
+  <span class="kw">system.time</span>(fit &lt;-<span class="st"> </span><span class="kw">glmQLFit</span>(dgList, <span class="dt">design =</span> designMat))
+  
+  ## Run test to detect differentially expressed genes
+  <span class="kw">message</span>(<span class="st">&quot;</span><span class="ch">\t</span><span class="st">edgeR</span><span class="ch">\t</span><span class="st">detecting differentially expressed genes with glmQLFTest()&quot;</span>)
+  qlf &lt;-<span class="st"> </span><span class="kw">glmQLFTest</span>(fit, <span class="dt">coef =</span> <span class="dv">2</span><span class="op">:</span><span class="kw">ncol</span>(designMat))
+  <span class="kw">message</span>(<span class="st">&quot;</span><span class="ch">\t</span><span class="st">edgeR</span><span class="ch">\t</span><span class="st">&quot;</span>)
+  qlf.TT &lt;-<span class="st"> </span><span class="kw">topTags</span>(qlf, <span class="dt">n =</span> <span class="kw">nrow</span>(qlf<span class="op">$</span>table), <span class="dt">sort.by =</span> <span class="st">&quot;none&quot;</span>,
+                    <span class="dt">adjust.method =</span> parameters<span class="op">$</span>p.adjust.method)
+  <span class="co"># class(qlf.TT)</span>
+  <span class="co"># Note: the adusted p-values are co-linear with the nominal p-value, </span>
+  ## which is not supposed to be the case with BH correction. 
+  ## I should test this. 
+  <span class="co"># plot(qlf.TT$table$PValue, qlf.TT$table$FDR, log = &quot;xy&quot;, col = &quot;grey&quot;)</span>
+  
+  ## Select differentially expressed genes
+  edgeR.DEG.table &lt;-<span class="st"> </span><span class="kw">as.data.frame</span>(qlf.TT<span class="op">$</span>table)
+  <span class="kw">names</span>(edgeR.DEG.table) &lt;-<span class="st"> </span><span class="kw">sub</span>(<span class="dt">pattern =</span> <span class="st">&quot;FDR&quot;</span>, <span class="dt">replacement =</span> <span class="st">&quot;padj&quot;</span>, <span class="dt">x =</span> <span class="kw">names</span>(edgeR.DEG.table))
+  <span class="kw">names</span>(edgeR.DEG.table) &lt;-<span class="st"> </span><span class="kw">sub</span>(<span class="dt">pattern =</span> <span class="st">&quot;PValue&quot;</span>, <span class="dt">replacement =</span> <span class="st">&quot;pvalue&quot;</span>, <span class="dt">x =</span> <span class="kw">names</span>(edgeR.DEG.table))
+  edgeR.DEG.table<span class="op">$</span>evalue &lt;-<span class="st"> </span>edgeR.DEG.table<span class="op">$</span>pvalue <span class="op">*</span><span class="st"> </span><span class="kw">nrow</span>(edgeR.DEG.table)
+  edgeR.DEG.table<span class="op">$</span>rank &lt;-<span class="st"> </span><span class="kw">rank</span>(edgeR.DEG.table<span class="op">$</span>padj, <span class="dt">ties.method =</span> <span class="st">&quot;average&quot;</span>)
+  edgeR.DEG &lt;-<span class="st"> </span>edgeR.DEG.table<span class="op">$</span>padj <span class="op">&lt;</span><span class="st"> </span>parameters<span class="op">$</span>alpha
+  <span class="co"># names(edgeR.DEG.table)</span>
+  <span class="co"># names(DESeq2.DEG.table)</span>
+  <span class="co"># sum(egeR.DEG)</span>
+  
+
+  
+  ## Awful: almost all genes are declared positive. 
+  ## The p-value histogram shows indeed that 90% of the genes are under H1 (method from Storey-Tibshirani, 2003). 
+  <span class="kw">PvalueHistogram</span>(<span class="dt">Pvalues =</span> edgeR.DEG.table<span class="op">$</span>pvalue, <span class="dt">main =</span> <span class="st">&quot;edgeR - Distribution of P-values&quot;</span>, <span class="dt">alpha =</span> parameters<span class="op">$</span>alpha)
+  
+}</code></pre></div>
+<div class="figure" style="text-align: center">
+<img src="figures/TCGA_BIC_differential_analysis_edgeR-1.png" alt="**Histogram of edgeR nominal P-values.**" width="80%" />
+<p class="caption">
+<strong>Histogram of edgeR nominal P-values.</strong>
+</p>
+</div>
+<pre><code>$N
+[1] 56735
+
+$m0
+[1] 38560
+
+$m1
+[1] 18175
+
+$pi0
+[1] 0.679651
+
+$pi1
+[1] 0.320349
+
+$alpha
+[1] 0.01
+
+$positives
+[1] 9552</code></pre>
+<hr />
+</div>
+<div id="exported-tables" class="section level2">
+<h2>Exported tables</h2>
+<p>The selected counts per gene and pheno table were exported in tab-separated value (TSV) format.</p>
+<div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r">## Prepare a list with all the exported files. 
+exported &lt;-<span class="st"> </span><span class="kw">list</span>()
+
+pheno.export.columns &lt;-<span class="st"> </span><span class="kw">names</span>(pheno)
+<span class="cf">for</span> (col <span class="cf">in</span> pheno.export.columns) {
+  ## Discard columns containing only NA values
+  nona &lt;-<span class="st"> </span><span class="kw">sum</span>(<span class="op">!</span><span class="kw">is.na</span>(pheno[, col]))
+  <span class="cf">if</span> (nona <span class="op">==</span><span class="st"> </span><span class="dv">0</span>) {
+    <span class="co"># message(&quot;\tDiscarding NA-only pheno column\t&quot;, col, &quot;\tnoNA = &quot;, nona)</span>
+    pheno.export.columns &lt;-<span class="st"> </span><span class="kw">setdiff</span>(pheno.export.columns, col)
+  }
+  
+  <span class="co"># Discard columns containing muli-value lists</span>
+  <span class="cf">if</span> (<span class="kw">class</span>(pheno[, col]) <span class="op">==</span><span class="st"> &quot;list&quot;</span>) {
+    <span class="kw">message</span>(<span class="st">&quot;</span><span class="ch">\t</span><span class="st">Discarding list-type pheno column</span><span class="ch">\t</span><span class="st">&quot;</span>, col)
+    pheno.export.columns &lt;-<span class="st"> </span><span class="kw">setdiff</span>(pheno.export.columns, col)
+    
+  }
+}
+
+## Export the non-problematic columns of the pheno table
+<span class="kw">message</span>(<span class="st">&quot;Exporting &quot;</span>, <span class="kw">length</span>(pheno.export.columns), <span class="st">&quot; pheno columns among &quot;</span>, <span class="kw">ncol</span>(pheno))
+pheno.file &lt;-<span class="st"> </span><span class="kw">paste</span>(<span class="dt">sep =</span> <span class="st">&quot;&quot;</span>, parameters<span class="op">$</span>study, <span class="st">&quot;_pheno.tsv&quot;</span>)
+exported<span class="op">$</span>pheno &lt;-<span class="st"> </span><span class="kw">ExportTable</span>(
+  <span class="dt">x =</span> <span class="kw">as.data.frame</span>(pheno[, pheno.export.columns]),
+  <span class="dt">filename =</span> pheno.file, 
+  <span class="dt">outdir =</span> export.dir, <span class="dt">gzip =</span> parameters<span class="op">$</span>gzip.output.files)
+
+
+
+## Export a small subset of relevant fields from the pheno table
+pheno.selected.columns &lt;-<span class="st"> </span><span class="kw">c</span>(
+  <span class="st">&quot;sample.class&quot;</span>,
+  pheno.columns
+)
+sample.class.file &lt;-<span class="st"> </span><span class="kw">paste</span>(<span class="dt">sep =</span> <span class="st">&quot;&quot;</span>, parameters<span class="op">$</span>study, <span class="st">&quot;_sample-classes.tsv&quot;</span>)
+sample.class.path &lt;-<span class="st"> </span><span class="kw">file.path</span>(export.dir, sample.class.file)
+
+exported<span class="op">$</span>sample.classes &lt;-<span class="st"> </span><span class="kw">ExportTable</span>(
+  <span class="dt">x =</span> <span class="kw">as.data.frame</span>(pheno[, pheno.selected.columns]),
+  <span class="dt">filename =</span> sample.class.file, 
+  <span class="dt">outdir =</span> export.dir, <span class="dt">gzip =</span> parameters<span class="op">$</span>gzip.output.files)
+
+
+## Export counts per gene
+count.file &lt;-<span class="st"> </span><span class="kw">paste</span>(<span class="dt">sep =</span> <span class="st">&quot;&quot;</span>, parameters<span class="op">$</span>study, <span class="st">&quot;_counts_all-genes.tsv&quot;</span>)
+exported<span class="op">$</span>counts &lt;-<span class="st"> </span><span class="kw">ExportTable</span>(
+  <span class="dt">x =</span> counts,
+  <span class="dt">filename =</span> count.file, 
+  <span class="dt">outdir =</span> export.dir, <span class="dt">gzip =</span> parameters<span class="op">$</span>gzip.output.files)
+
+## Export filtered counts
+filtered.count.file &lt;-<span class="st"> </span><span class="kw">paste</span>(<span class="dt">sep =</span> <span class="st">&quot;&quot;</span>, parameters<span class="op">$</span>study, <span class="st">&quot;_counts_filtered-genes.tsv&quot;</span>)
+
+exported<span class="op">$</span>counts &lt;-<span class="st"> </span><span class="kw">ExportTable</span>(
+  <span class="dt">x =</span> filtered.counts,
+  <span class="dt">filename =</span> filtered.count.file, 
+  <span class="dt">outdir =</span> export.dir,
+  <span class="dt">gzip =</span> parameters<span class="op">$</span>gzip.output.files)
+
+<span class="co"># list.files(export.dir)</span>
+
+## Export normalized counts
+norm.count.file &lt;-<span class="st"> </span><span class="kw">paste</span>(<span class="dt">sep =</span> <span class="st">&quot;&quot;</span>, parameters<span class="op">$</span>study, <span class="st">&quot;_log2-norm-counts_all-genes.tsv&quot;</span>)
+
+exported<span class="op">$</span>counts &lt;-<span class="st"> </span><span class="kw">ExportTable</span>(
+  <span class="dt">x =</span> counts.log2.norm,
+  <span class="dt">filename =</span> norm.count.file, 
+  <span class="dt">outdir =</span> export.dir, 
+  <span class="dt">gzip =</span> parameters<span class="op">$</span>gzip.output.files)
+
+## Export normalized counts
+filtered.norm.count.file &lt;-<span class="st"> </span><span class="kw">paste</span>(<span class="dt">sep =</span> <span class="st">&quot;&quot;</span>, parameters<span class="op">$</span>study, <span class="st">&quot;_log2-norm-counts_filtered-genes.tsv&quot;</span>)
+
+exported<span class="op">$</span>filtered.counts &lt;-<span class="st"> </span><span class="kw">ExportTable</span>(
+  <span class="dt">x =</span> counts.log2.norm, 
+  <span class="dt">filename =</span> filtered.norm.count.file,
+  <span class="dt">outdir =</span> export.dir, 
+  <span class="dt">gzip =</span> parameters<span class="op">$</span>gzip.output.files)
+
+
+## Export differential analysis results + normalized counts for DEG only
+<span class="cf">if</span> (parameters<span class="op">$</span>run.DESeq2) {
+  
+  ## Export DEG table returned by DESeq2
+  DESeq2.DEG.table.file &lt;-<span class="st"> </span><span class="kw">paste</span>(<span class="dt">sep =</span> <span class="st">&quot;&quot;</span>, parameters<span class="op">$</span>study, <span class="st">&quot;_DESeq2_DEG_table.tsv&quot;</span>)
+  exported<span class="op">$</span>counts &lt;-<span class="st"> </span><span class="kw">ExportTable</span>(
+    <span class="dt">x =</span> DESeq2.DEG.table, 
+    <span class="dt">filename =</span> DESeq2.DEG.table.file,
+    <span class="dt">outdir =</span> export.dir, 
+    <span class="dt">gzip =</span> parameters<span class="op">$</span>gzip.output.files)
+
+  
+  ## Normalized counts for DEG reported by DESeq2
+  DESeq2.DEG.norm.count.file &lt;-<span class="st"> </span><span class="kw">paste</span>(<span class="dt">sep =</span> <span class="st">&quot;&quot;</span>, parameters<span class="op">$</span>study, <span class="st">&quot;_log2-norm-counts_DESeq2_DEG_&quot;</span>, parameters<span class="op">$</span>p.adjust.method, <span class="st">&quot;_&quot;</span>, parameters<span class="op">$</span>alpha, <span class="st">&quot;.tsv&quot;</span>)
+  exported<span class="op">$</span>counts &lt;-<span class="st"> </span><span class="kw">ExportTable</span>(
+    <span class="dt">x =</span> counts.log2.norm[DESeq2.DEG, ], 
+    <span class="dt">filename =</span> DESeq2.DEG.norm.count.file,
+    <span class="dt">outdir =</span> export.dir, 
+    <span class="dt">gzip =</span> parameters<span class="op">$</span>gzip.output.files)
+
+  ## Normalized counts for a user-specified number of 
+  ## top significant DEG reported by DESeq2
+  DESeq2.top.DEG.norm.count.file &lt;-<span class="st"> </span><span class="kw">paste</span>(<span class="dt">sep =</span> <span class="st">&quot;&quot;</span>, parameters<span class="op">$</span>study, <span class="st">&quot;_log2-norm-counts_DESeq2_DEG_top_&quot;</span>, parameters<span class="op">$</span>top.genes, <span class="st">&quot;.tsv&quot;</span>)
+  
+  exported<span class="op">$</span>counts &lt;-<span class="st"> </span><span class="kw">ExportTable</span>(
+    <span class="dt">x =</span> counts.log2.norm[DESeq2.DEG.table<span class="op">$</span>rank <span class="op">&lt;=</span><span class="st"> </span>parameters<span class="op">$</span>top.genes, ], 
+    <span class="dt">filename =</span> DESeq2.top.DEG.norm.count.file,
+    <span class="dt">outdir =</span> export.dir, 
+    <span class="dt">gzip =</span> parameters<span class="op">$</span>gzip.output.files,
+    <span class="dt">row.names =</span> <span class="ot">TRUE</span>, <span class="dt">col.names =</span> <span class="ot">NA</span>)
+  
+}
+
+
+<span class="cf">if</span> (parameters<span class="op">$</span>run.edgeR) {
+  ## Export DEG table returned by edgeR
+  edgeR.DEG.table.file &lt;-<span class="st"> </span><span class="kw">paste</span>(<span class="dt">sep =</span> <span class="st">&quot;&quot;</span>, parameters<span class="op">$</span>study, <span class="st">&quot;_edgeR_DEG_table.tsv&quot;</span>)
+  
+  exported<span class="op">$</span>counts &lt;-<span class="st"> </span><span class="kw">ExportTable</span>(
+    <span class="dt">x =</span> edgeR.DEG.table, 
+    <span class="dt">filename =</span> edgeR.DEG.table.file,
+    <span class="dt">outdir =</span> export.dir, 
+    <span class="dt">gzip =</span> parameters<span class="op">$</span>gzip.output.files,
+    <span class="dt">row.names =</span> <span class="ot">TRUE</span>, <span class="dt">col.names =</span> <span class="ot">NA</span>)
+
+  ## Normalized counts for DEG reported by edgeR
+  edgeR.DEG.norm.count.file &lt;-<span class="st"> </span><span class="kw">paste</span>(<span class="dt">sep =</span> <span class="st">&quot;&quot;</span>, parameters<span class="op">$</span>study, <span class="st">&quot;_log2-norm-counts_edgeR_DEG_&quot;</span>, parameters<span class="op">$</span>p.adjust.method, <span class="st">&quot;_&quot;</span>, parameters<span class="op">$</span>alpha, <span class="st">&quot;.tsv&quot;</span>)
+  
+  exported<span class="op">$</span>counts &lt;-<span class="st"> </span><span class="kw">ExportTable</span>(
+    <span class="dt">x =</span> counts.log2.norm[edgeR.DEG, ], 
+    <span class="dt">filename =</span> edgeR.DEG.norm.count.file,
+    <span class="dt">outdir =</span> export.dir, 
+    <span class="dt">gzip =</span> parameters<span class="op">$</span>gzip.output.files,
+    <span class="dt">row.names =</span> <span class="ot">TRUE</span>, <span class="dt">col.names =</span> <span class="ot">NA</span>)
+  
+  ## Normalized counts for a user-specified number of 
+  ## top significant DEG reported by edgeR
+  edgeR.top.DEG.norm.count.file &lt;-<span class="st"> </span><span class="kw">paste</span>(<span class="dt">sep =</span> <span class="st">&quot;&quot;</span>, parameters<span class="op">$</span>study, <span class="st">&quot;_log2-norm-counts_edgeR_DEG_top_&quot;</span>, parameters<span class="op">$</span>top.genes, <span class="st">&quot;.tsv&quot;</span>)
+  
+  exported<span class="op">$</span>counts &lt;-<span class="st"> </span><span class="kw">ExportTable</span>(
+    <span class="dt">x =</span> counts.log2.norm[edgeR.DEG.table<span class="op">$</span>rank <span class="op">&lt;=</span><span class="st"> </span>parameters<span class="op">$</span>top.genes, ], 
+    <span class="dt">filename =</span> edgeR.top.DEG.norm.count.file,
+    <span class="dt">outdir =</span> export.dir, 
+    <span class="dt">gzip =</span> parameters<span class="op">$</span>gzip.output.files,
+    <span class="dt">row.names =</span> <span class="ot">TRUE</span>, <span class="dt">col.names =</span> <span class="ot">NA</span>)
+  
+}</code></pre></div>
+<table>
+<colgroup>
+<col width="56%" />
+<col width="43%" />
+</colgroup>
+<thead>
+<tr class="header">
+<th>Contants</th>
+<th>File name</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td>Export directory</td>
+<td><a href="~/TCGA_import//data/AML" class="uri">~/TCGA_import//data/AML</a></td>
+</tr>
+<tr class="even">
+<td>Pheno table</td>
+<td><a href="~/TCGA_import//data/AML" class="uri">~/TCGA_import//data/AML</a></td>
+</tr>
+<tr class="odd">
+<td>Counts per gene (all genes)</td>
+<td><a href="AML_counts_all-genes.tsv" class="uri">AML_counts_all-genes.tsv</a></td>
+</tr>
+<tr class="even">
+<td>Counts per gene (filtered genes)</td>
+<td><a href="AML_counts_filtered-genes.tsv" class="uri">AML_counts_filtered-genes.tsv</a></td>
+</tr>
+<tr class="odd">
+<td>Normalized counts per gene (all genes)</td>
+<td><a href="AML_log2-norm-counts_all-genes.tsv" class="uri">AML_log2-norm-counts_all-genes.tsv</a></td>
+</tr>
+<tr class="even">
+<td>Normalized counts per gene (filtered genes)</td>
+<td><a href="AML_log2-norm-counts_filtered-genes.tsv" class="uri">AML_log2-norm-counts_filtered-genes.tsv</a></td>
+</tr>
+<tr class="odd">
+<td>Normalized counts per gene (edgeR DEG only)</td>
+<td><a href="AML_log2-norm-counts_edgeR_DEG_fdr_0.01.tsv" class="uri">AML_log2-norm-counts_edgeR_DEG_fdr_0.01.tsv</a></td>
+</tr>
+<tr class="even">
+<td>edgeR DEG table</td>
+<td><a href="AML_edgeR_DEG_table.tsv" class="uri">AML_edgeR_DEG_table.tsv</a></td>
+</tr>
+</tbody>
+</table>
+<hr />
+<p>Contact: <a href="mailto:Jacques.van-Helden@univ-amu.fr">Jacques.van-Helden@univ-amu.fr</a></p>
+</div>
+
+
+
+</div>
+</div>
+
+</div>
+
+<script>
+
+// add bootstrap table styles to pandoc tables
+function bootstrapStylePandocTables() {
+  $('tr.header').parent('thead').parent('table').addClass('table table-condensed');
+}
+$(document).ready(function () {
+  bootstrapStylePandocTables();
+});
+
+
+</script>
+
+<!-- dynamically load mathjax for compatibility with self-contained -->
+<script>
+  (function () {
+    var script = document.createElement("script");
+    script.type = "text/javascript";
+    script.src  = "https://mathjax.rstudio.com/latest/MathJax.js?config=TeX-AMS-MML_HTMLorMML";
+    document.getElementsByTagName("head")[0].appendChild(script);
+  })();
+</script>
+
+</body>
+</html>

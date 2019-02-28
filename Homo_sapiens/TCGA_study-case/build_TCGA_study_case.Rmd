@@ -889,7 +889,6 @@ if (parameters$run.DESeq2) {
     filename = DESeq2.DEG.norm.count.file,
     outdir = export.dir, 
     gzip = parameters$gzip.output.files)
-}
 
   ## Normalized counts for a user-specified number of 
   ## top significant DEG reported by DESeq2
@@ -902,6 +901,8 @@ if (parameters$run.DESeq2) {
     gzip = parameters$gzip.output.files,
     row.names = TRUE, col.names = NA)
   
+}
+
 
 if (parameters$run.edgeR) {
   ## Export DEG table returned by edgeR
