@@ -74,7 +74,6 @@ source("R/pvalue_histogram.R")
 source("R/export_table.R")
 
 library(knitr)
-library(kableExtra)
 library(data.table)
 
 ## Install the library if needed then load it
@@ -310,9 +309,9 @@ pheno <- colData(rse.valid.samples)
 
 ## Extract the count table from the rse-gene object
 message("Extracting counts per gene")
-counts.per.gene <- assay(rse.valid.samples)
-# summary(counts.per.gene[, 1:10])
-# dim(counts.per.gene)
+counts <- assay(rse.valid.samples)
+# summary(counts[, 1:10])
+# dim(counts)
 
 
 # dim(phenoTable)
@@ -330,9 +329,9 @@ counts.per.gene <- assay(rse.valid.samples)
 #   ## Load the TCGA count table.
 #   ## We use gzfile to directly load the zgipped file, 
 #   ## and data.table:::fread() to accelerate the reading. 
-#   ## system.time(counts.per.gene <- read.delim(file = gzfile(localFiles["counts-gene"]))) ## This takes 430 seconds
+#   ## system.time(counts <- read.delim(file = gzfile(localFiles["counts-gene"]))) ## This takes 430 seconds
 #   message("Loading counts per gene")
-#   system.time(counts.per.gene <- fread(file = localFiles["counts-gene"]))
+#   system.time(counts <- fread(file = localFiles["counts-gene"]))
 #   # This takes 29 seconds
 # 
 #   ## Load the TCGA pheno table
@@ -340,17 +339,17 @@ counts.per.gene <- assay(rse.valid.samples)
 #   pheno <- read.delim(file = localFiles["phenotype"])
 #   # dim(pheno)
 #   
-#   # dim(counts.per.gene) 
+#   # dim(counts) 
 # }
 
   
 message("Selected dataset (project and valid markers)")
-message("\tRead count table contains ", nrow(counts.per.gene), " rows (genes) x ", ncol(counts.per.gene), " columns (samples). ")
+message("\tRead count table contains ", nrow(counts), " rows (genes) x ", ncol(counts), " columns (samples). ")
 message("\tPheno table contains ", nrow(pheno), " rows (samples) x ", ncol(pheno), " columns (sample attributes). ")
   
 ```
 
-The full TCGA gene count table contains `r ncol(counts.per.gene)` samples (columns) and `r nrow(counts.per.gene)` genes (rows).
+The full TCGA gene count table contains `r ncol(counts)` samples (columns) and `r nrow(counts)` genes (rows).
 
 ```{r samples_per_project}
 kable(sort(table(phenoTable$gdc_cases.project.name), decreasing = TRUE),
@@ -428,23 +427,25 @@ kable(sort(decreasing = TRUE, table(pheno[, "cancer.type"])), useNA = "ifany", c
 
 ## Get the identifiers of the selected samples
 selected.sample.ids <- rownames(pheno)
-# summary(selected.sample.ids %in% colnames(counts.per.gene))
-# summary(colnames(counts.per.gene) %in% selected.sample.ids)
+# summary(selected.sample.ids %in% colnames(counts))
+# summary(colnames(counts) %in% selected.sample.ids)
 
 ## Get the subset of the big count table corresponding to our selected IDs
 ## Note the special notation due to the specific class of the fread() result.
 # if (!loadRdata) {
-#   selected.counts <- as.data.frame(counts.per.gene[, ..selected.sample.ids])
+#   selected.counts <- as.data.frame(counts[, ..selected.sample.ids])
 # }
 # dim(selected.counts)
 # summary(selected.counts[, 1:10])
-# summary(counts.per.gene[, 1:10])
+# summary(counts[, 1:10])
 ```
 
 
 ****************************************************************
 
 ## Gene filtering
+
+
 
 ### Percent zero counts
 
@@ -453,7 +454,7 @@ selected.sample.ids <- rownames(pheno)
 
 ## Discard genes having zeros in at least 95% of samples
 message("Applying threshold on the percent of non-zero counts per gene: ", parameters$gene.filter.percent.zeros, "%")
-percent.zeros <- 100*apply(counts.per.gene == 0, 1, sum) / ncol(counts.per.gene)
+percent.zeros <- 100*apply(counts == 0, 1, sum) / ncol(counts)
 hist(percent.zeros, breaks = 20, col = "#DDDDDD", 
      main = "Filter on the percentage of zero counts", 
      xlab = "Percent of samples", ylab = "Number of genes", las = 1)
@@ -471,22 +472,37 @@ text(x = parameters$gene.filter.percent.zeros,
 
 ### Min counts per gene
 
+We apply a filter on the mininmum count per gene in the following way.
+
+- For each gene, we compute its maximal count value across all samples (max count per gene)
+- On this value, we apply a lower threshold: it the maximal count per gene (across all samples) is lower than a user-specified threshold, this gene is discarded. 
+
 ```{r gene_filtering_min_count, out.width = "80%", fig.width=7, fig.height=4.5, fig.cap="Distribution of min counts per gene. Genes below the thresold (red arrow) are filtered out. "}
 
-min.count <- apply(counts.per.gene, 1, min)
-summary(min.count)
-hist(log2(min.count + parameters$epsilon), breaks = 100, col = "#BBBBFF",
-     xlab = "log2(min count per gene)",
-     ylab = "Number of genes", las = 1,
-     main = "Filtering on min count per gene")
+max.per.gene <-  apply(counts, 1, max)
+summary(max.per.gene)
+
+
+# View(summary(min.count))
+h <- hist(log2(max.per.gene + parameters$epsilon), breaks = 100, col = "#BBBBFF",
+          xlab = "log2(max count per gene)",
+          ylab = "Number of genes", las = 1,
+          main = "Filtering on min count per gene")
+h.max <- max(h$counts)
 arrows(x0 = log2(parameters$gene.filter.min.count), 
-       y0 = 3000, 
+       y0 = h.max * 0.5, 
        x1 = log2(parameters$gene.filter.min.count), 
-       y1 = 1000, 
+       y1 = h.max * 0.3, 
        col = "red", lwd = 2,
        angle = 30, length = 0.1)
+arrows(x0 = log2(parameters$epsilon), 
+       y0 = h.max * 0.5, 
+       x1 = log2(parameters$gene.filter.min.count), 
+       y1 = h.max * 0.5, 
+       col = "red", lwd = 4, code = 0,
+       angle = 30, length = 0.1)
 text(x = log2(parameters$gene.filter.min.count), 
-     y = 3000, 
+     y = h.max * 0.5, 
      labels = paste(sep = "", "log2(", 
                     parameters$gene.filter.min.count,
                     ") = ", signif(digits = 3, log2(parameters$gene.filter.min.count))),
@@ -496,14 +512,28 @@ text(x = log2(parameters$gene.filter.min.count),
 
 
 ```{r gene_filtering}
-discarded.genes <- 
-  percent.zeros > parameters$gene.filter.percent.zeros |
-  min.count < parameters$gene.filter.min.count
-# table(kept.genes)
+discarded.genes <- data.frame(
+  too.many.zeros = percent.zeros > parameters$gene.filter.percent.zeros,
+  too.small.counts = max.per.gene < parameters$gene.filter.min.count
+)
 
-## Genes passing the filters
-filtered.genes <- !discarded.genes
-filtered.counts <- counts.per.gene[filtered.genes, ]
+
+## Draw a venn diagram indicating the number of genes 
+## discarded by the different criteria. 
+venn.counts <- vennCounts(discarded.genes)
+vennDiagram(venn.counts, cex = 0.8,
+            main = "Genes discarded by different criteria")
+
+
+## Genes passing the filters are those for which 
+## all the discarding criteria are FALSE, 
+## i.e. the sum of the row is 0
+filtered.genes <- apply(discarded.genes, 1, sum) == 0
+
+## Select a matrix with the filtered genes, 
+## i.e. those not discarded by any criterion
+filtered.counts <- counts[filtered.genes, ]
+
 
 ```
 
@@ -558,7 +588,7 @@ log2.count.breaks <- seq(
 
 par(mfrow = c(2, 1))
 
-hist(unlist(log2(unlist(counts.per.gene + parameters$epsilon))), main = "Log2(raw counts)",
+hist(unlist(log2(unlist(counts + parameters$epsilon))), main = "Log2(raw counts)",
      xlab = "log2(raw counts + epsilon)",
      ylab = "Number of measures",
      breaks = log2.count.breaks, 
@@ -688,7 +718,7 @@ if (parameters$run.edgeR) {
   
   ## Build a "model matrix" from the class labels
   ## This matrix contains one row per sample and one column per class
-  designMat <- model.matrix(~ pheno$cancer.type)
+  designMat <- model.matrix(~ as.vector(pheno$cancer.type))
   # View(designMat)
   
   ## Build an edgeR::DGEList object which is required to run edgeR DE analysis
@@ -793,7 +823,7 @@ exported$sample.classes <- ExportTable(
 ## Export counts per gene
 count.file <- paste(sep = "", project.acronym, "_counts_all-genes.tsv")
 exported$counts <- ExportTable(
-  x = counts.per.gene,
+  x = counts,
   filename = count.file, 
   outdir = export.dir, gzip = parameters$gzip.output.files)
 
@@ -937,7 +967,6 @@ if (parameters$run.edgeR) {
 | Normalized counts per gene (filtered genes) | [`r filtered.norm.count.file`](`r filtered.norm.count.file`) |
 | Normalized counts per gene (edgeR DEG only) | [`r edgeR.DEG.norm.count.file`](`r edgeR.DEG.norm.count.file`) |
 | edgeR DEG table | [`r edgeR.DEG.table.file`](`r edgeR.DEG.table.file`) |
-<!--| DESeq2 DEG table | [`r DESeq2.DEG.table.file`](`r DESeq2.DEG.table.file`) |-->
 
 
 ****************************************************************
