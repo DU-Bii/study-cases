@@ -75,6 +75,7 @@ source("R/export_table.R")
 
 library(knitr)
 library(data.table)
+library(VennDiagram)
 
 ## Install the library if needed then load it
 required.bioconductor <- c("DESeq2", "edgeR")
@@ -95,7 +96,6 @@ if (!require("recount")) {
   BiocManager::install("recount")
   require(recount)
 }
-
 
 ```
 
