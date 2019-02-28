@@ -12,6 +12,8 @@ ExportTable <- function(x,
                         filename,
                         outdir = ".",
                         gzip = FALSE,
+                        row.names = TRUE,
+                        col.names = NA, # write column names with empty slot above row names
                         ...) {
   
   ## Fix some row names
@@ -39,6 +41,7 @@ ExportTable <- function(x,
   write.table(x, 
               file = filehandle, 
               sep = "\t", quote = FALSE, 
+              col.names = col.names, row.names = row.names,
               ...)
   result <- list(
     filename = filename,
