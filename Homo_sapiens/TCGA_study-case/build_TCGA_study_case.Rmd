@@ -158,7 +158,7 @@ if (parameters$study == "BIC") {
 } else if  (parameters$study == "AML") {
   pheno.columns <- c(
     risk.category = "xml_acute_myeloid_leukemia_calgb_cytogenetics_risk_category")
-  valid.pheno.values <- as.vector(unique(na.omit(phenoTable[, pheno.columns[1]])))
+  valid.pheno.values <- c("Poor", "Favorable", "Intermediate/Normal")
 
 } else {
   stop("Invalid project acronym: ", parameters$study)
