@@ -11,7 +11,7 @@
 
 <meta name="author" content="Jacques van Helden" />
 
-<meta name="date" content="2019-02-28" />
+<meta name="date" content="2019-03-02" />
 
 <title>DU-Bii Study cases - TCGA Acute Myeloid Leukemia study</title>
 
@@ -361,7 +361,7 @@ div.tocify {
 <h1 class="title toc-ignore">DU-Bii Study cases - TCGA Acute Myeloid Leukemia study</h1>
 <h3 class="subtitle"><em>DUBii 2019</em></h3>
 <h4 class="author"><em>Jacques van Helden</em></h4>
-<h4 class="date"><em>2019-02-28</em></h4>
+<h4 class="date"><em>2019-03-02</em></h4>
 
 </div>
 
@@ -484,12 +484,12 @@ parameters &lt;-<span class="st"> </span><span class="kw">list</span>(
 </table>
 <div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r"><span class="kw">message</span>(<span class="st">&quot;Valid values for hte selected pheno columns:</span><span class="ch">\n\t</span><span class="st">&quot;</span>, 
         <span class="kw">paste</span>(<span class="dt">collapse =</span> <span class="st">&quot;</span><span class="ch">\n\t</span><span class="st">&quot;</span>, valid.pheno.values))
-<span class="kw">kable</span>(valid.pheno.values, <span class="dt">col.names =</span> <span class="st">&quot;Value&quot;</span>, <span class="dt">caption =</span> <span class="st">&quot;Valid values for the pheno column(s)&quot;</span>)</code></pre></div>
+<span class="kw">kable</span>(valid.pheno.values, <span class="dt">col.names =</span> <span class="st">&quot;Accepted values&quot;</span>, <span class="dt">caption =</span> <span class="st">&quot;Valid values for the pheno column(s)&quot;</span>)</code></pre></div>
 <table>
 <caption>Valid values for the pheno column(s)</caption>
 <thead>
 <tr class="header">
-<th align="left">Value</th>
+<th align="left">Accepted values</th>
 </tr>
 </thead>
 <tbody>
@@ -505,14 +505,40 @@ parameters &lt;-<span class="st"> </span><span class="kw">list</span>(
 </tbody>
 </table>
 </div>
+<div id="how-to-reproduce-this-analysis" class="section level2">
+<h2>How to reproduce this analysis?</h2>
+<p>This report was generated with an R markdown file that enables to reproduce all the steps and the final results of the analyses, by executing the following steps.</p>
+<div id="requirements" class="section level3">
+<h3>Requirements</h3>
+<ul>
+<li>RStudio</li>
+</ul>
+</div>
+<div id="procedure-to-reproduce-the-results" class="section level3">
+<h3>Procedure to reproduce the results</h3>
+<ol style="list-style-type: decimal">
+<li>Get a clone of the git repopsitory by running the following command.</li>
+</ol>
+<p><code>git clone git@github.com:DU-Bii/study-cases.git</code></p>
+<ol start="2" style="list-style-type: decimal">
+<li><p>In the downloaded clone, locate the folder containing this R mardkown file <code>study-cases/Homo_sapiens/TCGA_study-case/</code></p></li>
+<li><p>With RStudio, open the Rproj (Rstudio project) file <code>TCGA_study-case.Rproj</code>. The simplest way to do this is to double-click on this Rproj file, which will open RStudio with the appropriate options (in particular, the working directory).s</p></li>
+<li><p>Within RStudio, open the R markdown file <code>build_TCGA_study_case.Rmd</code>, and run Knit.</p></li>
+</ol>
+</div>
+</div>
 <div id="introduction" class="section level2">
 <h2>Introduction</h2>
+<p>TO BE WRITTEN</p>
 </div>
 <div id="data-source" class="section level2">
 <h2>Data source</h2>
-<p><strong>Recount2</strong> (<a href="https://jhubiostatistics.shinyapps.io/recount/" class="uri">https://jhubiostatistics.shinyapps.io/recount/</a>) is a database rasembling several thousands of human RNA-seq studies, that were all processed with a same workflow in order to ensure the consistency of the transcriptome measurements. Recount2 provides direct access to tables of raw counts per gene, exon or transcript.</p>
+<ul>
+<li><p><strong>TCGA</strong> TO BE WRITTEN</p></li>
+<li><p><strong>Recount2</strong> (<a href="https://jhubiostatistics.shinyapps.io/recount/" class="uri">https://jhubiostatistics.shinyapps.io/recount/</a>) is a database rasembling several thousands of human RNA-seq studies, that were all processed with a same workflow in order to ensure the consistency of the transcriptome measurements. Recount2 provides direct access to tables of raw counts per gene, exon or transcript.</p></li>
+</ul>
 </div>
-<div id="requirements" class="section level2">
+<div id="requirements-1" class="section level2">
 <h2>Requirements</h2>
 <ul>
 <li>Recount library: <a href="https://bioconductor.org/packages/release/bioc/html/recount.html" class="uri">https://bioconductor.org/packages/release/bioc/html/recount.html</a></li>
@@ -532,7 +558,7 @@ parameters &lt;-<span class="st"> </span><span class="kw">list</span>(
 <div id="working-directory" class="section level2">
 <h2>Working directory</h2>
 <div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r">## Set the working directory
-workdir &lt;-<span class="st"> &quot;~/TCGA_import/&quot;</span>
+workdir &lt;-<span class="st"> &quot;~/TCGA_study-cases/&quot;</span>
 <span class="kw">dir.create</span>(workdir, <span class="dt">recursive =</span> <span class="ot">TRUE</span>, <span class="dt">showWarnings =</span> <span class="ot">FALSE</span>)
 <span class="kw">setwd</span>(workdir)
 
@@ -597,7 +623,7 @@ localFiles &lt;-<span class="st"> </span><span class="kw">c</span>()
 <span class="kw">message</span>(<span class="st">&quot;Loading TCGA counts&quot;</span>)
 <span class="kw">system.time</span>(<span class="kw">load</span>(localFiles[<span class="st">&quot;rse-gene&quot;</span>]))</code></pre></div>
 <pre><code>   user  system elapsed 
- 28.887   1.848  30.764 </code></pre>
+ 29.081   2.018  31.407 </code></pre>
 <div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r">## Extract the pheno table from the rse-gene object
 phenoTable &lt;-<span class="st"> </span><span class="kw">colData</span>(rse_gene) ## phenotype per run</code></pre></div>
 <div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r">## Exctract subset of the TCGA data that corresponds to the selected study
@@ -1022,7 +1048,7 @@ counts.log2.norm &lt;-<span class="st"> </span><span class="kw">log2</span>(coun
 <span class="kw">message</span>(<span class="st">&quot;</span><span class="ch">\t</span><span class="st">DESeq2::vst()</span><span class="ch">\t</span><span class="st">Quickly estimate dispersion trend and apply variance-stabilizing transformation&quot;</span>)
 <span class="kw">system.time</span>(dds.vst &lt;-<span class="st"> </span><span class="kw">vst</span>(dds))</code></pre></div>
 <pre><code>   user  system elapsed 
-  3.550   0.531   4.096 </code></pre>
+  3.721   0.671   4.443 </code></pre>
 <div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r">## DO NOT compute regularized log transformation (takes ages)
 <span class="co"># message(&quot;\tDESeq2::rlog()\tComputing regularized log transformation&quot;)</span>
 <span class="co"># system.time(rld &lt;- rlog(dds)) ## Takes a long time with large number of samples</span></code></pre></div>
@@ -1400,11 +1426,11 @@ exported<span class="op">$</span>filtered.counts &lt;-<span class="st"> </span><
 <tbody>
 <tr class="odd">
 <td>Export directory</td>
-<td><a href="~/TCGA_import//data/AML" class="uri">~/TCGA_import//data/AML</a></td>
+<td><a href="~/TCGA_study-cases//data/AML" class="uri">~/TCGA_study-cases//data/AML</a></td>
 </tr>
 <tr class="even">
 <td>Pheno table</td>
-<td><a href="~/TCGA_import//data/AML" class="uri">~/TCGA_import//data/AML</a></td>
+<td><a href="~/TCGA_study-cases//data/AML" class="uri">~/TCGA_study-cases//data/AML</a></td>
 </tr>
 <tr class="odd">
 <td>Counts per gene (all genes)</td>
