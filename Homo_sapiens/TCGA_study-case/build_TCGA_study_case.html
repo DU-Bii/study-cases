@@ -623,7 +623,7 @@ localFiles &lt;-<span class="st"> </span><span class="kw">c</span>()
 <span class="kw">message</span>(<span class="st">&quot;Loading TCGA counts&quot;</span>)
 <span class="kw">system.time</span>(<span class="kw">load</span>(localFiles[<span class="st">&quot;rse-gene&quot;</span>]))</code></pre></div>
 <pre><code>   user  system elapsed 
- 29.734   2.019  32.118 </code></pre>
+ 28.651   1.978  30.821 </code></pre>
 <div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r">## Extract the pheno table from the rse-gene object
 phenoTable &lt;-<span class="st"> </span><span class="kw">colData</span>(rse_gene) ## phenotype per run</code></pre></div>
 <div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r">## Exctract subset of the TCGA data that corresponds to the selected study
@@ -857,10 +857,9 @@ counts &lt;-<span class="st"> </span><span class="kw">assay</span>(rse.valid.sam
  Poor               :30   </code></pre>
 <p>We discard the samples for which any of the pheno values is undefined (<code>NA</code>), or does not match the values defined as valid (Poor, Favorable, Intermediate/Normal). In total, this leaves us with 125 samples.</p>
 <p>We then assign a class label to each samplebased on the values in the selected pheno column(s).</p>
-<div class="figure">
-<img src="images/breast_cancer_typology.png" alt="Figure 1. Definition of breast cancer subtypes based on immunological markers HER2, ER (Estrogen Receptor), and PR (Progesterone Receptor)" />
-<p class="caption">Figure 1. <strong>Definition of breast cancer subtypes</strong> based on immunological markers HER2, ER (Estrogen Receptor), and PR (Progesterone Receptor)</p>
-</div>
+<div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r"><span class="cf">if</span> (parameters<span class="op">$</span>study <span class="op">==</span><span class="st"> &quot;BIC&quot;</span>) {
+  <span class="kw">include_graphics</span>(<span class="dt">path =</span> <span class="st">&quot;images/breast_cancer_typology.png&quot;</span>)
+}</code></pre></div>
 <div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r"><span class="cf">if</span> (parameters<span class="op">$</span>study <span class="op">==</span><span class="st"> &quot;BIC&quot;</span>) {
   
   ## Define sample classes based on the combination of 3 marker values
@@ -1048,7 +1047,7 @@ counts.log2.norm &lt;-<span class="st"> </span><span class="kw">log2</span>(coun
 <span class="kw">message</span>(<span class="st">&quot;</span><span class="ch">\t</span><span class="st">DESeq2::vst()</span><span class="ch">\t</span><span class="st">Quickly estimate dispersion trend and apply variance-stabilizing transformation&quot;</span>)
 <span class="kw">system.time</span>(dds.vst &lt;-<span class="st"> </span><span class="kw">vst</span>(dds))</code></pre></div>
 <pre><code>   user  system elapsed 
-  3.566   0.613   4.186 </code></pre>
+  3.484   0.545   4.037 </code></pre>
 <div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r">## DO NOT compute regularized log transformation (takes ages)
 <span class="co"># message(&quot;\tDESeq2::rlog()\tComputing regularized log transformation&quot;)</span>
 <span class="co"># system.time(rld &lt;- rlog(dds)) ## Takes a long time with large number of samples</span></code></pre></div>

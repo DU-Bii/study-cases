@@ -436,7 +436,16 @@ We discard the samples for which any of the pheno values is undefined (`NA`), or
 
 We then assign a class label to each samplebased on the values in the selected pheno column(s). 
 
-![Figure 1. **Definition of breast cancer subtypes** based on immunological markers HER2, ER (Estrogen Receptor), and PR (Progesterone Receptor)](images/breast_cancer_typology.png)
+
+```{r BIC_classes, out.width="80%", fig.cap="**Definition of breast cancer subtypes** based on immunological markers HER2, ER (Estrogen Receptor), and PR (Progesterone Receptor)"}
+
+if (parameters$study == "BIC") {
+  include_graphics(path = "images/breast_cancer_typology.png")
+}
+
+```
+
+
 
 ```{r class_labels}
 
