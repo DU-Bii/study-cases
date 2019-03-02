@@ -144,6 +144,23 @@ kable(t(data.frame(parameters)), col.names = "Parameter value")
 ```
 
 
+## Reproduction of the analysis
+
+This report was generated with an R markdown file that enables to reproduce all the steps and the final results of the analyses, by executing the following steps.
+
+1. Get a clone of the git repopsitory. 
+
+```{bash}
+git clone git@github.com:DU-Bii/study-cases.git
+```
+
+2. In the downloaded clone, locate the folder containing this R mardkown file  `study-cases/Homo_sapiens/TCGA_study-case/`
+
+3. With RStudio, open the Rproj (Rstudio project) file `TCGA_study-case.Rproj`. The simplest way to do this is to double-click on this Rproj file, which will open RStudio with the appropriate options (in particular, the working directory).s
+
+4. Within RStudio, open the R markdown file `import_TCGA_from_Recount.Rmd`, and run Knit.
+
+
 ## Introduction
 
 
