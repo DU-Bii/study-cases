@@ -96,12 +96,26 @@ options(scipen = 12) ## Max number of digits for non-scientific notation
 ```{r libraries, include=FALSE, echo=FALSE, eval=TRUE}
 message("Loading required libraries")
 
+
+dir.ori <- getwd()
+message("Starting directory\t", dir.ori)
+
 source("R/pvalue_histogram.R")
 source("R/export_table.R")
 
-library(knitr)
-library(data.table)
-library(VennDiagram)
+required.cran <- c("knitr", "data.table", "VennDiagram")
+for (pkg in required.cran) {
+  message("Loading bioconductor package\t", pkg)
+  if (!require(pkg, character.only = TRUE)) {
+    message("Installing CRAN package\t", pkg)
+    install.packages(pkg)
+    require(pkg, character.only = TRUE)
+  }
+}
+
+# library(knitr)
+# library(data.table)
+# library(VennDiagram)
 
 ## Install the library if needed then load it
 required.bioconductor <- c("DESeq2", "edgeR")
@@ -143,7 +157,7 @@ parameters <- list(
   top.genes = 1000, # export a separate file with top genes for the practical on clustering
   lambda = 0.5, # Lambda parameter for the estimation of H0/H1 proportions following Storey Tibshirani (2003)
   p.adjust.method = "fdr",
-  run.DESeq2 = FALSE, # I set this parameter because DESeq2 takes a huge time to run (although finally succeeds)
+  run.DESeq2 = TRUE, # I set this parameter because DESeq2 takes a huge time to run (although finally succeeds)
   run.edgeR = TRUE
 )
 
@@ -174,17 +188,42 @@ kable(pheno.columns, col.names = "Pheno column", caption = "Columns from the phe
 
 message("Valid values for hte selected pheno columns:\n\t", 
         paste(collapse = "\n\t", valid.pheno.values))
-kable(valid.pheno.values, col.names = "Value", caption = "Valid values for the pheno column(s)")
+kable(valid.pheno.values, col.names = "Accepted values", caption = "Valid values for the pheno column(s)")
 
 ```
 
+## How to reproduce this analysis?
+
+This report was generated with an R markdown file that enables to reproduce all the steps and the final results of the analyses, by executing the following steps.
+
+### Requirements
+
+- RStudio
+
+
+### Procedure to reproduce the results
+
+1. Get a clone of the git repopsitory by running the following command in the terminal. 
+
+`git clone git@github.com:DU-Bii/study-cases.git`
+
+2. In the downloaded clone, locate the folder containing this R mardkown file  `study-cases/Homo_sapiens/TCGA_study-case/`
+
+3. With RStudio, open the Rproj (Rstudio project) file `TCGA_study-case.Rproj`. The simplest way to do this is to double-click on this Rproj file, which will open RStudio with the appropriate options (in particular, the working directory).s
+
+4. Within RStudio, open the R markdown file `build_TCGA_study_case.Rmd`, and run Knit.
 
 ## Introduction
+
+TO BE WRITTEN
 
 
 ## Data source
 
-**Recount2** (https://jhubiostatistics.shinyapps.io/recount/) is a database rasembling several thousands of human RNA-seq studies, that were all processed with a same workflow in order to ensure the consistency of the transcriptome measurements. Recount2 provides direct access to tables of raw counts per gene, exon or transcript. 
+
+- **TCGA** TO BE WRITTEN
+
+- **Recount2** (https://jhubiostatistics.shinyapps.io/recount/) is a database rasembling several thousands of human RNA-seq studies, that were all processed with a same workflow in order to ensure the consistency of the transcriptome measurements. Recount2 provides direct access to tables of raw counts per gene, exon or transcript. 
 
 
 
@@ -213,7 +252,7 @@ if (!require(recount)) {
 
 ```{r workdir}
 ## Set the working directory
-workdir <- "~/TCGA_import/"
+workdir <- "~/TCGA_study-cases/"
 dir.create(workdir, recursive = TRUE, showWarnings = FALSE)
 setwd(workdir)
 
@@ -615,7 +654,7 @@ par(mfrow = c(1, 1))
 
 ## PCA of the samples
 
-```{r plot_pca, out.width="95%", fig.width=12, fig.height=6,  fig.cap="**PC plots. **"}
+```{r plot_pca, out.width="95%", fig.width=12, fig.height=12,  fig.cap="**PC plots. **"}
 
 ## Assign a color to each sample according to its class
 message("Assigning colors to samples according to their class")

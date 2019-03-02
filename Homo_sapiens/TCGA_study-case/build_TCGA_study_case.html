@@ -383,7 +383,7 @@ parameters &lt;-<span class="st"> </span><span class="kw">list</span>(
   <span class="dt">top.genes =</span> <span class="dv">1000</span>, <span class="co"># export a separate file with top genes for the practical on clustering</span>
   <span class="dt">lambda =</span> <span class="fl">0.5</span>, <span class="co"># Lambda parameter for the estimation of H0/H1 proportions following Storey Tibshirani (2003)</span>
   <span class="dt">p.adjust.method =</span> <span class="st">&quot;fdr&quot;</span>,
-  <span class="dt">run.DESeq2 =</span> <span class="ot">FALSE</span>, <span class="co"># I set this parameter because DESeq2 takes a huge time to run (although finally succeeds)</span>
+  <span class="dt">run.DESeq2 =</span> <span class="ot">TRUE</span>, <span class="co"># I set this parameter because DESeq2 takes a huge time to run (although finally succeeds)</span>
   <span class="dt">run.edgeR =</span> <span class="ot">TRUE</span>
 )
 
@@ -456,7 +456,7 @@ parameters &lt;-<span class="st"> </span><span class="kw">list</span>(
 </tr>
 <tr class="odd">
 <td>run.DESeq2</td>
-<td align="left">FALSE</td>
+<td align="left">TRUE</td>
 </tr>
 <tr class="even">
 <td>run.edgeR</td>
@@ -517,7 +517,7 @@ parameters &lt;-<span class="st"> </span><span class="kw">list</span>(
 <div id="procedure-to-reproduce-the-results" class="section level3">
 <h3>Procedure to reproduce the results</h3>
 <ol style="list-style-type: decimal">
-<li>Get a clone of the git repopsitory by running the following command.</li>
+<li>Get a clone of the git repopsitory by running the following command in the terminal.</li>
 </ol>
 <p><code>git clone git@github.com:DU-Bii/study-cases.git</code></p>
 <ol start="2" style="list-style-type: decimal">
@@ -623,7 +623,7 @@ localFiles &lt;-<span class="st"> </span><span class="kw">c</span>()
 <span class="kw">message</span>(<span class="st">&quot;Loading TCGA counts&quot;</span>)
 <span class="kw">system.time</span>(<span class="kw">load</span>(localFiles[<span class="st">&quot;rse-gene&quot;</span>]))</code></pre></div>
 <pre><code>   user  system elapsed 
- 29.081   2.018  31.407 </code></pre>
+ 29.734   2.019  32.118 </code></pre>
 <div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r">## Extract the pheno table from the rse-gene object
 phenoTable &lt;-<span class="st"> </span><span class="kw">colData</span>(rse_gene) ## phenotype per run</code></pre></div>
 <div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r">## Exctract subset of the TCGA data that corresponds to the selected study
@@ -1048,7 +1048,7 @@ counts.log2.norm &lt;-<span class="st"> </span><span class="kw">log2</span>(coun
 <span class="kw">message</span>(<span class="st">&quot;</span><span class="ch">\t</span><span class="st">DESeq2::vst()</span><span class="ch">\t</span><span class="st">Quickly estimate dispersion trend and apply variance-stabilizing transformation&quot;</span>)
 <span class="kw">system.time</span>(dds.vst &lt;-<span class="st"> </span><span class="kw">vst</span>(dds))</code></pre></div>
 <pre><code>   user  system elapsed 
-  3.721   0.671   4.443 </code></pre>
+  3.566   0.613   4.186 </code></pre>
 <div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r">## DO NOT compute regularized log transformation (takes ages)
 <span class="co"># message(&quot;\tDESeq2::rlog()\tComputing regularized log transformation&quot;)</span>
 <span class="co"># system.time(rld &lt;- rlog(dds)) ## Takes a long time with large number of samples</span></code></pre></div>
