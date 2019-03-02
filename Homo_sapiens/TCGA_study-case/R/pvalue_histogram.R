@@ -45,7 +45,7 @@ PvalueHistogram <- function(Pvalues,
     legend.text <- append(
       legend.text, 
       c(paste("alpha = ", signif(digits = 2, pval.stat$alpha)),
-        paste("positives = ", pval.stat$positives)))
+        paste("positives (non-adjusted!) = ", pval.stat$positives)))
   }  
   
   legend("topright", legend = legend.text)
