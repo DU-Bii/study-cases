@@ -336,6 +336,7 @@ phenoTable <- colData(rse_gene) ## phenotype per run
 ```
 
 
+
 ```{r extract_study_case}
 ## Exctract subset of the TCGA data that corresponds to the selected study
 message("Identifying valid samples for TCGA study ", parameters$project.name)
@@ -377,7 +378,6 @@ pheno <- colData(rse.valid.samples)
 # dim(pheno.valid.samples)
 
 
-
 ## Extract the count table from the rse-gene object
 message("Extracting counts per gene")
 counts <- assay(rse.valid.samples)
@@ -392,7 +392,7 @@ message("\tPheno table contains ", nrow(pheno), " rows (samples) x ", ncol(pheno
   
 ```
 
-The full TCGA gene count table contains `r ncol(counts)` samples (columns) and `r nrow(counts)` genes (rows).
+The gene count table for TCGA study `r parameters$study` contains `r ncol(counts)` samples (columns) and `r nrow(counts)` genes (rows).
 
 ```{r samples_per_project}
 kable(sort(table(phenoTable$gdc_cases.project.name), 
@@ -420,6 +420,7 @@ The tables below provide summaries of the values in the selected pheno columns.
 ```{r marker_summary}
 pheno.values <- data.frame(phenoTable[project.samples, pheno.columns])
 colnames(pheno.values) <- names(pheno.columns)
+message("Statistics on original pheno values")
 summary(as.data.frame(pheno.values))
 ```
 
