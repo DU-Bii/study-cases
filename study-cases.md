@@ -26,6 +26,7 @@ This includes:
 
 **Beware:** this repository should by no means not contain any massive data like the raw read files or mass spectrometry profiles.
 
+
 ## Study case descriptions
 
 ### Escherichia coli
@@ -60,6 +61,54 @@ PubMed PMID: 26865323 PubMed Central PMCID: PMC4750186 Free access at BMC Plant 
 
 - [The Cancer Genome Atlas (TCGA) selected subsets](Homo_sapiens/TCGA_study-case/)
 
+
+## Resources to get study cases
+
+
+### Biostudies
+
+Web: <https://www.ebi.ac.uk/biostudies/>
+
+The BioStudies database holds descriptions of biological studies, links to data from these studies in other databases at EMBL-EBI or outside, as well as data that do not fit in the structured archives at EMBL-EBI. 
+
+### Sci. data special issue on multi-omics data
+
+Reference : Conesa, A., Beck, S. Making multi-omics data accessible to researchers. Sci Data 6, 251 (2019). <https://doi.org/10.1038/s41597-019-0258-4>. 
+<https://www.nature.com/articles/s41597-019-0258-4>
+
+Some, papers:
+
+- Gomez-Cabrero, D., Tarazona, S., Ferreirós-Vidal, I. et al. STATegra, a comprehensive multi-omics dataset of B-cell differentiation in mouse. Sci Data 6, 256 (2019). 
+    - <https://doi.org/10.1038/s41597-019-0202-7>
+    - <https://www.nature.com/articles/s41597-019-0202-7>
+    - STATegra data: <https://github.com/STATegraData/STATegraData>
+
+
+- Pavkovic, M., Pantano, L., Gerlach, C.V. et al. Multi omics analysis of fibrotic kidneys in two mouse models. Sci Data 6, 92 (2019). 
+    - <https://doi.org/10.1038/s41597-019-0095-5> 
+    - <https://www.nature.com/articles/s41597-019-0095-5#citeas>
+    - Mouse fibrotic kidney browser: <http://hbcreports.med.harvard.edu/fmm/>
+    - Data on Zenodo: <https://zenodo.org/record/2592516>
+
+- Stare, T., Ramšak, Ž., Križnik, M. et al. Multiomics analysis of tolerant interaction of potato with potato virus Y. Sci Data 6, 250 (2019). 
+    - <https://doi.org/10.1038/s41597-019-0216-1>
+    - <https://www.nature.com/articles/s41597-019-0216-1#citeas>
+    - Data: <https://www.ebi.ac.uk/pride/archive/projects/PXD015221>
+    - Data (FTP): <ftp://ftp.pride.ebi.ac.uk/pride/data/archive/2019/09/PXD015221>
+
+### ProteomeXchange datasets
+
+
+Vizcaíno, J., Deutsch, E., Wang, R. et al. ProteomeXchange provides globally coordinated proteomics data submission and dissemination. Nat Biotechnol 32, 223–226 (2014). 
+    - <https://doi.org/10.1038/nbt.2839>
+    - Datasets: <http://proteomecentral.proteomexchange.org/cgi/GetDataset>
+
+
+- Ramus C, Hovasse A, Marcellin M, Hesse AM, Mouton-Barbosa E, Bouyssié D, Vaca 
+S, Carapito C, Chaoui K, Bruley C, Garin J, Cianférani S, Ferro M, Dorssaeler AV, Burlet-Schiltz O, Schaeffer C, Couté Y, Gonzalez de Peredo A. Spiked proteomic standard dataset for testing label-free quantitative software and statistical methods. Data Brief. 2015 Dec 17;6:286-94. doi: 10.1016/j.dib.2015.11.063. eCollection 2016 Mar. PubMed PMID: 26862574; PubMed Central PMCID: PMC4706616.
+    - PMID [26862574](https://www.ncbi.nlm.nih.gov/pubmed/26862574)
+    - <http://proteomecentral.proteomexchange.org/cgi/GetDataset?ID=PXD001819>
+    - Access on Pride: <https://www.ebi.ac.uk/pride/archive/projects/PXD001819>
 
 ## Access
 
