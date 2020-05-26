@@ -98,14 +98,12 @@ options(scipen = 12) ## Max number of digits for non-scientific notation
 
 ```{r paraemters}
 ## Define parameters for the analysis
-
-
 outdirs <- list()
 outdirs$main <- getwd()
 
 ## Output directory
 outdirs$data <- file.path(outdirs$main, "Mus_musculus" , "pavkovic_2019", "data")
-dir.create(outdir$data, recursive = TRUE, showWarnings = FALSE)
+dir.create(outdirs$data, recursive = TRUE, showWarnings = FALSE)
 
 ```
 
@@ -164,13 +162,14 @@ setwd(outdirs$main)
 
 ```{r load_raw_counts}
 #### Load raw counts data table ####
-
 rawCountFile <- file.path(
   outdirs$data,
   "hbc-MouseKidneyFibrOmics-a39e55a/tables/uuo/results/counts/raw_counts.csv.gz")
 rawCounts <- read.csv(file = rawCountFile, header = 1)
 
 ```
+
+The RNA-seq trnascriptome data was loaded as raw counts. This table contains `r nrow(rawCounts)` rows (genes) and `r ncol(rawCounts)` columns (samples).  
 
 
 
