@@ -362,7 +362,13 @@ div.tocify {
 <a class="sourceLine" id="cb1-4" data-line-number="4"></a>
 <a class="sourceLine" id="cb1-5" data-line-number="5"><span class="co">## Output directory</span></a>
 <a class="sourceLine" id="cb1-6" data-line-number="6">outdirs<span class="op">$</span>data &lt;-<span class="st"> </span><span class="kw">file.path</span>(outdirs<span class="op">$</span>main, <span class="st">&quot;Mus_musculus&quot;</span> , <span class="st">&quot;pavkovic_2019&quot;</span>, <span class="st">&quot;data&quot;</span>)</a>
-<a class="sourceLine" id="cb1-7" data-line-number="7"><span class="kw">dir.create</span>(outdirs<span class="op">$</span>data, <span class="dt">recursive =</span> <span class="ot">TRUE</span>, <span class="dt">showWarnings =</span> <span class="ot">FALSE</span>)</a></code></pre></div>
+<a class="sourceLine" id="cb1-7" data-line-number="7"><span class="kw">dir.create</span>(outdirs<span class="op">$</span>data, <span class="dt">recursive =</span> <span class="ot">TRUE</span>, <span class="dt">showWarnings =</span> <span class="ot">FALSE</span>)</a>
+<a class="sourceLine" id="cb1-8" data-line-number="8"></a>
+<a class="sourceLine" id="cb1-9" data-line-number="9"><span class="co">## Analysis parameters</span></a>
+<a class="sourceLine" id="cb1-10" data-line-number="10">epsilon &lt;-<span class="st"> </span><span class="fl">0.1</span></a>
+<a class="sourceLine" id="cb1-11" data-line-number="11"></a>
+<a class="sourceLine" id="cb1-12" data-line-number="12"><span class="co">## Original graphical parameters</span></a>
+<a class="sourceLine" id="cb1-13" data-line-number="13">par.ori &lt;-<span class="st"> </span><span class="kw">par</span>(<span class="dt">no.readonly =</span> <span class="ot">TRUE</span>)</a></code></pre></div>
 <div id="reference" class="section level2">
 <h2>Reference</h2>
 <p>Pavkovic, M., Pantano, L., Gerlach, C.V. et al. Multi omics analysis of fibrotic kidneys in two mouse models. Sci Data 6, 92 (2019).</p>
@@ -429,12 +435,68 @@ div.tocify {
 <a class="sourceLine" id="cb3-2" data-line-number="2">rawCountFile &lt;-<span class="st"> </span><span class="kw">file.path</span>(</a>
 <a class="sourceLine" id="cb3-3" data-line-number="3">  outdirs<span class="op">$</span>data,</a>
 <a class="sourceLine" id="cb3-4" data-line-number="4">  <span class="st">&quot;hbc-MouseKidneyFibrOmics-a39e55a/tables/uuo/results/counts/raw_counts.csv.gz&quot;</span>)</a>
-<a class="sourceLine" id="cb3-5" data-line-number="5">rawCounts &lt;-<span class="st"> </span><span class="kw">read.csv</span>(<span class="dt">file =</span> rawCountFile, <span class="dt">header =</span> <span class="dv">1</span>)</a></code></pre></div>
-<p>The RNA-seq trnascriptome data was loaded as raw counts. This table contains 46679 rows (genes) and 16 columns (samples).</p>
+<a class="sourceLine" id="cb3-5" data-line-number="5">rawCounts &lt;-<span class="st"> </span><span class="kw">read.csv</span>(<span class="dt">file =</span> rawCountFile, <span class="dt">header =</span> <span class="dv">1</span>, <span class="dt">row.names =</span> <span class="dv">1</span>)</a></code></pre></div>
+<p>The RNA-seq trnascriptome data was loaded as raw counts. This table contains 46679 rows (genes) and 15 columns (samples).</p>
+</div>
+<div id="distribution-of-raw-counts" class="section level2">
+<h2>Distribution of raw counts</h2>
+<div class="sourceCode" id="cb4"><pre class="sourceCode r"><code class="sourceCode r"><a class="sourceLine" id="cb4-1" data-line-number="1"><span class="co">#### Count distrib ####</span></a>
+<a class="sourceLine" id="cb4-2" data-line-number="2"><span class="co"># head(rawCounts)</span></a>
+<a class="sourceLine" id="cb4-3" data-line-number="3"></a>
+<a class="sourceLine" id="cb4-4" data-line-number="4"><span class="kw">par</span>(<span class="dt">mfrow =</span> <span class="kw">c</span>(<span class="dv">2</span>, <span class="dv">1</span>))</a>
+<a class="sourceLine" id="cb4-5" data-line-number="5"><span class="kw">hist</span>(<span class="kw">unlist</span>(rawCounts), <span class="dt">breaks =</span> <span class="dv">1000</span>, </a>
+<a class="sourceLine" id="cb4-6" data-line-number="6">     <span class="dt">main =</span> <span class="st">&quot;Raw count distribution&quot;</span>, </a>
+<a class="sourceLine" id="cb4-7" data-line-number="7">     <span class="dt">xlab =</span> <span class="st">&quot;Raw counts&quot;</span>, </a>
+<a class="sourceLine" id="cb4-8" data-line-number="8">     <span class="dt">ylab =</span> <span class="st">&quot;Number of genes (all samples)&quot;</span>)</a>
+<a class="sourceLine" id="cb4-9" data-line-number="9"></a>
+<a class="sourceLine" id="cb4-10" data-line-number="10"><span class="kw">hist</span>(<span class="kw">unlist</span>(rawCounts), <span class="dt">breaks =</span> <span class="dv">500000</span>, </a>
+<a class="sourceLine" id="cb4-11" data-line-number="11">     <span class="dt">main =</span> <span class="st">&quot;Raw count distribution&quot;</span>, </a>
+<a class="sourceLine" id="cb4-12" data-line-number="12">     <span class="dt">xlab =</span> <span class="st">&quot;Raw counts (truncated abscissa&quot;</span>, </a>
+<a class="sourceLine" id="cb4-13" data-line-number="13">     <span class="dt">ylab =</span> <span class="st">&quot;Number of genes (all samples)&quot;</span>,</a>
+<a class="sourceLine" id="cb4-14" data-line-number="14">     <span class="dt">xlim =</span> <span class="kw">c</span>(<span class="dv">0</span>, <span class="dv">500</span>))</a></code></pre></div>
+<div class="figure" style="text-align: center">
+<img src="figures/mouse-kidney_RNA-seq_count_distrib-1.png" alt="Distribution of raw counts" width="100%" />
+<p class="caption">
+Distribution of raw counts
+</p>
+</div>
+<div class="sourceCode" id="cb5"><pre class="sourceCode r"><code class="sourceCode r"><a class="sourceLine" id="cb5-1" data-line-number="1"><span class="kw">par</span>(<span class="dt">mfrow =</span> <span class="kw">c</span>(<span class="dv">1</span>, <span class="dv">1</span>))</a></code></pre></div>
+<p>The distribution of raw counts is not very informative, because the range is defined by some outlier, i.e. a gene having a huge number of reads. Even with strong zoom on the abcsissa range from 0 to 500, the histogram shows a steep drop in the first bins.</p>
+</div>
+<div id="log2-transformed-counts" class="section level2">
+<h2>Log2-transformed counts</h2>
+<p>A typical approach is to normalise the counts by applying a log2 transformation . This however creates a problem when the counts of a given gene in a given sample is 0. To circumvent this, we can add an epsilon before the log2 transformation.</p>
+<div class="sourceCode" id="cb6"><pre class="sourceCode r"><code class="sourceCode r"><a class="sourceLine" id="cb6-1" data-line-number="1"><span class="co">#### Log2 transformatiojn of the counts ####</span></a>
+<a class="sourceLine" id="cb6-2" data-line-number="2">log2Counts &lt;-<span class="st"> </span><span class="kw">log2</span>(rawCounts <span class="op">+</span><span class="st"> </span>epsilon)</a>
+<a class="sourceLine" id="cb6-3" data-line-number="3"></a>
+<a class="sourceLine" id="cb6-4" data-line-number="4"></a>
+<a class="sourceLine" id="cb6-5" data-line-number="5"><span class="kw">hist</span>(<span class="kw">unlist</span>(log2Counts), <span class="dt">breaks =</span> <span class="kw">seq</span>(<span class="dt">from =</span> <span class="dv">-5</span>, <span class="dt">to =</span> <span class="dv">22</span>, <span class="dt">by =</span> <span class="fl">0.1</span>),</a>
+<a class="sourceLine" id="cb6-6" data-line-number="6">     <span class="dt">main =</span> <span class="st">&quot;log2-counts distribution&quot;</span>,</a>
+<a class="sourceLine" id="cb6-7" data-line-number="7">     <span class="dt">xlab =</span> <span class="st">&quot;log2(Counts + epsilon)&quot;</span>, </a>
+<a class="sourceLine" id="cb6-8" data-line-number="8">     <span class="dt">ylab =</span> <span class="st">&quot;Number of genes&quot;</span>, <span class="dt">col =</span> <span class="st">&quot;#BBFFBB&quot;</span>)</a></code></pre></div>
+<p><img src="figures/mouse-kidney_log2_counts-1.png" width="672" style="display: block; margin: auto;" /></p>
+</div>
+<div id="box-plots" class="section level2">
+<h2>Box plots</h2>
+<p>We can now inspect the distribution of counts per sample with the <code>boxplot()</code> function.</p>
+<div class="sourceCode" id="cb7"><pre class="sourceCode r"><code class="sourceCode r"><a class="sourceLine" id="cb7-1" data-line-number="1"><span class="co">#### Box plots ####</span></a>
+<a class="sourceLine" id="cb7-2" data-line-number="2"><span class="kw">par</span>(<span class="dt">mar =</span> <span class="kw">c</span>(<span class="dv">4</span>, <span class="dv">6</span>, <span class="dv">5</span>, <span class="dv">1</span>))</a>
+<a class="sourceLine" id="cb7-3" data-line-number="3"><span class="kw">boxplot</span>(log2Counts, <span class="dt">horizontal =</span> <span class="ot">TRUE</span>, <span class="dt">las =</span> <span class="dv">1</span>)</a></code></pre></div>
+<p><img src="figures/mouse-kidney_box%20plots-1.png" width="672" style="display: block; margin: auto;" /></p>
+<p>We notice an obvious problem: the vast majority of counts is very small. This can result from different causes, whcih will not be investigted in this contet.</p>
+</div>
+<div id="gene-filtering" class="section level2">
+<h2>Gene filtering</h2>
+<div class="sourceCode" id="cb8"><pre class="sourceCode r"><code class="sourceCode r"><a class="sourceLine" id="cb8-1" data-line-number="1">undetectedGenes &lt;-<span class="st"> </span><span class="kw">apply</span>(rawCounts, <span class="dt">MARGIN =</span> <span class="dv">1</span>, <span class="dt">FUN =</span> sum) <span class="op">==</span><span class="st"> </span><span class="dv">0</span></a>
+<a class="sourceLine" id="cb8-2" data-line-number="2"><span class="kw">table</span>(undetectedGenes)</a></code></pre></div>
+<pre><code>undetectedGenes
+FALSE  TRUE 
+33379 13300 </code></pre>
+<div class="sourceCode" id="cb10"><pre class="sourceCode r"><code class="sourceCode r"><a class="sourceLine" id="cb10-1" data-line-number="1">log2CountsFiltered &lt;-<span class="st"> </span>log2Counts[<span class="op">!</span>undetectedGenes, ]</a></code></pre></div>
 </div>
 <div id="session-info" class="section level2">
 <h2>Session info</h2>
-<div class="sourceCode" id="cb4"><pre class="sourceCode r"><code class="sourceCode r"><a class="sourceLine" id="cb4-1" data-line-number="1"><span class="kw">sessionInfo</span>()</a></code></pre></div>
+<div class="sourceCode" id="cb11"><pre class="sourceCode r"><code class="sourceCode r"><a class="sourceLine" id="cb11-1" data-line-number="1"><span class="kw">sessionInfo</span>()</a></code></pre></div>
 <pre><code>R version 4.0.0 (2020-04-24)
 Platform: x86_64-apple-darwin17.0 (64-bit)
 Running under: macOS Mojave 10.14.6
@@ -453,7 +515,7 @@ other attached packages:
 [1] knitr_1.28
 
 loaded via a namespace (and not attached):
- [1] compiler_4.0.0  magrittr_1.5    tools_4.0.0     htmltools_0.4.0 yaml_2.2.1      Rcpp_1.0.4.6    stringi_1.4.6   rmarkdown_2.1   stringr_1.4.0   xfun_0.14       digest_0.6.25   rlang_0.4.6     evaluate_0.14  </code></pre>
+ [1] compiler_4.0.0  magrittr_1.5    tools_4.0.0     htmltools_0.4.0 yaml_2.2.1      Rcpp_1.0.4.6    stringi_1.4.6   rmarkdown_2.1   highr_0.8       stringr_1.4.0   xfun_0.14       digest_0.6.25   rlang_0.4.6     evaluate_0.14  </code></pre>
 </div>
 
 

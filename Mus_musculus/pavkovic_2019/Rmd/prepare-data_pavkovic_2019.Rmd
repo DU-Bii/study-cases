@@ -105,6 +105,12 @@ outdirs$main <- getwd()
 outdirs$data <- file.path(outdirs$main, "Mus_musculus" , "pavkovic_2019", "data")
 dir.create(outdirs$data, recursive = TRUE, showWarnings = FALSE)
 
+## Analysis parameters
+epsilon <- 0.1
+
+## Original graphical parameters
+par.ori <- par(no.readonly = TRUE)
+
 ```
 
 
@@ -165,13 +171,78 @@ setwd(outdirs$main)
 rawCountFile <- file.path(
   outdirs$data,
   "hbc-MouseKidneyFibrOmics-a39e55a/tables/uuo/results/counts/raw_counts.csv.gz")
-rawCounts <- read.csv(file = rawCountFile, header = 1)
+rawCounts <- read.csv(file = rawCountFile, header = 1, row.names = 1)
 
 ```
 
 The RNA-seq trnascriptome data was loaded as raw counts. This table contains `r nrow(rawCounts)` rows (genes) and `r ncol(rawCounts)` columns (samples).  
 
 
+## Distribution of raw counts
+
+```{r RNA-seq_count_distrib, fig.width=12, fig.height=10, out.width="100%", fig.cap="Distribution of raw counts"}
+#### Count distrib ####
+# head(rawCounts)
+
+par(mfrow = c(2, 1))
+hist(unlist(rawCounts), breaks = 1000, 
+     main = "Raw count distribution", 
+     xlab = "Raw counts", 
+     ylab = "Number of genes (all samples)")
+
+hist(unlist(rawCounts), breaks = 500000, 
+     main = "Raw count distribution", 
+     xlab = "Raw counts (truncated abscissa", 
+     ylab = "Number of genes (all samples)",
+     xlim = c(0, 500))
+
+par(mfrow = c(1, 1))
+```
+
+The distribution of raw counts is not very informative, because the range is defined by some outlier, i.e. a gene having a huge number of reads. Even with  strong zoom on the abcsissa range from 0 to 500, the histogram shows a steep drop in the first bins. 
+
+## Log2-transformed counts
+
+A typical approach is to normalise the counts by applying a log2 transformation .
+This however creates a problem when the counts of a given gene in a given sample is 0. To circumvent this, we can add an epsilon before the log2 transformation. 
+
+```{r log2_counts, fig.width=12, fig.height=10, out.width="60%"}
+
+#### Log2 transformatiojn of the counts ####
+log2Counts <- log2(rawCounts + epsilon)
+
+
+hist(unlist(log2Counts), breaks = seq(from = -5, to = 22, by = 0.1),
+     main = "log2-counts distribution",
+     xlab = "log2(Counts + epsilon)", 
+     ylab = "Number of genes", col = "#BBFFBB")
+
+```
+
+
+## Box plots
+
+We can now inspect the distribution of counts per sample with the `boxplot()` function.
+
+```{r box plots, fig.width=12, fig.height=10, out.width="60%"}}
+#### Box plots ####
+par(mar = c(4, 6, 5, 1))
+boxplot(log2Counts, horizontal = TRUE, las = 1)
+```
+
+
+We notice an obvious problem: the vast majority of counts is very small. This can result from different causes, whcih will not be investigted in this contet. 
+
+## Gene filtering
+
+```{r gene_filtering, fig.width=12, fig.height=10, out.width="60%"}}
+
+undetectedGenes <- apply(rawCounts, MARGIN = 1, FUN = sum) == 0
+table(undetectedGenes)
+
+log2CountsFiltered <- log2Counts[!undetectedGenes, ]
+
+```
 
 ## Session info
 
