@@ -1,6 +1,6 @@
-## Proteome-metabolome associations in *Arabidopsis thaliana*
+# Proteome-metabolome associations in *Arabidopsis thaliana*
 
-### Publication<
+## Publication
 
 Stress-Related Mitogen-Activated Protein Kinases Stimulate the Accumulation of Small Molecules and Proteins in Arabidopsis thaliana Root Exudates. Front Plant Sci. 2017; 8: 1292. Published online 2017 Jul 21. doi: [10.3389/fpls.2017.01292](https://doi.org/10.3389/fpls.2017.01292).
 
