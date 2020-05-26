@@ -61,6 +61,17 @@ PubMed PMID: 26865323 PubMed Central PMCID: PMC4750186 Free access at BMC Plant 
 
 - [The Cancer Genome Atlas (TCGA) selected subsets](Homo_sapiens/TCGA_study-case/)
 
+### *Mus musculus*
+
+
+- Pavkovic, M., Pantano, L., Gerlach, C.V. et al. Multi omics analysis of fibrotic kidneys in two mouse models. Sci Data 6, 92 (2019). 
+    - <https://doi.org/10.1038/s41597-019-0095-5> 
+    - <https://www.nature.com/articles/s41597-019-0095-5#citeas>
+    - Mouse fibrotic kidney browser: <http://hbcreports.med.harvard.edu/fmm/>
+    - Data on Zenodo: <https://zenodo.org/record/2592516>
+
+- Data preparation scripts: [html](Mus_musculus/pavkovic_2019/Rmd/prepare-data_pavkovic_2019.html) [Rmd](Mus_musculus/pavkovic_2019/Rmd/prepare-data_pavkovic_2019.Rmd)
+
 
 ## Resources to get study cases
 
@@ -83,12 +94,6 @@ Some, papers:
     - <https://www.nature.com/articles/s41597-019-0202-7>
     - STATegra data: <https://github.com/STATegraData/STATegraData>
 
-
-- Pavkovic, M., Pantano, L., Gerlach, C.V. et al. Multi omics analysis of fibrotic kidneys in two mouse models. Sci Data 6, 92 (2019). 
-    - <https://doi.org/10.1038/s41597-019-0095-5> 
-    - <https://www.nature.com/articles/s41597-019-0095-5#citeas>
-    - Mouse fibrotic kidney browser: <http://hbcreports.med.harvard.edu/fmm/>
-    - Data on Zenodo: <https://zenodo.org/record/2592516>
 
 - Stare, T., Ramšak, Ž., Križnik, M. et al. Multiomics analysis of tolerant interaction of potato with potato virus Y. Sci Data 6, 250 (2019). 
     - <https://doi.org/10.1038/s41597-019-0216-1>
