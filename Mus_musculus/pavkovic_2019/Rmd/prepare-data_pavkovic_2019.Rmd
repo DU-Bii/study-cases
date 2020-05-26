@@ -139,23 +139,39 @@ Pavkovic, M., Pantano, L., Gerlach, C.V. et al. Multi omics analysis of fibrotic
 #transcriptomeSource <- paste0("https://www.ncbi.nlm.nih.gov/geo/download/?acc=", series, "&format=file")
 
 ## BEWARE, the extension is wrong in Zenodo: this is a tar file, not a zip !
-archiveFile <- "MouseKidneyFibrOmics-v1.0"
-archiveURL <- file.path("https://zenodo.org/record/2592516/files/hbc", paste0(archiveFile, ".zip"))
-localDataArchive <- file.path(outdirs$data, paste0(archiveFile, ".tar"))
+archiveFile <- "MouseKidneyFibrOmics-v1.0.zip"
+archiveURL <- file.path("https://zenodo.org/record/2592516/files/hbc", archiveFile)
+localDataArchive <- file.path(outdirs$data, archiveFile)
 
 if (file.exists(localDataArchive)) {
   message("Data archive already downloaded: ", localDataArchive)
 } else {
   message("Downloading data archive from zenodo: ", archiveURL)
-  download.file(url = transcriptomeSource, destfile =  localDataArchive)
+  download.file(url = archiveURL, destfile =  localDataArchive)
 }
 
+## Define destination directory
+# outdirs$csv <- file.path(outdirs$data, "CSV")
+# dir.create(outdirs$csv, showWarnings = FALSE, recursive = TRUE)
+
 ## Uncompess the archive
-setwd(outdirs$data)
-tar(tarfile = paste0(archiveFile, ".tar"))
+unzip(zipfile = localDataArchive, exdir = outdirs$data)
 setwd(outdirs$main)
 
 ```
+
+## Load raw counts
+
+```{r load_raw_counts}
+#### Load raw counts data table ####
+
+rawCountFile <- file.path(
+  outdirs$data,
+  "hbc-MouseKidneyFibrOmics-a39e55a/tables/uuo/results/counts/raw_counts.csv.gz")
+rawCounts <- read.csv(file = rawCountFile, header = 1)
+
+```
+
 
 
 ## Session info
