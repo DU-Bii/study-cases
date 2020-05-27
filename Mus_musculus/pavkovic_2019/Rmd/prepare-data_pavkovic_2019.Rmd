@@ -3,18 +3,22 @@ title: "DU-Bii Study cases - Mouse fibrotic kidney"
 author: "Olivier Sand and Jacques van Helden"
 date: '`r Sys.Date()`'
 output:
-  slidy_presentation:
-    smart: no
+  powerpoint_presentation:
     slide_level: 2
-    self_contained: yes
     fig_caption: yes
-    fig_height: 6
+    fig_height: 5
     fig_width: 7
+    toc: yes
+  ioslides_presentation:
+    slide_level: 2
+    self_contained: no
+    colortheme: dolphin
+    fig_caption: yes
+    fig_height: 5
+    fig_width: 7
+    fonttheme: structurebold
     highlight: tango
-    incremental: no
-    keep_md: yes
     smaller: yes
-    theme: cerulean
     toc: yes
     widescreen: yes
   html_document:
@@ -26,18 +30,18 @@ output:
     toc_depth: 3
     toc_float: yes
     code_folding: "hide"
-  ioslides_presentation:
-    slide_level: 2
-    self_contained: no
+  beamer_presentation:
     colortheme: dolphin
     fig_caption: yes
-    fig_height: 6
+    fig_height: 5
     fig_width: 7
     fonttheme: structurebold
     highlight: tango
-    smaller: yes
+    incremental: no
+    keep_tex: no
+    slide_level: 2
+    theme: Montpellier
     toc: yes
-    widescreen: yes
   revealjs::revealjs_presentation:
     theme: night
     transition: none
@@ -48,18 +52,20 @@ output:
     highlight: zenburn
     toc: yes
     toc_depth: 3
-  beamer_presentation:
-    colortheme: dolphin
+  slidy_presentation:
+    smart: no
+    slide_level: 2
+    self_contained: yes
     fig_caption: yes
-    fig_height: 6
+    fig_height: 5
     fig_width: 7
-    fonttheme: structurebold
     highlight: tango
     incremental: no
-    keep_tex: no
-    slide_level: 2
-    theme: Montpellier
+    keep_md: yes
+    smaller: yes
+    theme: cerulean
     toc: yes
+    widescreen: yes
 font-import: http://fonts.googleapis.com/css?family=Risque
 subtitle: DUBii 2020
 font-family: Garamond
@@ -259,6 +265,20 @@ hist(unlist(log2Counts), breaks = seq(from = -5, to = 22, by = 0.1),
      ylab = "Number of genes", col = "#BBFFBB")
 
 ```
+
+## Two-columns test
+
+:::::::::::::: {.columns}
+::: {.column}
+contents 1 ...
+:::
+
+::: {.column}
+pas l'air de marcher ...
+:::
+
+::::::::::::::
+
 
 
 ## Box plots
