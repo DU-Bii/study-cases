@@ -120,8 +120,7 @@ Pavkovic, M., Pantano, L., Gerlach, C.V. et al. Multi omics analysis of fibrotic
 
 | Doc | URL | 
 |-----------------------------|--------------------------|
-| Total RNA for the experiment on Unilateral ureter obstruction (UUO) model
-  | <https://www.ncbi.nlm.nih.gov/geo/query/acc.cgi?acc=GSE118339> |
+| Total RNA for the experiment on Unilateral ureter obstruction (UUO) model | <https://www.ncbi.nlm.nih.gov/geo/query/acc.cgi?acc=GSE118339> |
 
 
 
@@ -273,7 +272,7 @@ par(par.ori)
 ```
 
 
-We notice an obvious problem: the vast majority of counts is very small. This can result from different causes, whcih will not be investigted in this contet. 
+We notice an obvious problem: the vast majority of counts is very small. This can result from different causes, whcih will not be investigted in this context. 
 
 ## Gene filtering
 
@@ -286,7 +285,7 @@ log2CountsFiltered <- log2Counts[!undetectedGenes, ]
 
 ```
 
-We filtered out all the genes whose maximal count value across all samples was lower than `r parameters$minCount`. Aming the `r nrow(rawCounts)` genes from the raw count table, `r sum(undetectedGenes)` were considered undetected according to this criterion. We use the remaining `r nrow(log2CountsFiltered)` genes for the subsequent analyses. 
+We filtered out all the genes whose maximal count value across all samples was lower than `r parameters$minCount`. Among the `r nrow(rawCounts)` genes from the raw count table, `r sum(undetectedGenes)` were considered undetected according to this criterion. We use the remaining `r nrow(log2CountsFiltered)` genes for the subsequent analyses. 
 
 ```{r boxplot_filtered, fig.width=5, fig.height=7, out.width="50%"}
 #### Box plots after filtering ####
