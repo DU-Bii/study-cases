@@ -272,7 +272,7 @@ par(par.ori)
 ```
 
 
-We notice an obvious problem: the vast majority of counts is very small. This can result from different causes, whcih will not be investigted in this context. 
+We notice an obvious problem: the vast majority of counts is very small. This can result from different causes, which will not be investigted in this context. 
 
 ## Gene filtering
 
@@ -302,7 +302,7 @@ par(par.ori)
 
 ## Normalisation (more precisely: scaling)
 
-Before going any further, it is important to ebsyre sile normalisation of the counts, in order to correct for biases due to inter-sample differences in sequencing depth. 
+Before going any further, it is important to ensure some normalisation of the counts, in order to correct for biases due to inter-sample differences in sequencing depth. 
 
 For the sake of simplicity, we will use here a very simple criterion: median-based normalisation. The principle is to multiply the counts of each sample by a scaling factor in order to bring each sample to the same median count. 
 
