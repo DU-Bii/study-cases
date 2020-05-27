@@ -12,6 +12,20 @@ output:
     toc_depth: 3
     toc_float: yes
     code_folding: "hide"
+  slidy_presentation:
+    smart: no
+    slide_level: 2
+    self_contained: yes
+    fig_caption: yes
+    fig_height: 6
+    fig_width: 7
+    highlight: tango
+    incremental: no
+    keep_md: yes
+    smaller: yes
+    theme: cerulean
+    toc: yes
+    widescreen: yes
   beamer_presentation:
     colortheme: dolphin
     fig_caption: yes
@@ -29,20 +43,6 @@ output:
     transition: none
     self_contained: true
     css: ../slides.css
-  slidy_presentation:
-    smart: no
-    slide_level: 2
-    self_contained: yes
-    fig_caption: yes
-    fig_height: 6
-    fig_width: 7
-    highlight: tango
-    incremental: no
-    keep_md: yes
-    smaller: yes
-    theme: cerulean
-    toc: yes
-    widescreen: yes
   pdf_document:
     fig_caption: yes
     highlight: zenburn
@@ -68,10 +68,19 @@ editor_options:
   chunk_output_type: console
 ---
 
+
 ```{r libraries, include=FALSE, echo=FALSE, eval=TRUE}
-library(knitr)
+
+requiredLib <- c("knitr", "stringr")
+for (lib in requiredLib) {
+  if (!require(lib, character.only = TRUE)) {
+    install.packages(lib, )
+  }
+  require(lib, character.only = TRUE)
+}
 
 ```
+
 
 
 ```{r settings, include=FALSE, echo=FALSE, eval=TRUE}
@@ -96,24 +105,6 @@ options(scipen = 12) ## Max number of digits for non-scientific notation
 ```
 
 
-```{r paraemters}
-## Define parameters for the analysis
-outdirs <- list()
-outdirs$main <- getwd()
-
-## Output directory
-outdirs$data <- file.path(outdirs$main, "Mus_musculus" , "pavkovic_2019", "data")
-dir.create(outdirs$data, recursive = TRUE, showWarnings = FALSE)
-
-## Analysis parameters
-epsilon <- 0.1
-
-## Original graphical parameters
-par.ori <- par(no.readonly = TRUE)
-
-```
-
-
 ## Reference
 
 
@@ -132,6 +123,32 @@ Pavkovic, M., Pantano, L., Gerlach, C.V. et al. Multi omics analysis of fibrotic
 | Total RNA for the experiment on Unilateral ureter obstruction (UUO) model
   | <https://www.ncbi.nlm.nih.gov/geo/query/acc.cgi?acc=GSE118339> |
 
+
+
+## Parameters
+
+```{r paraemters}
+#### Define parameters for the analysis ####
+
+## Keep a trace of the original parameters
+par.ori <- par(no.readonly = TRUE)
+
+## Output directories
+outdirs <- list()
+outdirs$main <- getwd()
+
+## Output directory
+outdirs$data <- file.path(outdirs$main, "Mus_musculus" , "pavkovic_2019", "data")
+dir.create(outdirs$data, recursive = TRUE, showWarnings = FALSE)
+
+## Analysis parameters
+parameters <- list(
+  epsilon = 0.1,
+  minCount = 10)
+
+kable(t(as.data.frame(parameters)), col.names = "Parameter")
+
+```
 
 ## Download transcriptome data
 
@@ -178,6 +195,25 @@ rawCounts <- read.csv(file = rawCountFile, header = 1, row.names = 1)
 The RNA-seq trnascriptome data was loaded as raw counts. This table contains `r nrow(rawCounts)` rows (genes) and `r ncol(rawCounts)` columns (samples).  
 
 
+## Build metadata table
+
+```{r metadata}
+#### Build metadata table ####
+
+metadata <- data.frame(sampleName = colnames(rawCounts))
+metadata[ , c("condition", "sampleNumber")] <- 
+  str_split_fixed(string = metadata$sampleName, pattern = "_", n = 2)
+
+## Colors per condition
+colPerCondition <- c(normal = "#BBFFBB",
+                     day3 = "#FFFFDD", 
+                     day7 = "#FFDD88",
+                     day14 = "#FF4400")
+metadata$color <- colPerCondition[metadata$condition]
+
+```
+
+
 ## Distribution of raw counts
 
 ```{r RNA-seq_count_distrib, fig.width=12, fig.height=10, out.width="100%", fig.cap="Distribution of raw counts"}
@@ -204,12 +240,12 @@ The distribution of raw counts is not very informative, because the range is def
 ## Log2-transformed counts
 
 A typical approach is to normalise the counts by applying a log2 transformation .
-This however creates a problem when the counts of a given gene in a given sample is 0. To circumvent this, we can add an epsilon before the log2 transformation. 
+This however creates a problem when the counts of a given gene in a given sample is 0. To circumvent this, we can add an epsilon ($\epsilon = `r parameters$epsilon`$) before the log2 transformation. 
 
-```{r log2_counts, fig.width=12, fig.height=10, out.width="60%"}
+```{r log2_counts, fig.width=12, fig.height=5, out.width="100%"}
 
 #### Log2 transformatiojn of the counts ####
-log2Counts <- log2(rawCounts + epsilon)
+log2Counts <- log2(rawCounts + parameters$epsilon)
 
 
 hist(unlist(log2Counts), breaks = seq(from = -5, to = 22, by = 0.1),
@@ -224,10 +260,16 @@ hist(unlist(log2Counts), breaks = seq(from = -5, to = 22, by = 0.1),
 
 We can now inspect the distribution of counts per sample with the `boxplot()` function.
 
-```{r box plots, fig.width=12, fig.height=10, out.width="60%"}}
+```{r box plots, fig.width=5, fig.height=7, out.width="50%"}
 #### Box plots ####
 par(mar = c(4, 6, 5, 1))
-boxplot(log2Counts, horizontal = TRUE, las = 1)
+boxplot(log2Counts, 
+        col = metadata$color,
+        horizontal = TRUE, 
+        las = 1, 
+        main = "log2-transformed", 
+        xlab = "log2(counts)")
+par(par.ori)
 ```
 
 
@@ -235,14 +277,70 @@ We notice an obvious problem: the vast majority of counts is very small. This ca
 
 ## Gene filtering
 
-```{r gene_filtering, fig.width=12, fig.height=10, out.width="60%"}}
+```{r gene_filtering, fig.width=5, fig.height=7, out.width="50%"}
 
-undetectedGenes <- apply(rawCounts, MARGIN = 1, FUN = sum) == 0
-table(undetectedGenes)
-
+## Filter out the genes with very low counts in all conditions
+undetectedGenes <- apply(rawCounts, MARGIN = 1, FUN = sum) < parameters$minCount
+# table(undetectedGenes)
 log2CountsFiltered <- log2Counts[!undetectedGenes, ]
 
 ```
+
+We filtered out all the genes whose maximal count value across all samples was lower than `r parameters$minCount`. Aming the `r nrow(rawCounts)` genes from the raw count table, `r sum(undetectedGenes)` were considered undetected according to this criterion. We use the remaining `r nrow(log2CountsFiltered)` genes for the subsequent analyses. 
+
+```{r boxplot_filtered, fig.width=5, fig.height=7, out.width="50%"}
+#### Box plots after filtering ####
+par(mar = c(4, 6, 5, 1))
+boxplot(log2CountsFiltered, 
+        col = metadata$color,
+        horizontal = TRUE, 
+        las = 1,
+        main = "Filtered genes", 
+        xlab = "log2(counts)")
+par(par.ori)
+
+```
+
+## Normalisation (more precisely: scaling)
+
+Before going any further, it is important to ebsyre sile normalisation of the counts, in order to correct for biases due to inter-sample differences in sequencing depth. 
+
+For the sake of simplicity, we will use here a very simple criterion: median-based normalisation. The principle is to multiply the counts of each sample by a scaling factor in order to bring each sample to the same median count. 
+
+```{r median_normalisation, fig.width=5, fig.height=7, out.width="50%"}
+
+#### Median-based normalisation ####
+sampleMedians <- apply(log2CountsFiltered, 2, median)
+seriesMedian <- median(sampleMedians)
+scalingFactors <- seriesMedian / sampleMedians
+
+log2CountsStandardised <- data.frame(matrix(
+  nrow = nrow(log2CountsFiltered),
+  ncol = ncol(log2CountsFiltered)))
+colnames(log2CountsStandardised) <- colnames(log2CountsFiltered)
+rownames(log2CountsStandardised) <- rownames(log2CountsFiltered)
+for (j in 1:ncol(log2CountsFiltered)) {
+  log2CountsStandardised[, j] <- log2CountsFiltered[, j] * scalingFactors[j]
+}
+
+## Check the remaining medians
+apply(log2CountsStandardised, 2, median)
+
+#### Box plots after scaling ####
+par(mar = c(4, 6, 5, 1))
+boxplot(log2CountsStandardised, 
+        col = metadata$color,
+        horizontal = TRUE, 
+        las = 1,
+        main = "Median-based scaled", 
+        xlab = "log2(counts")
+par(par.ori)
+
+
+```
+
+
+
 
 ## Session info
 
