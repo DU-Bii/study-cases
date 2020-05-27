@@ -249,12 +249,10 @@ hist(unlist(rawCounts), breaks = 500000,
 A typical approach is to normalise the counts by applying a log2 transformation .
 This however creates a problem when the counts of a given gene in a given sample is 0. To circumvent this, we can add an epsilon ($\epsilon = `r parameters$epsilon`$) before the log2 transformation. 
 
-```{r log2_counts, fig.width=12, fig.height=5, out.width="100%"}
+```{r log2_counts, fig.width=12, fig.height=5, out.width="70%"}
 
 #### Log2 transformatiojn of the counts ####
 log2Counts <- log2(rawCounts + parameters$epsilon)
-
-
 hist(unlist(log2Counts), breaks = seq(from = -5, to = 22, by = 0.1),
      main = "log2-counts distribution",
      xlab = "log2(Counts + epsilon)", 
@@ -267,7 +265,7 @@ hist(unlist(log2Counts), breaks = seq(from = -5, to = 22, by = 0.1),
 
 We can now inspect the distribution of counts per sample with the `boxplot()` function.
 
-```{r box plots, fig.width=5, fig.height=7, out.width="50%"}
+```{r box plots, fig.width=5, fig.height=7, out.width="25%"}
 #### Box plots ####
 par(mar = c(4, 6, 5, 1))
 boxplot(log2Counts, 
@@ -279,8 +277,9 @@ boxplot(log2Counts,
 par(par.ori)
 ```
 
+## Box plot comment
 
-We notice an obvious problem: the vast majority of counts is very small. This can result from different causes, which will not be investigted in this context. 
+We notice an obvious problem: the vast majority of counts is very small. This can result from different causes, which will not be investigated in this context. 
 
 ## Gene filtering
 
@@ -295,7 +294,9 @@ log2CountsFiltered <- log2Counts[!undetectedGenes, ]
 
 We filtered out all the genes whose maximal count value across all samples was lower than `r parameters$minCount`. Among the `r nrow(rawCounts)` genes from the raw count table, `r sum(undetectedGenes)` were considered undetected according to this criterion. We use the remaining `r nrow(log2CountsFiltered)` genes for the subsequent analyses. 
 
-```{r boxplot_filtered, fig.width=5, fig.height=7, out.width="50%"}
+## Gene filtered boxplot
+
+```{r boxplot_filtered, fig.width=5, fig.height=7, out.width="32%"}
 #### Box plots after filtering ####
 par(mar = c(4, 6, 5, 1))
 boxplot(log2CountsFiltered, 
@@ -314,7 +315,9 @@ Before going any further, it is important to ensure some normalisation of the co
 
 For the sake of simplicity, we will use here a very simple criterion: median-based normalisation. The principle is to multiply the counts of each sample by a scaling factor in order to bring each sample to the same median count. 
 
-```{r median_normalisation, fig.width=5, fig.height=7, out.width="50%"}
+## Normalisation code
+
+```{r median_normalisation, fig.width=5, fig.height=7, out.width="25%"}
 
 #### Median-based normalisation ####
 sampleMedians <- apply(log2CountsFiltered, 2, median)
@@ -333,6 +336,11 @@ for (j in 1:ncol(log2CountsFiltered)) {
 ## Check the remaining medians
 apply(log2CountsStandardised, 2, median)
 
+```
+
+## Normalization boxplot
+
+```{r median_normalisation_boxplot, fig.width=5, fig.height=7, out.width="32%"}
 #### Box plots after scaling ####
 par(mar = c(4, 6, 5, 1))
 boxplot(log2CountsStandardised, 
