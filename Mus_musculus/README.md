@@ -10,6 +10,6 @@ Pavkovic, M., Pantano, L., Gerlach, C.V. et al. Multi omics analysis of fibrotic
 - Mouse fibrotic kidney browser: <http://hbcreports.med.harvard.edu/fmm/>
 - Data on Zenodo: <https://zenodo.org/record/2592516>
 
-| Doc | URL |
+| Doc | Link |
 |---------------------------|-------------|
-| Data preparation | | 
+| Data preparation |[[html](Mus_musculus/pavkovic_2019/Rmd/prepare-data_pavkovic_2019.html)] [[Rmd](https://raw.githubusercontent.com/DU-Bii/study-cases/master/Mus_musculus/pavkovic_2019/Rmd/prepare-data_pavkovic_2019.Rmd)] | 

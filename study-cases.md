@@ -74,7 +74,7 @@ PubMed PMID: 26865323 PubMed Central PMCID: PMC4750186 Free access at BMC Plant 
     - Mouse fibrotic kidney browser: <http://hbcreports.med.harvard.edu/fmm/>
     - Data on Zenodo: <https://zenodo.org/record/2592516>
 
-- Data preparation scripts: [html](Mus_musculus/pavkovic_2019/Rmd/prepare-data_pavkovic_2019.html) [Rmd](Mus_musculus/pavkovic_2019/Rmd/prepare-data_pavkovic_2019.Rmd)
+- Data preparation and exploration: [html](Mus_musculus/pavkovic_2019/Rmd/prepare-data_pavkovic_2019.html) [Rmd](https://raw.githubusercontent.com/DU-Bii/study-cases/master/Mus_musculus/pavkovic_2019/Rmd/prepare-data_pavkovic_2019.Rmd)
 
 
 ## Resources to get study cases
