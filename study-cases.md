@@ -7,6 +7,7 @@
     - [Escherichia coli](#escherichia-coli)
     - [Arabidopsis thaliana](#arabidopsis-thaliana)
     - [Homo sapiens](#homo-sapiens)
+    - [Mus musculus](#mus-musculus)
 - [Access](#access)
 - [Local installation](#local-installation)
 - [Credits](#credits)
@@ -64,9 +65,12 @@ PubMed PMID: 26865323 PubMed Central PMCID: PMC4750186 Free access at BMC Plant 
 ### *Mus musculus*
 
 
-- Pavkovic, M., Pantano, L., Gerlach, C.V. et al. Multi omics analysis of fibrotic kidneys in two mouse models. Sci Data 6, 92 (2019). 
-    - <https://doi.org/10.1038/s41597-019-0095-5> 
-    - <https://www.nature.com/articles/s41597-019-0095-5#citeas>
+- **Pavkovic et al. (2019).**
+
+    - Data types: Transcriptomics, metabolomics and proteomics
+    - Reference: Pavkovic, M., Pantano, L., Gerlach, C.V. et al. Multi omics analysis of fibrotic kidneys in two mouse models. Sci Data 6, 92 (2019). 
+    - DOI: <https://doi.org/10.1038/s41597-019-0095-5> 
+    - Article: <https://www.nature.com/articles/s41597-019-0095-5#citeas>
     - Mouse fibrotic kidney browser: <http://hbcreports.med.harvard.edu/fmm/>
     - Data on Zenodo: <https://zenodo.org/record/2592516>
 
