@@ -3,12 +3,20 @@ title: "DU-Bii Study cases - Mouse fibrotic kidney"
 author: "Olivier Sand and Jacques van Helden"
 date: '`r Sys.Date()`'
 output:
-  powerpoint_presentation:
+  slidy_presentation:
+    smart: no
     slide_level: 2
+    self_contained: yes
     fig_caption: yes
     fig_height: 5
     fig_width: 7
+    highlight: tango
+    incremental: no
+    keep_md: yes
+    smaller: yes
+    theme: cerulean
     toc: yes
+    widescreen: yes
   ioslides_presentation:
     slide_level: 2
     self_contained: no
@@ -52,20 +60,12 @@ output:
     highlight: zenburn
     toc: yes
     toc_depth: 3
-  slidy_presentation:
-    smart: no
+  powerpoint_presentation:
     slide_level: 2
-    self_contained: yes
     fig_caption: yes
     fig_height: 5
     fig_width: 7
-    highlight: tango
-    incremental: no
-    keep_md: yes
-    smaller: yes
-    theme: cerulean
     toc: yes
-    widescreen: yes
 font-import: http://fonts.googleapis.com/css?family=Risque
 subtitle: DUBii 2020
 font-family: Garamond
@@ -128,7 +128,10 @@ Pavkovic, M., Pantano, L., Gerlach, C.V. et al. Multi omics analysis of fibrotic
 |:-----------------------------|:--------------------------|
 | Total RNA for the experiment on Unilateral ureter obstruction (UUO) model | <https://www.ncbi.nlm.nih.gov/geo/query/acc.cgi?acc=GSE118339> |
 
+## Samples
+Samples from two mouse models were collected. The first one is a reversible chemical-induced injury model (folic acid (FA) induced nephropathy). The second one is an irreversible surgically-induced fibrosis model (unilateral ureteral obstruction (UUO)). mRNA and small RNA sequencing, as well as 10-plex tandem mass tag (TMT) proteomics were performed with kidney samples from different time points over the course of fibrosis development. In the FA model, mice were sacrificed before the treatment (day 0) and 1, 2, 7, and 14 days after a single injection of folic acid. For the UUO model, mice were sacrificed before obstruction (day 0) and 3, 7, and 14 days after the ureter of the left kidney was obstructed via ligation. For both studies, kidneys were removed at each time point for total RNA isolation and protein sample preparation.
 
+We will first explore the UUO transcriptome data.
 
 ## Parameters
 
@@ -167,10 +170,7 @@ outdirs$transcriptome <- file.path(outdirs$main, "results/transcriptome")
 dir.create(outdirs$transcriptome, recursive = TRUE, showWarnings = FALSE)
 ```
 
-
-
 ## Download transcriptome data
-
 
 ```{r download_transcriptome}
 #### Download transcriptome data ####
@@ -193,7 +193,6 @@ if (file.exists(localDataArchive) & !parameters$forceDownload) {
 # outdirs$csv <- file.path(outdirs$data, "CSV")
 # dir.create(outdirs$csv, showWarnings = FALSE, recursive = TRUE)
 
-
 ```
 
 ## Load raw counts
@@ -202,12 +201,13 @@ if (file.exists(localDataArchive) & !parameters$forceDownload) {
 #### Load raw counts data table ####
 rawCountFile <- file.path(
   outdirs$data,
-  "hbc-MouseKidneyFibrOmics-a39e55a/tables/uuo/results/counts/raw_counts.csv.gz")
+   "hbc-MouseKidneyFibrOmics-a39e55a/tables/uuo/results/counts/raw_counts.csv.gz")
+ # "hbc-MouseKidneyFibrOmics-a39e55a/tables/fa/results/counts/raw_counts.csv.gz")
 rawCounts <- read.csv(file = rawCountFile, header = 1, row.names = 1)
 
 ```
 
-The RNA-seq trnascriptome data was loaded as raw counts. This table contains `r nrow(rawCounts)` rows (genes) and `r ncol(rawCounts)` columns (samples).  
+The RNA-seq transcriptome data was loaded as raw counts. This table contains `r nrow(rawCounts)` rows (genes) and `r ncol(rawCounts)` columns (samples).  
 
 
 ## Build metadata table
@@ -225,7 +225,6 @@ colPerCondition <- c(normal = "#BBFFBB",
                      day14 = "#FF4400")
 metadata$color <- colPerCondition[metadata$condition]
 ```
-
 
 ## Distribution of raw counts
 
@@ -358,7 +357,7 @@ apply(log2CountsStandardised, 2, median)
 
 ```
 
-## Normalization boxplot
+## Normalized boxplot
 
 ```{r median_normalisation_boxplot, fig.width=5, fig.height=7, out.width="32%"}
 #### Box plots after scaling ####
@@ -373,6 +372,36 @@ par(par.ori)
 
 
 ```
+
+## Violin plots
+
+We can also inspect the distribution of counts per sample with the `vioplot()` function.
+
+```{r violin plots, fig.width=5, fig.height=7, out.width="25%"}
+#### Violin plots ####
+par(mar = c(4, 6, 5, 1))
+vioplot::vioplot(log2Counts, 
+        col = metadata$color,
+        horizontal = TRUE, 
+        las = 1, 
+        main = "log2-transformed", 
+        xlab = "log2(counts)")
+par(par.ori)
+```
+
+## Scatter plots
+
+We can also inspect the distribution of counts per sample with the `plot()` function.
+
+```{r scatter plots, fig.width=5, fig.height=7, out.width="25%"}
+#### Scatter plots ####
+#par(mar = c(4, 6, 5, 1))
+#plot(log2Counts[,metadata$sampleName], 
+#        col = metadata$color)
+#par(par.ori)
+```
+
+## Combinations
 
 
 
