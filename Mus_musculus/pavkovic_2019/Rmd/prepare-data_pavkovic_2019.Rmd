@@ -3,6 +3,27 @@ title: "DU-Bii Study cases - Mouse fibrotic kidney"
 author: "Olivier Sand and Jacques van Helden"
 date: '`r Sys.Date()`'
 output:
+  html_document:
+    self_contained: no
+    fig_caption: yes
+    highlight: zenburn
+    theme: cerulean
+    toc: yes
+    toc_depth: 3
+    toc_float: yes
+    code_folding: "hide"
+  ioslides_presentation:
+    slide_level: 2
+    self_contained: no
+    colortheme: dolphin
+    fig_caption: yes
+    fig_height: 5
+    fig_width: 7
+    fonttheme: structurebold
+    highlight: tango
+    smaller: yes
+    toc: yes
+    widescreen: yes
   slidy_presentation:
     smart: no
     slide_level: 2
@@ -17,27 +38,6 @@ output:
     theme: cerulean
     toc: yes
     widescreen: yes
-  ioslides_presentation:
-    slide_level: 2
-    self_contained: no
-    colortheme: dolphin
-    fig_caption: yes
-    fig_height: 5
-    fig_width: 7
-    fonttheme: structurebold
-    highlight: tango
-    smaller: yes
-    toc: yes
-    widescreen: yes
-  html_document:
-    self_contained: no
-    fig_caption: yes
-    highlight: zenburn
-    theme: cerulean
-    toc: yes
-    toc_depth: 3
-    toc_float: yes
-    code_folding: "hide"
   beamer_presentation:
     colortheme: dolphin
     fig_caption: yes
@@ -75,19 +75,6 @@ editor_options:
 ---
 
 
-```{r libraries, include=FALSE, echo=FALSE, eval=TRUE}
-
-requiredLib <- c("knitr", "stringr")
-for (lib in requiredLib) {
-  if (!require(lib, character.only = TRUE)) {
-    install.packages(lib, )
-  }
-  require(lib, character.only = TRUE)
-}
-
-```
-
-
 
 ```{r settings, include=FALSE, echo=FALSE, eval=TRUE}
 
@@ -111,6 +98,18 @@ options(scipen = 12) ## Max number of digits for non-scientific notation
 ```
 
 
+
+```{r libraries, echo=FALSE, eval=TRUE}
+requiredLib <- c("knitr", "stringr", "vioplot")
+for (lib in requiredLib) {
+  if (!require(lib, character.only = TRUE)) {
+    install.packages(lib, )
+  }
+  require(lib, character.only = TRUE)
+}
+
+```
+
 ## Reference
 
 
@@ -122,16 +121,18 @@ Pavkovic, M., Pantano, L., Gerlach, C.V. et al. Multi omics analysis of fibrotic
 - Data on Zenodo: <https://zenodo.org/record/2592516>
 
 
+## Samples
+
+>Samples from two mouse models were collected. The first one is a reversible chemical-induced injury model (folic acid (FA) induced nephropathy). The second one is an irreversible surgically-induced fibrosis model (unilateral ureteral obstruction (UUO)). mRNA and small RNA sequencing, as well as 10-plex tandem mass tag (TMT) proteomics were performed with kidney samples from different time points over the course of fibrosis development. In the FA model, mice were sacrificed before the treatment (day 0) and 1, 2, 7, and 14 days after a single injection of folic acid. For the UUO model, mice were sacrificed before obstruction (day 0) and 3, 7, and 14 days after the ureter of the left kidney was obstructed via ligation. For both studies, kidneys were removed at each time point for total RNA isolation and protein sample preparation.
+
+We will first explore the UUO transcriptome data.
+
+
 ## Data sources
 
 | Doc | URL | 
 |:-----------------------------|:--------------------------|
 | Total RNA for the experiment on Unilateral ureter obstruction (UUO) model | <https://www.ncbi.nlm.nih.gov/geo/query/acc.cgi?acc=GSE118339> |
-
-## Samples
-Samples from two mouse models were collected. The first one is a reversible chemical-induced injury model (folic acid (FA) induced nephropathy). The second one is an irreversible surgically-induced fibrosis model (unilateral ureteral obstruction (UUO)). mRNA and small RNA sequencing, as well as 10-plex tandem mass tag (TMT) proteomics were performed with kidney samples from different time points over the course of fibrosis development. In the FA model, mice were sacrificed before the treatment (day 0) and 1, 2, 7, and 14 days after a single injection of folic acid. For the UUO model, mice were sacrificed before obstruction (day 0) and 3, 7, and 14 days after the ureter of the left kidney was obstructed via ligation. For both studies, kidneys were removed at each time point for total RNA isolation and protein sample preparation.
-
-We will first explore the UUO transcriptome data.
 
 ## Parameters
 
@@ -156,7 +157,8 @@ kable(as.data.frame(parameters))
 ```{r outdirs}
 #### Output directories ####
 outdirs <- list()
-outdirs$main <- getwd()
+# outdirs$main <- getwd()
+outdirs$main <- "."
 
 ## Data directory, where the data will be downloaded and uncompressed
 outdirs$data <- file.path(outdirs$main, "data")
@@ -166,8 +168,13 @@ dir.create(outdirs$data, recursive = TRUE, showWarnings = FALSE)
 outdirs$results <- file.path(outdirs$main, "results")
 
 # Transcriptome results
-outdirs$transcriptome <- file.path(outdirs$main, "results/transcriptome")
+outdirs$transcriptome <- file.path(outdirs$results, "transcriptome")
 dir.create(outdirs$transcriptome, recursive = TRUE, showWarnings = FALSE)
+
+
+## Output files
+outfiles <- vector()
+
 ```
 
 ## Download transcriptome data
@@ -214,7 +221,9 @@ The RNA-seq transcriptome data was loaded as raw counts. This table contains `r 
 
 ```{r metadata}
 #### Build metadata table ####
-metadata <- data.frame(sampleName = colnames(rawCounts))
+metadata <- data.frame(
+  dataType = "transcriptome",
+  sampleName = colnames(rawCounts))
 metadata[ , c("condition", "sampleNumber")] <- 
   str_split_fixed(string = metadata$sampleName, pattern = "_", n = 2)
 
@@ -313,7 +322,7 @@ log2CountsFiltered <- log2Counts[!undetectedGenes, ]
 
 We filtered out all the genes whose maximal count value across all samples was lower than `r parameters$minCount`. Among the `r nrow(rawCounts)` genes from the raw count table, `r sum(undetectedGenes)` were considered undetected according to this criterion. We use the remaining `r nrow(log2CountsFiltered)` genes for the subsequent analyses. 
 
-## Gene filtered boxplot
+## Boxplot after gene filtering
 
 ```{r boxplot_filtered, fig.width=5, fig.height=7, out.width="32%"}
 #### Box plots after filtering ####
@@ -403,6 +412,61 @@ We can also inspect the distribution of counts per sample with the `plot()` func
 
 ## Combinations
 
+
+## Exporting the result
+
+We export the pre-processed data in separate tables for further reuse. 
+
+```{r save_tables}
+#### Save tables  ####
+
+## Raw counts, all the genes
+outfiles["raw counts"] <- file.path(outdirs$transcriptome, "transcriptome_raw.tsv.gz")
+write.table(x = rawCounts, file = outfiles["raw counts"] , quote = FALSE, sep = "\t")
+write.table(x = rawCounts, 
+            dec = ".", 
+            file = gzfile(outfiles["raw counts"], "w"), 
+            quote = FALSE, sep = "\t")
+
+## Log2-transformed counts, all the genes
+outfiles["log2 counts"] <- file.path(outdirs$transcriptome, "transcriptome_log2.tsv.gz")
+write.table(x = format(digits = 3, log2Counts), 
+            dec = ".", 
+            file = gzfile(outfiles["log2 counts"], "w"), 
+            quote = FALSE, sep = "\t")
+
+## Filtered genes only, log2-transformed counts
+outfiles["filtered log2 counts"] <- file.path(outdirs$transcriptome, "transcriptome_log2_filterd.tsv.gz")
+write.table(x = format(digits = 3, log2CountsFiltered), 
+            dec = ".", 
+            file = gzfile(outfiles["filtered log2 counts"], "w"), 
+            quote = FALSE, sep = "\t")
+
+## Filtered genes only, log2-transformed and standardized counts
+outfiles["standardised log2 counts"] <- file.path(outdirs$transcriptome, "transcriptome_log2_norm.tsv.gz")
+write.table(x = format(digits = 3, log2CountsStandardised), 
+            dec = ".", 
+            file = gzfile(outfiles["standardised log2 counts"], "w"), 
+            quote = FALSE, sep = "\t")
+
+## Metadata
+outfiles["Metadata"] <- file.path(outdirs$transcriptome, "transcriptome_metadata.tsv")
+write.table(x = metadata, file = outfiles["Metadata"] , quote = FALSE, sep = "\t")
+
+
+## Build a table to display the links in the report
+fileTable <- data.frame(outfiles)
+fileTable$basename <- basename(fileTable$outfiles)
+fileTable$dirname <- dirname(fileTable$outfiles)
+fileTable$link <- paste0("[", fileTable$basename, "]", "(", fileTable$outfiles, ")")
+
+## Print the directories
+kable(t(as.data.frame.list(outdirs)), col.names = "Directories", caption = "Directories")
+
+##  Print the link table
+kable(cbind(rownames(fileTable), fileTable$link), row.names = FALSE, col.names = c("Contents", "Link"),
+      caption = "Output files")
+```
 
 
 
