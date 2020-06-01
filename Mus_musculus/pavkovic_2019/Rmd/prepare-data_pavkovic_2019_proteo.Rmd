@@ -143,6 +143,7 @@ par.ori <- par(no.readonly = TRUE)
 
 ## Analysis parameters
 parameters <- list(
+  dataset = "uuo", ## Supported: uuo, fa
   epsilon = 0.1,
   minCount = 10,
   forceDownload = FALSE)
@@ -201,9 +202,15 @@ if (file.exists(localDataArchive) & !parameters$forceDownload) {
 #### Load raw counts data table ####
 rawCountFile <- file.path(
   outdirs$data,
-   "hbc-MouseKidneyFibrOmics-a39e55a/tables/puuo/results/counts/uuo_model_counts.csv")
-  # "hbc-MouseKidneyFibrOmics-a39e55a/tables/pfa/results/counts/fa_model_counts.csv")
-rawCounts <- read.csv(file = rawCountFile, header = 1, row.names = 1)
+   paste0("hbc-MouseKidneyFibrOmics-a39e55a/tables/p", 
+          parameters$dataset,
+          "/results/counts/", 
+          parameters$dataset, "_model_counts.csv"))
+rawCounts <- read.csv(file = rawCountFile, header = 1, row.names = NULL)
+rownames(rawCounts) <- make.names(rawCounts[,1], unique = TRUE)
+
+# unique(sort(as.vector(rawCounts[, 1])))
+# length(unique(sort(as.vector(rawCounts[, 1]))))
 
 ```
 
