@@ -75,22 +75,10 @@ editor_options:
 ---
 
 
-```{r libraries, include=FALSE, echo=FALSE, eval=TRUE}
-
-requiredLib <- c("knitr", "stringr")
-for (lib in requiredLib) {
-  if (!require(lib, character.only = TRUE)) {
-    install.packages(lib, )
-  }
-  require(lib, character.only = TRUE)
-}
-
-```
-
 
 
 ```{r settings, include=FALSE, echo=FALSE, eval=TRUE}
-
+library(knitr)
 options(width = 300)
 # options(encoding = 'UTF-8')
 knitr::opts_chunk$set(
@@ -111,6 +99,17 @@ options(scipen = 12) ## Max number of digits for non-scientific notation
 ```
 
 
+
+```{r libraries, echo=FALSE, eval=TRUE}
+requiredLib <- c("knitr", "stringr", "vioplot")
+for (lib in requiredLib) {
+  if (!require(lib, character.only = TRUE)) {
+    install.packages(lib, )
+  }
+  require(lib, character.only = TRUE)
+}
+
+```
 ## Reference
 
 
@@ -122,16 +121,18 @@ Pavkovic, M., Pantano, L., Gerlach, C.V. et al. Multi omics analysis of fibrotic
 - Data on Zenodo: <https://zenodo.org/record/2592516>
 
 
+## Samples
+
+> Samples from two mouse models were collected. The first one is a reversible chemical-induced injury model (folic acid (FA) induced nephropathy). The second one is an irreversible surgically-induced fibrosis model (unilateral ureteral obstruction (UUO)). mRNA and small RNA sequencing, as well as 10-plex tandem mass tag (TMT) proteomics were performed with kidney samples from different time points over the course of fibrosis development. In the FA model, mice were sacrificed before the treatment (day 0) and 1, 2, 7, and 14 days after a single injection of folic acid. For the UUO model, mice were sacrificed before obstruction (day 0) and 3, 7, and 14 days after the ureter of the left kidney was obstructed via ligation. For both studies, kidneys were removed at each time point for total RNA isolation and protein sample preparation.
+
+We will now explore the UUO proteome data.
+
+
 ## Data sources
 
 | Doc | URL | 
 |:-----------------------------|:--------------------------|
 | Total RNA for the experiment on Unilateral ureter obstruction (UUO) model | <https://www.ncbi.nlm.nih.gov/geo/query/acc.cgi?acc=GSE118339> |
-
-## Samples
-Samples from two mouse models were collected. The first one is a reversible chemical-induced injury model (folic acid (FA) induced nephropathy). The second one is an irreversible surgically-induced fibrosis model (unilateral ureteral obstruction (UUO)). mRNA and small RNA sequencing, as well as 10-plex tandem mass tag (TMT) proteomics were performed with kidney samples from different time points over the course of fibrosis development. In the FA model, mice were sacrificed before the treatment (day 0) and 1, 2, 7, and 14 days after a single injection of folic acid. For the UUO model, mice were sacrificed before obstruction (day 0) and 3, 7, and 14 days after the ureter of the left kidney was obstructed via ligation. For both studies, kidneys were removed at each time point for total RNA isolation and protein sample preparation.
-
-We will now explore the UUO proteome data.
 
 ## Parameters
 
@@ -195,26 +196,30 @@ if (file.exists(localDataArchive) & !parameters$forceDownload) {
 
 ```
 
-## Load raw counts
+## Load raw values
 
-```{r load_raw_counts}
-#### Load raw counts data table ####
+```{r load_raw_values}
+#### Load raw values data table ####
 rawCountFile <- file.path(
   outdirs$data,
    "hbc-MouseKidneyFibrOmics-a39e55a/tables/puuo/results/counts/uuo_model_counts.csv")
   # "hbc-MouseKidneyFibrOmics-a39e55a/tables/pfa/results/counts/fa_model_counts.csv")
-rawCounts <- read.csv(file = rawCountFile, header = 1, row.names = 1)
+rawValues <- read.csv(file = rawCountFile, header = 1, row.names = NULL)
+row.names(rawValues) <- make.names(rawValues$id, unique = TRUE)
+rawValues <- rawValues[, -1]
+# View(rawValues)
 
 ```
 
-The proteome data was loaded as raw counts. This table contains `r nrow(rawCounts)` rows (genes) and `r ncol(rawCounts)` columns (samples).  
+The proteome data was loaded as raw measurement values 
+This table contains `r nrow(rawValues)` rows (proteins) and `r ncol(rawValues)` columns (samples).
 
 
 ## Build metadata table
 
 ```{r metadata}
 #### Build metadata table ####
-metadata <- data.frame(sampleName = colnames(rawCounts))
+metadata <- data.frame(sampleName = colnames(rawValues))
 metadata[ , c("condition", "sampleNumber")] <- 
   str_split_fixed(string = metadata$sampleName, pattern = "_", n = 2)
 
@@ -226,25 +231,48 @@ colPerCondition <- c(normal = "#BBFFBB",
 metadata$color <- colPerCondition[metadata$condition]
 ```
 
+## Compute sample-wise statistics
+
+```{r sample_wise_stat}
+
+sampleStat <- metadata
+sampleStat$mean <- apply(X = rawValues, 2, mean)
+sampleStat$median <- apply(X = rawValues, 2, median)
+sampleStat$sd <- apply(X = rawValues, 2, sd)
+sampleStat$min <- apply(X = rawValues, 2, min)
+sampleStat$perc05 <- apply(X = rawValues, 2, quantile, prob = 0.05)
+sampleStat$Q1 <- apply(X = rawValues, 2, quantile, prob = 0.25)
+sampleStat$median <- apply(X = rawValues, 2, quantile, prob = 0.5)
+sampleStat$Q3 <- apply(X = rawValues, 2, quantile, prob = 0.75)
+sampleStat$perc95 <- apply(X = rawValues, 2, quantile, prob = 0.95)
+sampleStat$max <- apply(X = rawValues, 2, max)
+sampleStat$iqr <- apply(X = rawValues, 2, IQR)
+
+## Print statistics per sample
+kable(format(x = format(digits = 5, sampleStat)))
+
+```
+
+
 ## Distribution of raw counts
 
 ```{r proteo_count_distrib, fig.width=12, fig.height=5, out.width="70%", fig.cap="Distribution of raw counts"}
-hist(unlist(rawCounts), breaks = 1000, 
+hist(unlist(rawValues), breaks = 1000, 
      main = "Raw count distribution", 
      xlab = "Raw counts", 
-     ylab = "Number of genes (all samples)")
+     ylab = "Number of proteins (all samples)")
 ```
 
-The distribution of raw counts is not very informative, because the range is defined by some outlier, i.e. a gene having a huge number of reads. Even with  strong zoom on the abcsissa range from 0 to 500, the histogram shows a steep drop in the first bins. 
+The distribution of raw counts is not very informative, because the range is defined by some outlier, i.e. a protein having a huge number of reads. Even with  strong zoom on the abcsissa range from 0 to 500, the histogram shows a steep drop in the first bins. 
 
 ## Distribution of raw counts - truncated abscissa
 
 ```{r proteo_count_distrib_truncated, fig.width=12, fig.height=5, out.width="70%", fig.cap="Distribution of raw counts"}
 #### Count distrib - truncated abscissa ####
-hist(unlist(rawCounts), breaks = 500000, 
+hist(unlist(rawValues), breaks = 500000, 
      main = "Raw count distribution", 
      xlab = "Raw counts (truncated abscissa", 
-     ylab = "Number of genes (all samples)",
+     ylab = "Number of proteins (all samples)",
      xlim = c(0, 500))
 
 ```
@@ -252,16 +280,16 @@ hist(unlist(rawCounts), breaks = 500000,
 ## Log2-transformed counts
 
 A typical approach is to normalise the counts by applying a log2 transformation .
-This however creates a problem when the counts of a given gene in a given sample is 0. To circumvent this, we can add an epsilon ($\epsilon = `r parameters$epsilon`$) before the log2 transformation. 
+This however creates a problem when the counts of a given protein in a given sample is 0. To circumvent this, we can add an epsilon ($\epsilon = `r parameters$epsilon`$) before the log2 transformation. 
 
 ```{r log2_counts, fig.width=12, fig.height=5, out.width="70%"}
 
 #### Log2 transformatiojn of the counts ####
-log2Counts <- log2(rawCounts + parameters$epsilon)
+log2Counts <- log2(rawValues + parameters$epsilon)
 hist(unlist(log2Counts), breaks = seq(from = -5, to = 22, by = 0.1),
      main = "log2-counts distribution",
      xlab = "log2(Counts + epsilon)", 
-     ylab = "Number of genes", col = "#BBFFBB")
+     ylab = "Number of proteins", col = "#BBFFBB")
 
 ```
 
@@ -284,7 +312,7 @@ pas l'air de marcher ...
 
 We can now inspect the distribution of counts per sample with the `boxplot()` function.
 
-```{r box plots, fig.width=5, fig.height=7, out.width="25%"}
+```{r boxplots, fig.width=5, fig.height=7, out.width="25%"}
 #### Box plots ####
 par(mar = c(4, 6, 5, 1))
 boxplot(log2Counts, 
@@ -298,35 +326,7 @@ par(par.ori)
 
 ## Box plot comment
 
-We notice an obvious problem: the vast majority of counts is very small. This can result from different causes, which will not be investigated in this context. 
-
-## Gene filtering
-
-```{r gene_filtering, fig.width=5, fig.height=7, out.width="50%"}
-
-## Filter out the genes with very low counts in all conditions
-undetectedGenes <- apply(rawCounts, MARGIN = 1, FUN = sum) < parameters$minCount
-# table(undetectedGenes)
-log2CountsFiltered <- log2Counts[!undetectedGenes, ]
-
-```
-
-We filtered out all the genes whose maximal count value across all samples was lower than `r parameters$minCount`. Among the `r nrow(rawCounts)` genes from the raw count table, `r sum(undetectedGenes)` were considered undetected according to this criterion. We use the remaining `r nrow(log2CountsFiltered)` genes for the subsequent analyses. 
-
-## Gene filtered boxplot
-
-```{r boxplot_filtered, fig.width=5, fig.height=7, out.width="32%"}
-#### Box plots after filtering ####
-par(mar = c(4, 6, 5, 1))
-boxplot(log2CountsFiltered, 
-        col = metadata$color,
-        horizontal = TRUE, 
-        las = 1,
-        main = "Filtered genes", 
-        xlab = "log2(counts)")
-par(par.ori)
-
-```
+In contrast with transcriptome data, the box plot seems relatively well balanced between samples. 
 
 ## Normalisation (more precisely: scaling)
 
@@ -339,17 +339,17 @@ For the sake of simplicity, we will use here a very simple criterion: median-bas
 ```{r median_normalisation, fig.width=5, fig.height=7, out.width="25%"}
 
 #### Median-based normalisation ####
-sampleMedians <- apply(log2CountsFiltered, 2, median)
+sampleMedians <- apply(log2Filtered, 2, median)
 seriesMedian <- median(sampleMedians)
 scalingFactors <- seriesMedian / sampleMedians
 
 log2CountsStandardised <- data.frame(matrix(
-  nrow = nrow(log2CountsFiltered),
-  ncol = ncol(log2CountsFiltered)))
-colnames(log2CountsStandardised) <- colnames(log2CountsFiltered)
-rownames(log2CountsStandardised) <- rownames(log2CountsFiltered)
-for (j in 1:ncol(log2CountsFiltered)) {
-  log2CountsStandardised[, j] <- log2CountsFiltered[, j] * scalingFactors[j]
+  nrow = nrow(log2Filtered),
+  ncol = ncol(log2Filtered)))
+colnames(log2CountsStandardised) <- colnames(log2Filtered)
+rownames(log2CountsStandardised) <- rownames(log2Filtered)
+for (j in 1:ncol(log2Filtered)) {
+  log2CountsStandardised[, j] <- log2Filtered[, j] * scalingFactors[j]
 }
 
 ## Check the remaining medians
@@ -357,7 +357,8 @@ apply(log2CountsStandardised, 2, median)
 
 ```
 
-## Normalized boxplot
+
+## Median-centered boxplot
 
 ```{r median_normalisation_boxplot, fig.width=5, fig.height=7, out.width="32%"}
 #### Box plots after scaling ####
@@ -366,11 +367,23 @@ boxplot(log2CountsStandardised,
         col = metadata$color,
         horizontal = TRUE, 
         las = 1,
-        main = "Median-based scaled", 
+        main = "Median-based centered", 
         xlab = "log2(counts")
 par(par.ori)
+```
 
+## IQR-scaled boxplot
 
+```{r median_iqr_normalisation_boxplot, fig.width=5, fig.height=7, out.width="32%"}
+#### Box plots after scaling ####
+par(mar = c(4, 6, 5, 1))
+boxplot(log2CountsStandardised, 
+        col = metadata$color,
+        horizontal = TRUE, 
+        las = 1,
+        main = "Median-based centered", 
+        xlab = "log2(counts")
+par(par.ori)
 ```
 
 ## Violin plots
