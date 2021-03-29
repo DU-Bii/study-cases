@@ -403,14 +403,18 @@ div.tocify {
 <a class="sourceLine" id="cb1-5" data-line-number="5"></a>
 <a class="sourceLine" id="cb1-6" data-line-number="6"><span class="co">## Analysis parameters</span></a>
 <a class="sourceLine" id="cb1-7" data-line-number="7">parameters &lt;-<span class="st"> </span><span class="kw">list</span>(</a>
-<a class="sourceLine" id="cb1-8" data-line-number="8">  <span class="dt">epsilon =</span> <span class="fl">0.1</span>,</a>
-<a class="sourceLine" id="cb1-9" data-line-number="9">  <span class="dt">minCount =</span> <span class="dv">10</span>,</a>
-<a class="sourceLine" id="cb1-10" data-line-number="10">  <span class="dt">forceDownload =</span> <span class="ot">FALSE</span>)</a>
-<a class="sourceLine" id="cb1-11" data-line-number="11"></a>
-<a class="sourceLine" id="cb1-12" data-line-number="12"><span class="kw">kable</span>(<span class="kw">as.data.frame</span>(parameters))</a></code></pre></div>
+<a class="sourceLine" id="cb1-8" data-line-number="8">  <span class="dt">dataset =</span> <span class="st">&quot;uuo&quot;</span>, <span class="co">## Supported: uuo, fa</span></a>
+<a class="sourceLine" id="cb1-9" data-line-number="9">  <span class="dt">datatype =</span> <span class="st">&quot;transcriptome&quot;</span>,</a>
+<a class="sourceLine" id="cb1-10" data-line-number="10">  <span class="dt">epsilon =</span> <span class="fl">0.1</span>,</a>
+<a class="sourceLine" id="cb1-11" data-line-number="11">  <span class="dt">minCount =</span> <span class="dv">10</span>,</a>
+<a class="sourceLine" id="cb1-12" data-line-number="12">  <span class="dt">forceDownload =</span> <span class="ot">FALSE</span>)</a>
+<a class="sourceLine" id="cb1-13" data-line-number="13"></a>
+<a class="sourceLine" id="cb1-14" data-line-number="14"><span class="kw">kable</span>(<span class="kw">as.data.frame</span>(parameters))</a></code></pre></div>
 <table>
 <thead>
 <tr class="header">
+<th align="left">dataset</th>
+<th align="left">datatype</th>
 <th align="right">epsilon</th>
 <th align="right">minCount</th>
 <th align="left">forceDownload</th>
@@ -418,6 +422,8 @@ div.tocify {
 </thead>
 <tbody>
 <tr class="odd">
+<td align="left">uuo</td>
+<td align="left">transcriptome</td>
 <td align="right">0.1</td>
 <td align="right">10</td>
 <td align="left">FALSE</td>
@@ -441,11 +447,7 @@ div.tocify {
 <a class="sourceLine" id="cb2-12" data-line-number="12"></a>
 <a class="sourceLine" id="cb2-13" data-line-number="13"><span class="co"># Transcriptome results</span></a>
 <a class="sourceLine" id="cb2-14" data-line-number="14">outdirs<span class="op">$</span>transcriptome &lt;-<span class="st"> </span><span class="kw">file.path</span>(outdirs<span class="op">$</span>results, <span class="st">&quot;transcriptome&quot;</span>)</a>
-<a class="sourceLine" id="cb2-15" data-line-number="15"><span class="kw">dir.create</span>(outdirs<span class="op">$</span>transcriptome, <span class="dt">recursive =</span> <span class="ot">TRUE</span>, <span class="dt">showWarnings =</span> <span class="ot">FALSE</span>)</a>
-<a class="sourceLine" id="cb2-16" data-line-number="16"></a>
-<a class="sourceLine" id="cb2-17" data-line-number="17"></a>
-<a class="sourceLine" id="cb2-18" data-line-number="18"><span class="co">## Output files</span></a>
-<a class="sourceLine" id="cb2-19" data-line-number="19">outfiles &lt;-<span class="st"> </span><span class="kw">vector</span>()</a></code></pre></div>
+<a class="sourceLine" id="cb2-15" data-line-number="15"><span class="kw">dir.create</span>(outdirs<span class="op">$</span>transcriptome, <span class="dt">recursive =</span> <span class="ot">TRUE</span>, <span class="dt">showWarnings =</span> <span class="ot">FALSE</span>)</a></code></pre></div>
 </div>
 <div id="download-transcriptome-data" class="section level2">
 <h2>Download transcriptome data</h2>
@@ -472,11 +474,16 @@ div.tocify {
 <div id="load-raw-counts" class="section level2">
 <h2>Load raw counts</h2>
 <div class="sourceCode" id="cb4"><pre class="sourceCode r"><code class="sourceCode r"><a class="sourceLine" id="cb4-1" data-line-number="1"><span class="co">#### Load raw counts data table ####</span></a>
-<a class="sourceLine" id="cb4-2" data-line-number="2">rawCountFile &lt;-<span class="st"> </span><span class="kw">file.path</span>(</a>
-<a class="sourceLine" id="cb4-3" data-line-number="3">  outdirs<span class="op">$</span>data,</a>
-<a class="sourceLine" id="cb4-4" data-line-number="4">   <span class="st">&quot;hbc-MouseKidneyFibrOmics-a39e55a/tables/uuo/results/counts/raw_counts.csv.gz&quot;</span>)</a>
-<a class="sourceLine" id="cb4-5" data-line-number="5"> <span class="co"># &quot;hbc-MouseKidneyFibrOmics-a39e55a/tables/fa/results/counts/raw_counts.csv.gz&quot;)</span></a>
-<a class="sourceLine" id="cb4-6" data-line-number="6">rawCounts &lt;-<span class="st"> </span><span class="kw">read.csv</span>(<span class="dt">file =</span> rawCountFile, <span class="dt">header =</span> <span class="dv">1</span>, <span class="dt">row.names =</span> <span class="dv">1</span>)</a></code></pre></div>
+<a class="sourceLine" id="cb4-2" data-line-number="2"></a>
+<a class="sourceLine" id="cb4-3" data-line-number="3"></a>
+<a class="sourceLine" id="cb4-4" data-line-number="4"><span class="co">## Note: the &quot;raw&quot; counts are decimal numbers, I suspect that they have been somewhat normalised. To check. </span></a>
+<a class="sourceLine" id="cb4-5" data-line-number="5">rawCountFile &lt;-<span class="st"> </span><span class="kw">file.path</span>(</a>
+<a class="sourceLine" id="cb4-6" data-line-number="6">  outdirs<span class="op">$</span>data,</a>
+<a class="sourceLine" id="cb4-7" data-line-number="7">   <span class="kw">paste0</span>(<span class="st">&quot;hbc-MouseKidneyFibrOmics-a39e55a/tables/&quot;</span>, </a>
+<a class="sourceLine" id="cb4-8" data-line-number="8">          parameters<span class="op">$</span>dataset, </a>
+<a class="sourceLine" id="cb4-9" data-line-number="9">          <span class="st">&quot;/results/counts/raw_counts.csv.gz&quot;</span>))</a>
+<a class="sourceLine" id="cb4-10" data-line-number="10"> <span class="co"># &quot;hbc-MouseKidneyFibrOmics-a39e55a/tables/fa/results/counts/raw_counts.csv.gz&quot;)</span></a>
+<a class="sourceLine" id="cb4-11" data-line-number="11">rawValues &lt;-<span class="st"> </span><span class="kw">read.csv</span>(<span class="dt">file =</span> rawCountFile, <span class="dt">header =</span> <span class="dv">1</span>, <span class="dt">row.names =</span> <span class="dv">1</span>)</a></code></pre></div>
 <p>The RNA-seq transcriptome data was loaded as raw counts. This table contains 46679 rows (genes) and 15 columns (samples).</p>
 </div>
 <div id="build-metadata-table" class="section level2">
@@ -484,7 +491,7 @@ div.tocify {
 <div class="sourceCode" id="cb5"><pre class="sourceCode r"><code class="sourceCode r"><a class="sourceLine" id="cb5-1" data-line-number="1"><span class="co">#### Build metadata table ####</span></a>
 <a class="sourceLine" id="cb5-2" data-line-number="2">metadata &lt;-<span class="st"> </span><span class="kw">data.frame</span>(</a>
 <a class="sourceLine" id="cb5-3" data-line-number="3">  <span class="dt">dataType =</span> <span class="st">&quot;transcriptome&quot;</span>,</a>
-<a class="sourceLine" id="cb5-4" data-line-number="4">  <span class="dt">sampleName =</span> <span class="kw">colnames</span>(rawCounts))</a>
+<a class="sourceLine" id="cb5-4" data-line-number="4">  <span class="dt">sampleName =</span> <span class="kw">colnames</span>(rawValues))</a>
 <a class="sourceLine" id="cb5-5" data-line-number="5">metadata[ , <span class="kw">c</span>(<span class="st">&quot;condition&quot;</span>, <span class="st">&quot;sampleNumber&quot;</span>)] &lt;-<span class="st"> </span></a>
 <a class="sourceLine" id="cb5-6" data-line-number="6"><span class="st">  </span><span class="kw">str_split_fixed</span>(<span class="dt">string =</span> metadata<span class="op">$</span>sampleName, <span class="dt">pattern =</span> <span class="st">&quot;_&quot;</span>, <span class="dt">n =</span> <span class="dv">2</span>)</a>
 <a class="sourceLine" id="cb5-7" data-line-number="7"></a>
@@ -495,12 +502,308 @@ div.tocify {
 <a class="sourceLine" id="cb5-12" data-line-number="12">                     <span class="dt">day14 =</span> <span class="st">&quot;#FF4400&quot;</span>)</a>
 <a class="sourceLine" id="cb5-13" data-line-number="13">metadata<span class="op">$</span>color &lt;-<span class="st"> </span>colPerCondition[metadata<span class="op">$</span>condition]</a></code></pre></div>
 </div>
+<div id="compute-sample-wise-statistics" class="section level2">
+<h2>Compute sample-wise statistics</h2>
+<div class="sourceCode" id="cb6"><pre class="sourceCode r"><code class="sourceCode r"><a class="sourceLine" id="cb6-1" data-line-number="1">sampleStat &lt;-<span class="st"> </span>metadata</a>
+<a class="sourceLine" id="cb6-2" data-line-number="2">sampleStat<span class="op">$</span>mean &lt;-<span class="st"> </span><span class="kw">apply</span>(<span class="dt">X =</span> rawValues, <span class="dv">2</span>, mean)</a>
+<a class="sourceLine" id="cb6-3" data-line-number="3">sampleStat<span class="op">$</span>median &lt;-<span class="st"> </span><span class="kw">apply</span>(<span class="dt">X =</span> rawValues, <span class="dv">2</span>, median)</a>
+<a class="sourceLine" id="cb6-4" data-line-number="4">sampleStat<span class="op">$</span>sd &lt;-<span class="st"> </span><span class="kw">apply</span>(<span class="dt">X =</span> rawValues, <span class="dv">2</span>, sd)</a>
+<a class="sourceLine" id="cb6-5" data-line-number="5">sampleStat<span class="op">$</span>min &lt;-<span class="st"> </span><span class="kw">apply</span>(<span class="dt">X =</span> rawValues, <span class="dv">2</span>, min)</a>
+<a class="sourceLine" id="cb6-6" data-line-number="6">sampleStat<span class="op">$</span>perc05 &lt;-<span class="st"> </span><span class="kw">apply</span>(<span class="dt">X =</span> rawValues, <span class="dv">2</span>, quantile, <span class="dt">prob =</span> <span class="fl">0.05</span>)</a>
+<a class="sourceLine" id="cb6-7" data-line-number="7">sampleStat<span class="op">$</span>Q1 &lt;-<span class="st"> </span><span class="kw">apply</span>(<span class="dt">X =</span> rawValues, <span class="dv">2</span>, quantile, <span class="dt">prob =</span> <span class="fl">0.25</span>)</a>
+<a class="sourceLine" id="cb6-8" data-line-number="8">sampleStat<span class="op">$</span>median &lt;-<span class="st"> </span><span class="kw">apply</span>(<span class="dt">X =</span> rawValues, <span class="dv">2</span>, quantile, <span class="dt">prob =</span> <span class="fl">0.5</span>)</a>
+<a class="sourceLine" id="cb6-9" data-line-number="9">sampleStat<span class="op">$</span>Q3 &lt;-<span class="st"> </span><span class="kw">apply</span>(<span class="dt">X =</span> rawValues, <span class="dv">2</span>, quantile, <span class="dt">prob =</span> <span class="fl">0.75</span>)</a>
+<a class="sourceLine" id="cb6-10" data-line-number="10">sampleStat<span class="op">$</span>perc95 &lt;-<span class="st"> </span><span class="kw">apply</span>(<span class="dt">X =</span> rawValues, <span class="dv">2</span>, quantile, <span class="dt">prob =</span> <span class="fl">0.95</span>)</a>
+<a class="sourceLine" id="cb6-11" data-line-number="11">sampleStat<span class="op">$</span>max &lt;-<span class="st"> </span><span class="kw">apply</span>(<span class="dt">X =</span> rawValues, <span class="dv">2</span>, max)</a>
+<a class="sourceLine" id="cb6-12" data-line-number="12">sampleStat<span class="op">$</span>iqr &lt;-<span class="st"> </span><span class="kw">apply</span>(<span class="dt">X =</span> rawValues, <span class="dv">2</span>, IQR)</a>
+<a class="sourceLine" id="cb6-13" data-line-number="13"></a>
+<a class="sourceLine" id="cb6-14" data-line-number="14"><span class="co">## Print statistics per sample</span></a>
+<a class="sourceLine" id="cb6-15" data-line-number="15"><span class="kw">kable</span>(<span class="kw">format</span>(<span class="dt">x =</span> <span class="kw">format</span>(<span class="dt">digits =</span> <span class="dv">5</span>, sampleStat)))</a></code></pre></div>
+<table>
+<thead>
+<tr class="header">
+<th align="left">dataType</th>
+<th align="left">sampleName</th>
+<th align="left">condition</th>
+<th align="left">sampleNumber</th>
+<th align="left">color</th>
+<th align="left">mean</th>
+<th align="left">median</th>
+<th align="left">sd</th>
+<th align="left">min</th>
+<th align="left">perc05</th>
+<th align="left">Q1</th>
+<th align="left">Q3</th>
+<th align="left">perc95</th>
+<th align="left">max</th>
+<th align="left">iqr</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td align="left">transcriptome</td>
+<td align="left">day14_12</td>
+<td align="left">day14</td>
+<td align="left">12</td>
+<td align="left">#FF4400</td>
+<td align="left">577.40</td>
+<td align="left">1.32543</td>
+<td align="left">4020.5</td>
+<td align="left">0</td>
+<td align="left">0</td>
+<td align="left">0</td>
+<td align="left">227.855</td>
+<td align="left">2563.5</td>
+<td align="left">480841</td>
+<td align="left">227.855</td>
+</tr>
+<tr class="even">
+<td align="left">transcriptome</td>
+<td align="left">day14_13</td>
+<td align="left">day14</td>
+<td align="left">13</td>
+<td align="left">#FF4400</td>
+<td align="left">317.42</td>
+<td align="left">0.99779</td>
+<td align="left">2538.1</td>
+<td align="left">0</td>
+<td align="left">0</td>
+<td align="left">0</td>
+<td align="left">130.509</td>
+<td align="left">1371.5</td>
+<td align="left">258977</td>
+<td align="left">130.509</td>
+</tr>
+<tr class="odd">
+<td align="left">transcriptome</td>
+<td align="left">day14_14</td>
+<td align="left">day14</td>
+<td align="left">14</td>
+<td align="left">#FF4400</td>
+<td align="left">439.77</td>
+<td align="left">1.19451</td>
+<td align="left">2758.5</td>
+<td align="left">0</td>
+<td align="left">0</td>
+<td align="left">0</td>
+<td align="left">190.710</td>
+<td align="left">2043.2</td>
+<td align="left">280431</td>
+<td align="left">190.710</td>
+</tr>
+<tr class="even">
+<td align="left">transcriptome</td>
+<td align="left">day14_15</td>
+<td align="left">day14</td>
+<td align="left">15</td>
+<td align="left">#FF4400</td>
+<td align="left">464.17</td>
+<td align="left">1.24853</td>
+<td align="left">5165.5</td>
+<td align="left">0</td>
+<td align="left">0</td>
+<td align="left">0</td>
+<td align="left">180.824</td>
+<td align="left">1855.8</td>
+<td align="left">693041</td>
+<td align="left">180.824</td>
+</tr>
+<tr class="odd">
+<td align="left">transcriptome</td>
+<td align="left">day3_4</td>
+<td align="left">day3</td>
+<td align="left">4</td>
+<td align="left">#FFFFDD</td>
+<td align="left">736.30</td>
+<td align="left">1.00880</td>
+<td align="left">8571.4</td>
+<td align="left">0</td>
+<td align="left">0</td>
+<td align="left">0</td>
+<td align="left">197.157</td>
+<td align="left">2901.5</td>
+<td align="left">923949</td>
+<td align="left">197.157</td>
+</tr>
+<tr class="even">
+<td align="left">transcriptome</td>
+<td align="left">day3_5</td>
+<td align="left">day3</td>
+<td align="left">5</td>
+<td align="left">#FFFFDD</td>
+<td align="left">670.62</td>
+<td align="left">1.67158</td>
+<td align="left">7646.5</td>
+<td align="left">0</td>
+<td align="left">0</td>
+<td align="left">0</td>
+<td align="left">222.837</td>
+<td align="left">2687.5</td>
+<td align="left">874143</td>
+<td align="left">222.837</td>
+</tr>
+<tr class="odd">
+<td align="left">transcriptome</td>
+<td align="left">day3_6</td>
+<td align="left">day3</td>
+<td align="left">6</td>
+<td align="left">#FFFFDD</td>
+<td align="left">657.52</td>
+<td align="left">1.02132</td>
+<td align="left">8424.8</td>
+<td align="left">0</td>
+<td align="left">0</td>
+<td align="left">0</td>
+<td align="left">181.088</td>
+<td align="left">2513.6</td>
+<td align="left">987332</td>
+<td align="left">181.088</td>
+</tr>
+<tr class="even">
+<td align="left">transcriptome</td>
+<td align="left">day3_7</td>
+<td align="left">day3</td>
+<td align="left">7</td>
+<td align="left">#FFFFDD</td>
+<td align="left">762.34</td>
+<td align="left">1.20783</td>
+<td align="left">11164.8</td>
+<td align="left">0</td>
+<td align="left">0</td>
+<td align="left">0</td>
+<td align="left">216.455</td>
+<td align="left">2781.6</td>
+<td align="left">1349892</td>
+<td align="left">216.455</td>
+</tr>
+<tr class="odd">
+<td align="left">transcriptome</td>
+<td align="left">day7_10</td>
+<td align="left">day7</td>
+<td align="left">10</td>
+<td align="left">#FFDD88</td>
+<td align="left">747.06</td>
+<td align="left">1.72124</td>
+<td align="left">7495.7</td>
+<td align="left">0</td>
+<td align="left">0</td>
+<td align="left">0</td>
+<td align="left">242.263</td>
+<td align="left">3132.0</td>
+<td align="left">889506</td>
+<td align="left">242.263</td>
+</tr>
+<tr class="even">
+<td align="left">transcriptome</td>
+<td align="left">day7_11</td>
+<td align="left">day7</td>
+<td align="left">11</td>
+<td align="left">#FFDD88</td>
+<td align="left">507.88</td>
+<td align="left">1.01550</td>
+<td align="left">4781.0</td>
+<td align="left">0</td>
+<td align="left">0</td>
+<td align="left">0</td>
+<td align="left">185.765</td>
+<td align="left">2135.0</td>
+<td align="left">556133</td>
+<td align="left">185.765</td>
+</tr>
+<tr class="odd">
+<td align="left">transcriptome</td>
+<td align="left">day7_8</td>
+<td align="left">day7</td>
+<td align="left">8</td>
+<td align="left">#FFDD88</td>
+<td align="left">724.46</td>
+<td align="left">1.47772</td>
+<td align="left">7201.4</td>
+<td align="left">0</td>
+<td align="left">0</td>
+<td align="left">0</td>
+<td align="left">236.473</td>
+<td align="left">3005.6</td>
+<td align="left">904431</td>
+<td align="left">236.473</td>
+</tr>
+<tr class="even">
+<td align="left">transcriptome</td>
+<td align="left">day7_9</td>
+<td align="left">day7</td>
+<td align="left">9</td>
+<td align="left">#FFDD88</td>
+<td align="left">756.34</td>
+<td align="left">1.99637</td>
+<td align="left">6429.8</td>
+<td align="left">0</td>
+<td align="left">0</td>
+<td align="left">0</td>
+<td align="left">291.494</td>
+<td align="left">3264.0</td>
+<td align="left">733494</td>
+<td align="left">291.494</td>
+</tr>
+<tr class="odd">
+<td align="left">transcriptome</td>
+<td align="left">normal_1</td>
+<td align="left">normal</td>
+<td align="left">1</td>
+<td align="left">#BBFFBB</td>
+<td align="left">801.47</td>
+<td align="left">0.95108</td>
+<td align="left">11585.8</td>
+<td align="left">0</td>
+<td align="left">0</td>
+<td align="left">0</td>
+<td align="left">123.308</td>
+<td align="left">2740.6</td>
+<td align="left">1259045</td>
+<td align="left">123.308</td>
+</tr>
+<tr class="even">
+<td align="left">transcriptome</td>
+<td align="left">normal_2</td>
+<td align="left">normal</td>
+<td align="left">2</td>
+<td align="left">#BBFFBB</td>
+<td align="left">585.72</td>
+<td align="left">0.00000</td>
+<td align="left">8237.1</td>
+<td align="left">0</td>
+<td align="left">0</td>
+<td align="left">0</td>
+<td align="left">88.908</td>
+<td align="left">2035.8</td>
+<td align="left">912206</td>
+<td align="left">88.908</td>
+</tr>
+<tr class="odd">
+<td align="left">transcriptome</td>
+<td align="left">normal_3</td>
+<td align="left">normal</td>
+<td align="left">3</td>
+<td align="left">#BBFFBB</td>
+<td align="left">638.52</td>
+<td align="left">0.77229</td>
+<td align="left">9846.7</td>
+<td align="left">0</td>
+<td align="left">0</td>
+<td align="left">0</td>
+<td align="left">95.103</td>
+<td align="left">2149.2</td>
+<td align="left">1101035</td>
+<td align="left">95.103</td>
+</tr>
+</tbody>
+</table>
+</div>
 <div id="distribution-of-raw-counts" class="section level2">
 <h2>Distribution of raw counts</h2>
-<div class="sourceCode" id="cb6"><pre class="sourceCode r"><code class="sourceCode r"><a class="sourceLine" id="cb6-1" data-line-number="1"><span class="kw">hist</span>(<span class="kw">unlist</span>(rawCounts), <span class="dt">breaks =</span> <span class="dv">1000</span>, </a>
-<a class="sourceLine" id="cb6-2" data-line-number="2">     <span class="dt">main =</span> <span class="st">&quot;Raw count distribution&quot;</span>, </a>
-<a class="sourceLine" id="cb6-3" data-line-number="3">     <span class="dt">xlab =</span> <span class="st">&quot;Raw counts&quot;</span>, </a>
-<a class="sourceLine" id="cb6-4" data-line-number="4">     <span class="dt">ylab =</span> <span class="st">&quot;Number of genes (all samples)&quot;</span>)</a></code></pre></div>
+<div class="sourceCode" id="cb7"><pre class="sourceCode r"><code class="sourceCode r"><a class="sourceLine" id="cb7-1" data-line-number="1"><span class="kw">hist</span>(<span class="kw">unlist</span>(rawValues), <span class="dt">breaks =</span> <span class="dv">1000</span>, </a>
+<a class="sourceLine" id="cb7-2" data-line-number="2">     <span class="dt">main =</span> <span class="st">&quot;Raw count distribution&quot;</span>, </a>
+<a class="sourceLine" id="cb7-3" data-line-number="3">     <span class="dt">xlab =</span> <span class="st">&quot;Raw counts&quot;</span>, </a>
+<a class="sourceLine" id="cb7-4" data-line-number="4">     <span class="dt">ylab =</span> <span class="st">&quot;Number of genes (all samples)&quot;</span>)</a></code></pre></div>
 <div class="figure" style="text-align: center">
 <img src="figures/mouse-kidney_RNA-seq_count_distrib-1.png" alt="Distribution of raw counts" width="70%" />
 <p class="caption">
@@ -511,12 +814,12 @@ Distribution of raw counts
 </div>
 <div id="distribution-of-raw-counts---truncated-abscissa" class="section level2">
 <h2>Distribution of raw counts - truncated abscissa</h2>
-<div class="sourceCode" id="cb7"><pre class="sourceCode r"><code class="sourceCode r"><a class="sourceLine" id="cb7-1" data-line-number="1"><span class="co">#### Count distrib - truncated abscissa ####</span></a>
-<a class="sourceLine" id="cb7-2" data-line-number="2"><span class="kw">hist</span>(<span class="kw">unlist</span>(rawCounts), <span class="dt">breaks =</span> <span class="dv">500000</span>, </a>
-<a class="sourceLine" id="cb7-3" data-line-number="3">     <span class="dt">main =</span> <span class="st">&quot;Raw count distribution&quot;</span>, </a>
-<a class="sourceLine" id="cb7-4" data-line-number="4">     <span class="dt">xlab =</span> <span class="st">&quot;Raw counts (truncated abscissa&quot;</span>, </a>
-<a class="sourceLine" id="cb7-5" data-line-number="5">     <span class="dt">ylab =</span> <span class="st">&quot;Number of genes (all samples)&quot;</span>,</a>
-<a class="sourceLine" id="cb7-6" data-line-number="6">     <span class="dt">xlim =</span> <span class="kw">c</span>(<span class="dv">0</span>, <span class="dv">500</span>))</a></code></pre></div>
+<div class="sourceCode" id="cb8"><pre class="sourceCode r"><code class="sourceCode r"><a class="sourceLine" id="cb8-1" data-line-number="1"><span class="co">#### Count distrib - truncated abscissa ####</span></a>
+<a class="sourceLine" id="cb8-2" data-line-number="2"><span class="kw">hist</span>(<span class="kw">unlist</span>(rawValues), <span class="dt">breaks =</span> <span class="dv">500000</span>, </a>
+<a class="sourceLine" id="cb8-3" data-line-number="3">     <span class="dt">main =</span> <span class="st">&quot;Raw count distribution&quot;</span>, </a>
+<a class="sourceLine" id="cb8-4" data-line-number="4">     <span class="dt">xlab =</span> <span class="st">&quot;Raw counts (truncated abscissa&quot;</span>, </a>
+<a class="sourceLine" id="cb8-5" data-line-number="5">     <span class="dt">ylab =</span> <span class="st">&quot;Number of genes (all samples)&quot;</span>,</a>
+<a class="sourceLine" id="cb8-6" data-line-number="6">     <span class="dt">xlim =</span> <span class="kw">c</span>(<span class="dv">0</span>, <span class="dv">500</span>))</a></code></pre></div>
 <div class="figure" style="text-align: center">
 <img src="figures/mouse-kidney_RNA-seq_count_distrib_truncated-1.png" alt="Distribution of raw counts" width="70%" />
 <p class="caption">
@@ -527,12 +830,12 @@ Distribution of raw counts
 <div id="log2-transformed-counts" class="section level2">
 <h2>Log2-transformed counts</h2>
 <p>A typical approach is to normalise the counts by applying a log2 transformation . This however creates a problem when the counts of a given gene in a given sample is 0. To circumvent this, we can add an epsilon (<span class="math inline">\(\epsilon = 0.1\)</span>) before the log2 transformation.</p>
-<div class="sourceCode" id="cb8"><pre class="sourceCode r"><code class="sourceCode r"><a class="sourceLine" id="cb8-1" data-line-number="1"><span class="co">#### Log2 transformatiojn of the counts ####</span></a>
-<a class="sourceLine" id="cb8-2" data-line-number="2">log2Counts &lt;-<span class="st"> </span><span class="kw">log2</span>(rawCounts <span class="op">+</span><span class="st"> </span>parameters<span class="op">$</span>epsilon)</a>
-<a class="sourceLine" id="cb8-3" data-line-number="3"><span class="kw">hist</span>(<span class="kw">unlist</span>(log2Counts), <span class="dt">breaks =</span> <span class="kw">seq</span>(<span class="dt">from =</span> <span class="dv">-5</span>, <span class="dt">to =</span> <span class="dv">22</span>, <span class="dt">by =</span> <span class="fl">0.1</span>),</a>
-<a class="sourceLine" id="cb8-4" data-line-number="4">     <span class="dt">main =</span> <span class="st">&quot;log2-counts distribution&quot;</span>,</a>
-<a class="sourceLine" id="cb8-5" data-line-number="5">     <span class="dt">xlab =</span> <span class="st">&quot;log2(Counts + epsilon)&quot;</span>, </a>
-<a class="sourceLine" id="cb8-6" data-line-number="6">     <span class="dt">ylab =</span> <span class="st">&quot;Number of genes&quot;</span>, <span class="dt">col =</span> <span class="st">&quot;#BBFFBB&quot;</span>)</a></code></pre></div>
+<div class="sourceCode" id="cb9"><pre class="sourceCode r"><code class="sourceCode r"><a class="sourceLine" id="cb9-1" data-line-number="1"><span class="co">#### Log2 transformatiojn of the counts ####</span></a>
+<a class="sourceLine" id="cb9-2" data-line-number="2">log2Values &lt;-<span class="st"> </span><span class="kw">log2</span>(rawValues <span class="op">+</span><span class="st"> </span>parameters<span class="op">$</span>epsilon)</a>
+<a class="sourceLine" id="cb9-3" data-line-number="3"><span class="kw">hist</span>(<span class="kw">unlist</span>(log2Values), <span class="dt">breaks =</span> <span class="kw">seq</span>(<span class="dt">from =</span> <span class="dv">-5</span>, <span class="dt">to =</span> <span class="dv">22</span>, <span class="dt">by =</span> <span class="fl">0.1</span>),</a>
+<a class="sourceLine" id="cb9-4" data-line-number="4">     <span class="dt">main =</span> <span class="st">&quot;log2-counts distribution&quot;</span>,</a>
+<a class="sourceLine" id="cb9-5" data-line-number="5">     <span class="dt">xlab =</span> <span class="st">&quot;log2(Counts + epsilon)&quot;</span>, </a>
+<a class="sourceLine" id="cb9-6" data-line-number="6">     <span class="dt">ylab =</span> <span class="st">&quot;Number of genes&quot;</span>, <span class="dt">col =</span> <span class="st">&quot;#BBFFBB&quot;</span>)</a></code></pre></div>
 <p><img src="figures/mouse-kidney_log2_counts-1.png" width="70%" style="display: block; margin: auto;" /></p>
 </div>
 <div id="two-columns-test" class="section level2">
@@ -548,16 +851,16 @@ Distribution of raw counts
 <div id="box-plots" class="section level2">
 <h2>Box plots</h2>
 <p>We can now inspect the distribution of counts per sample with the <code>boxplot()</code> function.</p>
-<div class="sourceCode" id="cb9"><pre class="sourceCode r"><code class="sourceCode r"><a class="sourceLine" id="cb9-1" data-line-number="1"><span class="co">#### Box plots ####</span></a>
-<a class="sourceLine" id="cb9-2" data-line-number="2"><span class="kw">par</span>(<span class="dt">mar =</span> <span class="kw">c</span>(<span class="dv">4</span>, <span class="dv">6</span>, <span class="dv">5</span>, <span class="dv">1</span>))</a>
-<a class="sourceLine" id="cb9-3" data-line-number="3"><span class="kw">boxplot</span>(log2Counts, </a>
-<a class="sourceLine" id="cb9-4" data-line-number="4">        <span class="dt">col =</span> metadata<span class="op">$</span>color,</a>
-<a class="sourceLine" id="cb9-5" data-line-number="5">        <span class="dt">horizontal =</span> <span class="ot">TRUE</span>, </a>
-<a class="sourceLine" id="cb9-6" data-line-number="6">        <span class="dt">las =</span> <span class="dv">1</span>, </a>
-<a class="sourceLine" id="cb9-7" data-line-number="7">        <span class="dt">main =</span> <span class="st">&quot;log2-transformed&quot;</span>, </a>
-<a class="sourceLine" id="cb9-8" data-line-number="8">        <span class="dt">xlab =</span> <span class="st">&quot;log2(counts)&quot;</span>)</a></code></pre></div>
+<div class="sourceCode" id="cb10"><pre class="sourceCode r"><code class="sourceCode r"><a class="sourceLine" id="cb10-1" data-line-number="1"><span class="co">#### Box plots ####</span></a>
+<a class="sourceLine" id="cb10-2" data-line-number="2"><span class="kw">par</span>(<span class="dt">mar =</span> <span class="kw">c</span>(<span class="dv">4</span>, <span class="dv">6</span>, <span class="dv">5</span>, <span class="dv">1</span>))</a>
+<a class="sourceLine" id="cb10-3" data-line-number="3"><span class="kw">boxplot</span>(log2Values, </a>
+<a class="sourceLine" id="cb10-4" data-line-number="4">        <span class="dt">col =</span> metadata<span class="op">$</span>color,</a>
+<a class="sourceLine" id="cb10-5" data-line-number="5">        <span class="dt">horizontal =</span> <span class="ot">TRUE</span>, </a>
+<a class="sourceLine" id="cb10-6" data-line-number="6">        <span class="dt">las =</span> <span class="dv">1</span>, </a>
+<a class="sourceLine" id="cb10-7" data-line-number="7">        <span class="dt">main =</span> <span class="st">&quot;log2-transformed&quot;</span>, </a>
+<a class="sourceLine" id="cb10-8" data-line-number="8">        <span class="dt">xlab =</span> <span class="st">&quot;log2(counts)&quot;</span>)</a></code></pre></div>
 <p><img src="figures/mouse-kidney_box%20plots-1.png" width="25%" style="display: block; margin: auto;" /></p>
-<div class="sourceCode" id="cb10"><pre class="sourceCode r"><code class="sourceCode r"><a class="sourceLine" id="cb10-1" data-line-number="1"><span class="kw">par</span>(par.ori)</a></code></pre></div>
+<div class="sourceCode" id="cb11"><pre class="sourceCode r"><code class="sourceCode r"><a class="sourceLine" id="cb11-1" data-line-number="1"><span class="kw">par</span>(par.ori)</a></code></pre></div>
 </div>
 <div id="box-plot-comment" class="section level2">
 <h2>Box plot comment</h2>
@@ -565,24 +868,24 @@ Distribution of raw counts
 </div>
 <div id="gene-filtering" class="section level2">
 <h2>Gene filtering</h2>
-<div class="sourceCode" id="cb11"><pre class="sourceCode r"><code class="sourceCode r"><a class="sourceLine" id="cb11-1" data-line-number="1"><span class="co">## Filter out the genes with very low counts in all conditions</span></a>
-<a class="sourceLine" id="cb11-2" data-line-number="2">undetectedGenes &lt;-<span class="st"> </span><span class="kw">apply</span>(rawCounts, <span class="dt">MARGIN =</span> <span class="dv">1</span>, <span class="dt">FUN =</span> sum) <span class="op">&lt;</span><span class="st"> </span>parameters<span class="op">$</span>minCount</a>
-<a class="sourceLine" id="cb11-3" data-line-number="3"><span class="co"># table(undetectedGenes)</span></a>
-<a class="sourceLine" id="cb11-4" data-line-number="4">log2CountsFiltered &lt;-<span class="st"> </span>log2Counts[<span class="op">!</span>undetectedGenes, ]</a></code></pre></div>
+<div class="sourceCode" id="cb12"><pre class="sourceCode r"><code class="sourceCode r"><a class="sourceLine" id="cb12-1" data-line-number="1"><span class="co">## Filter out the genes with very low counts in all conditions</span></a>
+<a class="sourceLine" id="cb12-2" data-line-number="2">undetectedGenes &lt;-<span class="st"> </span><span class="kw">apply</span>(rawValues, <span class="dt">MARGIN =</span> <span class="dv">1</span>, <span class="dt">FUN =</span> sum) <span class="op">&lt;</span><span class="st"> </span>parameters<span class="op">$</span>minCount</a>
+<a class="sourceLine" id="cb12-3" data-line-number="3"><span class="co"># table(undetectedGenes)</span></a>
+<a class="sourceLine" id="cb12-4" data-line-number="4">log2Filtered &lt;-<span class="st"> </span>log2Values[<span class="op">!</span>undetectedGenes, ]</a></code></pre></div>
 <p>We filtered out all the genes whose maximal count value across all samples was lower than 10. Among the 46679 genes from the raw count table, 20851 were considered undetected according to this criterion. We use the remaining 25828 genes for the subsequent analyses.</p>
 </div>
 <div id="boxplot-after-gene-filtering" class="section level2">
 <h2>Boxplot after gene filtering</h2>
-<div class="sourceCode" id="cb12"><pre class="sourceCode r"><code class="sourceCode r"><a class="sourceLine" id="cb12-1" data-line-number="1"><span class="co">#### Box plots after filtering ####</span></a>
-<a class="sourceLine" id="cb12-2" data-line-number="2"><span class="kw">par</span>(<span class="dt">mar =</span> <span class="kw">c</span>(<span class="dv">4</span>, <span class="dv">6</span>, <span class="dv">5</span>, <span class="dv">1</span>))</a>
-<a class="sourceLine" id="cb12-3" data-line-number="3"><span class="kw">boxplot</span>(log2CountsFiltered, </a>
-<a class="sourceLine" id="cb12-4" data-line-number="4">        <span class="dt">col =</span> metadata<span class="op">$</span>color,</a>
-<a class="sourceLine" id="cb12-5" data-line-number="5">        <span class="dt">horizontal =</span> <span class="ot">TRUE</span>, </a>
-<a class="sourceLine" id="cb12-6" data-line-number="6">        <span class="dt">las =</span> <span class="dv">1</span>,</a>
-<a class="sourceLine" id="cb12-7" data-line-number="7">        <span class="dt">main =</span> <span class="st">&quot;Filtered genes&quot;</span>, </a>
-<a class="sourceLine" id="cb12-8" data-line-number="8">        <span class="dt">xlab =</span> <span class="st">&quot;log2(counts)&quot;</span>)</a></code></pre></div>
+<div class="sourceCode" id="cb13"><pre class="sourceCode r"><code class="sourceCode r"><a class="sourceLine" id="cb13-1" data-line-number="1"><span class="co">#### Box plots after filtering ####</span></a>
+<a class="sourceLine" id="cb13-2" data-line-number="2"><span class="kw">par</span>(<span class="dt">mar =</span> <span class="kw">c</span>(<span class="dv">4</span>, <span class="dv">6</span>, <span class="dv">5</span>, <span class="dv">1</span>))</a>
+<a class="sourceLine" id="cb13-3" data-line-number="3"><span class="kw">boxplot</span>(log2Filtered, </a>
+<a class="sourceLine" id="cb13-4" data-line-number="4">        <span class="dt">col =</span> metadata<span class="op">$</span>color,</a>
+<a class="sourceLine" id="cb13-5" data-line-number="5">        <span class="dt">horizontal =</span> <span class="ot">TRUE</span>, </a>
+<a class="sourceLine" id="cb13-6" data-line-number="6">        <span class="dt">las =</span> <span class="dv">1</span>,</a>
+<a class="sourceLine" id="cb13-7" data-line-number="7">        <span class="dt">main =</span> <span class="st">&quot;Filtered genes&quot;</span>, </a>
+<a class="sourceLine" id="cb13-8" data-line-number="8">        <span class="dt">xlab =</span> <span class="st">&quot;log2(counts)&quot;</span>)</a></code></pre></div>
 <p><img src="figures/mouse-kidney_boxplot_filtered-1.png" width="32%" style="display: block; margin: auto;" /></p>
-<div class="sourceCode" id="cb13"><pre class="sourceCode r"><code class="sourceCode r"><a class="sourceLine" id="cb13-1" data-line-number="1"><span class="kw">par</span>(par.ori)</a></code></pre></div>
+<div class="sourceCode" id="cb14"><pre class="sourceCode r"><code class="sourceCode r"><a class="sourceLine" id="cb14-1" data-line-number="1"><span class="kw">par</span>(par.ori)</a></code></pre></div>
 </div>
 <div id="normalisation-more-precisely-scaling" class="section level2">
 <h2>Normalisation (more precisely: scaling)</h2>
@@ -591,60 +894,60 @@ Distribution of raw counts
 </div>
 <div id="normalisation-code" class="section level2">
 <h2>Normalisation code</h2>
-<div class="sourceCode" id="cb14"><pre class="sourceCode r"><code class="sourceCode r"><a class="sourceLine" id="cb14-1" data-line-number="1"><span class="co">#### Median-based normalisation ####</span></a>
-<a class="sourceLine" id="cb14-2" data-line-number="2">sampleMedians &lt;-<span class="st"> </span><span class="kw">apply</span>(log2CountsFiltered, <span class="dv">2</span>, median)</a>
-<a class="sourceLine" id="cb14-3" data-line-number="3">seriesMedian &lt;-<span class="st"> </span><span class="kw">median</span>(sampleMedians)</a>
-<a class="sourceLine" id="cb14-4" data-line-number="4">scalingFactors &lt;-<span class="st"> </span>seriesMedian <span class="op">/</span><span class="st"> </span>sampleMedians</a>
-<a class="sourceLine" id="cb14-5" data-line-number="5"></a>
-<a class="sourceLine" id="cb14-6" data-line-number="6">log2CountsStandardised &lt;-<span class="st"> </span><span class="kw">data.frame</span>(<span class="kw">matrix</span>(</a>
-<a class="sourceLine" id="cb14-7" data-line-number="7">  <span class="dt">nrow =</span> <span class="kw">nrow</span>(log2CountsFiltered),</a>
-<a class="sourceLine" id="cb14-8" data-line-number="8">  <span class="dt">ncol =</span> <span class="kw">ncol</span>(log2CountsFiltered)))</a>
-<a class="sourceLine" id="cb14-9" data-line-number="9"><span class="kw">colnames</span>(log2CountsStandardised) &lt;-<span class="st"> </span><span class="kw">colnames</span>(log2CountsFiltered)</a>
-<a class="sourceLine" id="cb14-10" data-line-number="10"><span class="kw">rownames</span>(log2CountsStandardised) &lt;-<span class="st"> </span><span class="kw">rownames</span>(log2CountsFiltered)</a>
-<a class="sourceLine" id="cb14-11" data-line-number="11"><span class="cf">for</span> (j <span class="cf">in</span> <span class="dv">1</span><span class="op">:</span><span class="kw">ncol</span>(log2CountsFiltered)) {</a>
-<a class="sourceLine" id="cb14-12" data-line-number="12">  log2CountsStandardised[, j] &lt;-<span class="st"> </span>log2CountsFiltered[, j] <span class="op">*</span><span class="st"> </span>scalingFactors[j]</a>
-<a class="sourceLine" id="cb14-13" data-line-number="13">}</a>
-<a class="sourceLine" id="cb14-14" data-line-number="14"></a>
-<a class="sourceLine" id="cb14-15" data-line-number="15"><span class="co">## Check the remaining medians</span></a>
-<a class="sourceLine" id="cb14-16" data-line-number="16"><span class="kw">apply</span>(log2CountsStandardised, <span class="dv">2</span>, median)</a></code></pre></div>
+<div class="sourceCode" id="cb15"><pre class="sourceCode r"><code class="sourceCode r"><a class="sourceLine" id="cb15-1" data-line-number="1"><span class="co">#### Median-based normalisation ####</span></a>
+<a class="sourceLine" id="cb15-2" data-line-number="2">sampleMedians &lt;-<span class="st"> </span><span class="kw">apply</span>(log2Filtered, <span class="dv">2</span>, median)</a>
+<a class="sourceLine" id="cb15-3" data-line-number="3">seriesMedian &lt;-<span class="st"> </span><span class="kw">median</span>(sampleMedians)</a>
+<a class="sourceLine" id="cb15-4" data-line-number="4">scalingFactors &lt;-<span class="st"> </span>seriesMedian <span class="op">/</span><span class="st"> </span>sampleMedians</a>
+<a class="sourceLine" id="cb15-5" data-line-number="5"></a>
+<a class="sourceLine" id="cb15-6" data-line-number="6">log2Standardised &lt;-<span class="st"> </span><span class="kw">data.frame</span>(<span class="kw">matrix</span>(</a>
+<a class="sourceLine" id="cb15-7" data-line-number="7">  <span class="dt">nrow =</span> <span class="kw">nrow</span>(log2Filtered),</a>
+<a class="sourceLine" id="cb15-8" data-line-number="8">  <span class="dt">ncol =</span> <span class="kw">ncol</span>(log2Filtered)))</a>
+<a class="sourceLine" id="cb15-9" data-line-number="9"><span class="kw">colnames</span>(log2Standardised) &lt;-<span class="st"> </span><span class="kw">colnames</span>(log2Filtered)</a>
+<a class="sourceLine" id="cb15-10" data-line-number="10"><span class="kw">rownames</span>(log2Standardised) &lt;-<span class="st"> </span><span class="kw">rownames</span>(log2Filtered)</a>
+<a class="sourceLine" id="cb15-11" data-line-number="11"><span class="cf">for</span> (j <span class="cf">in</span> <span class="dv">1</span><span class="op">:</span><span class="kw">ncol</span>(log2Filtered)) {</a>
+<a class="sourceLine" id="cb15-12" data-line-number="12">  log2Standardised[, j] &lt;-<span class="st"> </span>log2Filtered[, j] <span class="op">*</span><span class="st"> </span>scalingFactors[j]</a>
+<a class="sourceLine" id="cb15-13" data-line-number="13">}</a>
+<a class="sourceLine" id="cb15-14" data-line-number="14"></a>
+<a class="sourceLine" id="cb15-15" data-line-number="15"><span class="co">## Check the remaining medians</span></a>
+<a class="sourceLine" id="cb15-16" data-line-number="16"><span class="kw">apply</span>(log2Standardised, <span class="dv">2</span>, median)</a></code></pre></div>
 <pre><code>day14_12 day14_13 day14_14 day14_15   day3_4   day3_5   day3_6   day3_7  day7_10  day7_11   day7_8   day7_9 normal_1 normal_2 normal_3 
 6.772065 6.772065 6.772065 6.772065 6.772065 6.772065 6.772065 6.772065 6.772065 6.772065 6.772065 6.772065 6.772065 6.772065 6.772065 </code></pre>
 </div>
 <div id="normalized-boxplot" class="section level2">
 <h2>Normalized boxplot</h2>
-<div class="sourceCode" id="cb16"><pre class="sourceCode r"><code class="sourceCode r"><a class="sourceLine" id="cb16-1" data-line-number="1"><span class="co">#### Box plots after scaling ####</span></a>
-<a class="sourceLine" id="cb16-2" data-line-number="2"><span class="kw">par</span>(<span class="dt">mar =</span> <span class="kw">c</span>(<span class="dv">4</span>, <span class="dv">6</span>, <span class="dv">5</span>, <span class="dv">1</span>))</a>
-<a class="sourceLine" id="cb16-3" data-line-number="3"><span class="kw">boxplot</span>(log2CountsStandardised, </a>
-<a class="sourceLine" id="cb16-4" data-line-number="4">        <span class="dt">col =</span> metadata<span class="op">$</span>color,</a>
-<a class="sourceLine" id="cb16-5" data-line-number="5">        <span class="dt">horizontal =</span> <span class="ot">TRUE</span>, </a>
-<a class="sourceLine" id="cb16-6" data-line-number="6">        <span class="dt">las =</span> <span class="dv">1</span>,</a>
-<a class="sourceLine" id="cb16-7" data-line-number="7">        <span class="dt">main =</span> <span class="st">&quot;Median-based scaled&quot;</span>, </a>
-<a class="sourceLine" id="cb16-8" data-line-number="8">        <span class="dt">xlab =</span> <span class="st">&quot;log2(counts&quot;</span>)</a></code></pre></div>
+<div class="sourceCode" id="cb17"><pre class="sourceCode r"><code class="sourceCode r"><a class="sourceLine" id="cb17-1" data-line-number="1"><span class="co">#### Box plots after scaling ####</span></a>
+<a class="sourceLine" id="cb17-2" data-line-number="2"><span class="kw">par</span>(<span class="dt">mar =</span> <span class="kw">c</span>(<span class="dv">4</span>, <span class="dv">6</span>, <span class="dv">5</span>, <span class="dv">1</span>))</a>
+<a class="sourceLine" id="cb17-3" data-line-number="3"><span class="kw">boxplot</span>(log2Standardised, </a>
+<a class="sourceLine" id="cb17-4" data-line-number="4">        <span class="dt">col =</span> metadata<span class="op">$</span>color,</a>
+<a class="sourceLine" id="cb17-5" data-line-number="5">        <span class="dt">horizontal =</span> <span class="ot">TRUE</span>, </a>
+<a class="sourceLine" id="cb17-6" data-line-number="6">        <span class="dt">las =</span> <span class="dv">1</span>,</a>
+<a class="sourceLine" id="cb17-7" data-line-number="7">        <span class="dt">main =</span> <span class="st">&quot;Median-based scaled&quot;</span>, </a>
+<a class="sourceLine" id="cb17-8" data-line-number="8">        <span class="dt">xlab =</span> <span class="st">&quot;log2(counts&quot;</span>)</a></code></pre></div>
 <p><img src="figures/mouse-kidney_median_normalisation_boxplot-1.png" width="32%" style="display: block; margin: auto;" /></p>
-<div class="sourceCode" id="cb17"><pre class="sourceCode r"><code class="sourceCode r"><a class="sourceLine" id="cb17-1" data-line-number="1"><span class="kw">par</span>(par.ori)</a></code></pre></div>
+<div class="sourceCode" id="cb18"><pre class="sourceCode r"><code class="sourceCode r"><a class="sourceLine" id="cb18-1" data-line-number="1"><span class="kw">par</span>(par.ori)</a></code></pre></div>
 </div>
 <div id="violin-plots" class="section level2">
 <h2>Violin plots</h2>
 <p>We can also inspect the distribution of counts per sample with the <code>vioplot()</code> function.</p>
-<div class="sourceCode" id="cb18"><pre class="sourceCode r"><code class="sourceCode r"><a class="sourceLine" id="cb18-1" data-line-number="1"><span class="co">#### Violin plots ####</span></a>
-<a class="sourceLine" id="cb18-2" data-line-number="2"><span class="kw">par</span>(<span class="dt">mar =</span> <span class="kw">c</span>(<span class="dv">4</span>, <span class="dv">6</span>, <span class="dv">5</span>, <span class="dv">1</span>))</a>
-<a class="sourceLine" id="cb18-3" data-line-number="3">vioplot<span class="op">::</span><span class="kw">vioplot</span>(log2Counts, </a>
-<a class="sourceLine" id="cb18-4" data-line-number="4">        <span class="dt">col =</span> metadata<span class="op">$</span>color,</a>
-<a class="sourceLine" id="cb18-5" data-line-number="5">        <span class="dt">horizontal =</span> <span class="ot">TRUE</span>, </a>
-<a class="sourceLine" id="cb18-6" data-line-number="6">        <span class="dt">las =</span> <span class="dv">1</span>, </a>
-<a class="sourceLine" id="cb18-7" data-line-number="7">        <span class="dt">main =</span> <span class="st">&quot;log2-transformed&quot;</span>, </a>
-<a class="sourceLine" id="cb18-8" data-line-number="8">        <span class="dt">xlab =</span> <span class="st">&quot;log2(counts)&quot;</span>)</a></code></pre></div>
+<div class="sourceCode" id="cb19"><pre class="sourceCode r"><code class="sourceCode r"><a class="sourceLine" id="cb19-1" data-line-number="1"><span class="co">#### Violin plots ####</span></a>
+<a class="sourceLine" id="cb19-2" data-line-number="2"><span class="kw">par</span>(<span class="dt">mar =</span> <span class="kw">c</span>(<span class="dv">4</span>, <span class="dv">6</span>, <span class="dv">5</span>, <span class="dv">1</span>))</a>
+<a class="sourceLine" id="cb19-3" data-line-number="3">vioplot<span class="op">::</span><span class="kw">vioplot</span>(log2Values, </a>
+<a class="sourceLine" id="cb19-4" data-line-number="4">        <span class="dt">col =</span> metadata<span class="op">$</span>color,</a>
+<a class="sourceLine" id="cb19-5" data-line-number="5">        <span class="dt">horizontal =</span> <span class="ot">TRUE</span>, </a>
+<a class="sourceLine" id="cb19-6" data-line-number="6">        <span class="dt">las =</span> <span class="dv">1</span>, </a>
+<a class="sourceLine" id="cb19-7" data-line-number="7">        <span class="dt">main =</span> <span class="st">&quot;log2-transformed&quot;</span>, </a>
+<a class="sourceLine" id="cb19-8" data-line-number="8">        <span class="dt">xlab =</span> <span class="st">&quot;log2(counts)&quot;</span>)</a></code></pre></div>
 <p><img src="figures/mouse-kidney_violin%20plots-1.png" width="25%" style="display: block; margin: auto;" /></p>
-<div class="sourceCode" id="cb19"><pre class="sourceCode r"><code class="sourceCode r"><a class="sourceLine" id="cb19-1" data-line-number="1"><span class="kw">par</span>(par.ori)</a></code></pre></div>
+<div class="sourceCode" id="cb20"><pre class="sourceCode r"><code class="sourceCode r"><a class="sourceLine" id="cb20-1" data-line-number="1"><span class="kw">par</span>(par.ori)</a></code></pre></div>
 </div>
 <div id="scatter-plots" class="section level2">
 <h2>Scatter plots</h2>
 <p>We can also inspect the distribution of counts per sample with the <code>plot()</code> function.</p>
-<div class="sourceCode" id="cb20"><pre class="sourceCode r"><code class="sourceCode r"><a class="sourceLine" id="cb20-1" data-line-number="1"><span class="co">#### Scatter plots ####</span></a>
-<a class="sourceLine" id="cb20-2" data-line-number="2"><span class="co">#par(mar = c(4, 6, 5, 1))</span></a>
-<a class="sourceLine" id="cb20-3" data-line-number="3"><span class="co">#plot(log2Counts[,metadata$sampleName], </span></a>
-<a class="sourceLine" id="cb20-4" data-line-number="4"><span class="co">#        col = metadata$color)</span></a>
-<a class="sourceLine" id="cb20-5" data-line-number="5"><span class="co">#par(par.ori)</span></a></code></pre></div>
+<div class="sourceCode" id="cb21"><pre class="sourceCode r"><code class="sourceCode r"><a class="sourceLine" id="cb21-1" data-line-number="1"><span class="co">#### Scatter plots ####</span></a>
+<a class="sourceLine" id="cb21-2" data-line-number="2"><span class="co">#par(mar = c(4, 6, 5, 1))</span></a>
+<a class="sourceLine" id="cb21-3" data-line-number="3"><span class="co">#plot(log2Values[,metadata$sampleName], </span></a>
+<a class="sourceLine" id="cb21-4" data-line-number="4"><span class="co">#        col = metadata$color)</span></a>
+<a class="sourceLine" id="cb21-5" data-line-number="5"><span class="co">#par(par.ori)</span></a></code></pre></div>
 </div>
 <div id="combinations" class="section level2">
 <h2>Combinations</h2>
@@ -652,50 +955,72 @@ Distribution of raw counts
 <div id="exporting-the-result" class="section level2">
 <h2>Exporting the result</h2>
 <p>We export the pre-processed data in separate tables for further reuse.</p>
-<div class="sourceCode" id="cb21"><pre class="sourceCode r"><code class="sourceCode r"><a class="sourceLine" id="cb21-1" data-line-number="1"><span class="co">#### Save tables  ####</span></a>
-<a class="sourceLine" id="cb21-2" data-line-number="2"></a>
-<a class="sourceLine" id="cb21-3" data-line-number="3"><span class="co">## Raw counts, all the genes</span></a>
-<a class="sourceLine" id="cb21-4" data-line-number="4">outfiles[<span class="st">&quot;raw counts&quot;</span>] &lt;-<span class="st"> </span><span class="kw">file.path</span>(outdirs<span class="op">$</span>transcriptome, <span class="st">&quot;transcriptome_raw.tsv.gz&quot;</span>)</a>
-<a class="sourceLine" id="cb21-5" data-line-number="5"><span class="kw">write.table</span>(<span class="dt">x =</span> rawCounts, <span class="dt">file =</span> outfiles[<span class="st">&quot;raw counts&quot;</span>] , <span class="dt">quote =</span> <span class="ot">FALSE</span>, <span class="dt">sep =</span> <span class="st">&quot;</span><span class="ch">\t</span><span class="st">&quot;</span>)</a>
-<a class="sourceLine" id="cb21-6" data-line-number="6"><span class="kw">write.table</span>(<span class="dt">x =</span> rawCounts, </a>
-<a class="sourceLine" id="cb21-7" data-line-number="7">            <span class="dt">dec =</span> <span class="st">&quot;.&quot;</span>, </a>
-<a class="sourceLine" id="cb21-8" data-line-number="8">            <span class="dt">file =</span> <span class="kw">gzfile</span>(outfiles[<span class="st">&quot;raw counts&quot;</span>], <span class="st">&quot;w&quot;</span>), </a>
-<a class="sourceLine" id="cb21-9" data-line-number="9">            <span class="dt">quote =</span> <span class="ot">FALSE</span>, <span class="dt">sep =</span> <span class="st">&quot;</span><span class="ch">\t</span><span class="st">&quot;</span>)</a>
-<a class="sourceLine" id="cb21-10" data-line-number="10"></a>
-<a class="sourceLine" id="cb21-11" data-line-number="11"><span class="co">## Log2-transformed counts, all the genes</span></a>
-<a class="sourceLine" id="cb21-12" data-line-number="12">outfiles[<span class="st">&quot;log2 counts&quot;</span>] &lt;-<span class="st"> </span><span class="kw">file.path</span>(outdirs<span class="op">$</span>transcriptome, <span class="st">&quot;transcriptome_log2.tsv.gz&quot;</span>)</a>
-<a class="sourceLine" id="cb21-13" data-line-number="13"><span class="kw">write.table</span>(<span class="dt">x =</span> <span class="kw">format</span>(<span class="dt">digits =</span> <span class="dv">3</span>, log2Counts), </a>
-<a class="sourceLine" id="cb21-14" data-line-number="14">            <span class="dt">dec =</span> <span class="st">&quot;.&quot;</span>, </a>
-<a class="sourceLine" id="cb21-15" data-line-number="15">            <span class="dt">file =</span> <span class="kw">gzfile</span>(outfiles[<span class="st">&quot;log2 counts&quot;</span>], <span class="st">&quot;w&quot;</span>), </a>
-<a class="sourceLine" id="cb21-16" data-line-number="16">            <span class="dt">quote =</span> <span class="ot">FALSE</span>, <span class="dt">sep =</span> <span class="st">&quot;</span><span class="ch">\t</span><span class="st">&quot;</span>)</a>
-<a class="sourceLine" id="cb21-17" data-line-number="17"></a>
-<a class="sourceLine" id="cb21-18" data-line-number="18"><span class="co">## Filtered genes only, log2-transformed counts</span></a>
-<a class="sourceLine" id="cb21-19" data-line-number="19">outfiles[<span class="st">&quot;filtered log2 counts&quot;</span>] &lt;-<span class="st"> </span><span class="kw">file.path</span>(outdirs<span class="op">$</span>transcriptome, <span class="st">&quot;transcriptome_log2_filterd.tsv.gz&quot;</span>)</a>
-<a class="sourceLine" id="cb21-20" data-line-number="20"><span class="kw">write.table</span>(<span class="dt">x =</span> <span class="kw">format</span>(<span class="dt">digits =</span> <span class="dv">3</span>, log2CountsFiltered), </a>
-<a class="sourceLine" id="cb21-21" data-line-number="21">            <span class="dt">dec =</span> <span class="st">&quot;.&quot;</span>, </a>
-<a class="sourceLine" id="cb21-22" data-line-number="22">            <span class="dt">file =</span> <span class="kw">gzfile</span>(outfiles[<span class="st">&quot;filtered log2 counts&quot;</span>], <span class="st">&quot;w&quot;</span>), </a>
-<a class="sourceLine" id="cb21-23" data-line-number="23">            <span class="dt">quote =</span> <span class="ot">FALSE</span>, <span class="dt">sep =</span> <span class="st">&quot;</span><span class="ch">\t</span><span class="st">&quot;</span>)</a>
-<a class="sourceLine" id="cb21-24" data-line-number="24"></a>
-<a class="sourceLine" id="cb21-25" data-line-number="25"><span class="co">## Filtered genes only, log2-transformed and standardized counts</span></a>
-<a class="sourceLine" id="cb21-26" data-line-number="26">outfiles[<span class="st">&quot;standardised log2 counts&quot;</span>] &lt;-<span class="st"> </span><span class="kw">file.path</span>(outdirs<span class="op">$</span>transcriptome, <span class="st">&quot;transcriptome_log2_norm.tsv.gz&quot;</span>)</a>
-<a class="sourceLine" id="cb21-27" data-line-number="27"><span class="kw">write.table</span>(<span class="dt">x =</span> <span class="kw">format</span>(<span class="dt">digits =</span> <span class="dv">3</span>, log2CountsStandardised), </a>
-<a class="sourceLine" id="cb21-28" data-line-number="28">            <span class="dt">dec =</span> <span class="st">&quot;.&quot;</span>, </a>
-<a class="sourceLine" id="cb21-29" data-line-number="29">            <span class="dt">file =</span> <span class="kw">gzfile</span>(outfiles[<span class="st">&quot;standardised log2 counts&quot;</span>], <span class="st">&quot;w&quot;</span>), </a>
-<a class="sourceLine" id="cb21-30" data-line-number="30">            <span class="dt">quote =</span> <span class="ot">FALSE</span>, <span class="dt">sep =</span> <span class="st">&quot;</span><span class="ch">\t</span><span class="st">&quot;</span>)</a>
-<a class="sourceLine" id="cb21-31" data-line-number="31"></a>
-<a class="sourceLine" id="cb21-32" data-line-number="32"><span class="co">## Metadata</span></a>
-<a class="sourceLine" id="cb21-33" data-line-number="33">outfiles[<span class="st">&quot;Metadata&quot;</span>] &lt;-<span class="st"> </span><span class="kw">file.path</span>(outdirs<span class="op">$</span>transcriptome, <span class="st">&quot;transcriptome_metadata.tsv&quot;</span>)</a>
-<a class="sourceLine" id="cb21-34" data-line-number="34"><span class="kw">write.table</span>(<span class="dt">x =</span> metadata, <span class="dt">file =</span> outfiles[<span class="st">&quot;Metadata&quot;</span>] , <span class="dt">quote =</span> <span class="ot">FALSE</span>, <span class="dt">sep =</span> <span class="st">&quot;</span><span class="ch">\t</span><span class="st">&quot;</span>)</a>
-<a class="sourceLine" id="cb21-35" data-line-number="35"></a>
-<a class="sourceLine" id="cb21-36" data-line-number="36"></a>
-<a class="sourceLine" id="cb21-37" data-line-number="37"><span class="co">## Build a table to display the links in the report</span></a>
-<a class="sourceLine" id="cb21-38" data-line-number="38">fileTable &lt;-<span class="st"> </span><span class="kw">data.frame</span>(outfiles)</a>
-<a class="sourceLine" id="cb21-39" data-line-number="39">fileTable<span class="op">$</span>basename &lt;-<span class="st"> </span><span class="kw">basename</span>(fileTable<span class="op">$</span>outfiles)</a>
-<a class="sourceLine" id="cb21-40" data-line-number="40">fileTable<span class="op">$</span>dirname &lt;-<span class="st"> </span><span class="kw">dirname</span>(fileTable<span class="op">$</span>outfiles)</a>
-<a class="sourceLine" id="cb21-41" data-line-number="41">fileTable<span class="op">$</span>link &lt;-<span class="st"> </span><span class="kw">paste0</span>(<span class="st">&quot;[&quot;</span>, fileTable<span class="op">$</span>basename, <span class="st">&quot;]&quot;</span>, <span class="st">&quot;(&quot;</span>, fileTable<span class="op">$</span>outfiles, <span class="st">&quot;)&quot;</span>)</a>
-<a class="sourceLine" id="cb21-42" data-line-number="42"></a>
-<a class="sourceLine" id="cb21-43" data-line-number="43"><span class="co">## Print the directories</span></a>
-<a class="sourceLine" id="cb21-44" data-line-number="44"><span class="kw">kable</span>(<span class="kw">t</span>(<span class="kw">as.data.frame.list</span>(outdirs)), <span class="dt">col.names =</span> <span class="st">&quot;Directories&quot;</span>, <span class="dt">caption =</span> <span class="st">&quot;Directories&quot;</span>)</a></code></pre></div>
+<div class="sourceCode" id="cb22"><pre class="sourceCode r"><code class="sourceCode r"><a class="sourceLine" id="cb22-1" data-line-number="1"><span class="co">#### Save tables  ####</span></a>
+<a class="sourceLine" id="cb22-2" data-line-number="2"></a>
+<a class="sourceLine" id="cb22-3" data-line-number="3">outfiles &lt;-<span class="st"> </span><span class="kw">vector</span>()</a>
+<a class="sourceLine" id="cb22-4" data-line-number="4"></a>
+<a class="sourceLine" id="cb22-5" data-line-number="5"><span class="co">## Raw counts, all the variables</span></a>
+<a class="sourceLine" id="cb22-6" data-line-number="6">outfiles[<span class="st">&quot;raw&quot;</span>] &lt;-<span class="st"> </span><span class="kw">file.path</span>(outdirs[parameters<span class="op">$</span>datatype], </a>
+<a class="sourceLine" id="cb22-7" data-line-number="7">                                    <span class="kw">paste0</span>(parameters<span class="op">$</span>dataset, </a>
+<a class="sourceLine" id="cb22-8" data-line-number="8">                                           <span class="st">&quot;_&quot;</span>, parameters<span class="op">$</span>datatype, </a>
+<a class="sourceLine" id="cb22-9" data-line-number="9">                                           <span class="st">&quot;_raw.tsv.gz&quot;</span>))</a>
+<a class="sourceLine" id="cb22-10" data-line-number="10"><span class="kw">write.table</span>(<span class="dt">x =</span> <span class="kw">format</span>(<span class="dt">digits =</span> <span class="dv">3</span>, <span class="dt">big.mark   =</span> <span class="st">&quot;&quot;</span>, <span class="dt">decimal.mark =</span> <span class="st">&quot;.&quot;</span>, rawValues), </a>
+<a class="sourceLine" id="cb22-11" data-line-number="11">            <span class="dt">dec =</span> <span class="st">&quot;.&quot;</span>, </a>
+<a class="sourceLine" id="cb22-12" data-line-number="12">            <span class="dt">file =</span> <span class="kw">gzfile</span>(outfiles[<span class="st">&quot;raw&quot;</span>], <span class="st">&quot;w&quot;</span>), </a>
+<a class="sourceLine" id="cb22-13" data-line-number="13">            <span class="dt">quote =</span> <span class="ot">FALSE</span>, <span class="dt">sep =</span> <span class="st">&quot;</span><span class="ch">\t</span><span class="st">&quot;</span>)</a>
+<a class="sourceLine" id="cb22-14" data-line-number="14"></a>
+<a class="sourceLine" id="cb22-15" data-line-number="15"><span class="co">## Log2-transformed counts, all the genes</span></a>
+<a class="sourceLine" id="cb22-16" data-line-number="16">outfiles[<span class="st">&quot;log2&quot;</span>] &lt;-<span class="st"> </span><span class="kw">file.path</span>(outdirs[parameters<span class="op">$</span>datatype], </a>
+<a class="sourceLine" id="cb22-17" data-line-number="17">                                    <span class="kw">paste0</span>(parameters<span class="op">$</span>dataset, </a>
+<a class="sourceLine" id="cb22-18" data-line-number="18">                                           <span class="st">&quot;_&quot;</span>, parameters<span class="op">$</span>datatype, </a>
+<a class="sourceLine" id="cb22-19" data-line-number="19">                                           <span class="st">&quot;_log2.tsv.gz&quot;</span>))</a>
+<a class="sourceLine" id="cb22-20" data-line-number="20"><span class="kw">write.table</span>(<span class="dt">x =</span> <span class="kw">format</span>(<span class="dt">digits =</span> <span class="dv">3</span>, <span class="dt">big.mark   =</span> <span class="st">&quot;&quot;</span>, <span class="dt">decimal.mark =</span> <span class="st">&quot;.&quot;</span>, log2Values), </a>
+<a class="sourceLine" id="cb22-21" data-line-number="21">            <span class="dt">dec =</span> <span class="st">&quot;.&quot;</span>, </a>
+<a class="sourceLine" id="cb22-22" data-line-number="22">            <span class="dt">file =</span> <span class="kw">gzfile</span>(outfiles[<span class="st">&quot;log2&quot;</span>], <span class="st">&quot;w&quot;</span>), </a>
+<a class="sourceLine" id="cb22-23" data-line-number="23">            <span class="dt">quote =</span> <span class="ot">FALSE</span>, <span class="dt">sep =</span> <span class="st">&quot;</span><span class="ch">\t</span><span class="st">&quot;</span>)</a>
+<a class="sourceLine" id="cb22-24" data-line-number="24"></a>
+<a class="sourceLine" id="cb22-25" data-line-number="25"><span class="co">## Filtered genes only, log2-transformed counts</span></a>
+<a class="sourceLine" id="cb22-26" data-line-number="26">outfiles[<span class="st">&quot;filtered&quot;</span>] &lt;-<span class="st"> </span><span class="kw">file.path</span>(outdirs[parameters<span class="op">$</span>datatype], </a>
+<a class="sourceLine" id="cb22-27" data-line-number="27">                                    <span class="kw">paste0</span>(parameters<span class="op">$</span>dataset, </a>
+<a class="sourceLine" id="cb22-28" data-line-number="28">                                           <span class="st">&quot;_&quot;</span>, parameters<span class="op">$</span>datatype, </a>
+<a class="sourceLine" id="cb22-29" data-line-number="29">                                           <span class="st">&quot;_log2_filtered.tsv.gz&quot;</span>))</a>
+<a class="sourceLine" id="cb22-30" data-line-number="30"><span class="kw">write.table</span>(<span class="dt">x =</span> <span class="kw">format</span>(<span class="dt">digits =</span> <span class="dv">3</span>, <span class="dt">big.mark   =</span> <span class="st">&quot;&quot;</span>, <span class="dt">decimal.mark =</span> <span class="st">&quot;.&quot;</span>, log2Filtered), </a>
+<a class="sourceLine" id="cb22-31" data-line-number="31">            <span class="dt">dec =</span> <span class="st">&quot;.&quot;</span>, </a>
+<a class="sourceLine" id="cb22-32" data-line-number="32">            <span class="dt">file =</span> <span class="kw">gzfile</span>(outfiles[<span class="st">&quot;filtered&quot;</span>], <span class="st">&quot;w&quot;</span>), </a>
+<a class="sourceLine" id="cb22-33" data-line-number="33">            <span class="dt">quote =</span> <span class="ot">FALSE</span>, <span class="dt">sep =</span> <span class="st">&quot;</span><span class="ch">\t</span><span class="st">&quot;</span>)</a>
+<a class="sourceLine" id="cb22-34" data-line-number="34"></a>
+<a class="sourceLine" id="cb22-35" data-line-number="35"><span class="co">## Filtered genes only, log2-transformed and standardized counts</span></a>
+<a class="sourceLine" id="cb22-36" data-line-number="36">outfiles[<span class="st">&quot;standardised&quot;</span>] &lt;-<span class="st"> </span><span class="kw">file.path</span>(outdirs[parameters<span class="op">$</span>datatype], </a>
+<a class="sourceLine" id="cb22-37" data-line-number="37">                                    <span class="kw">paste0</span>(parameters<span class="op">$</span>dataset, </a>
+<a class="sourceLine" id="cb22-38" data-line-number="38">                                           <span class="st">&quot;_&quot;</span>, parameters<span class="op">$</span>datatype, </a>
+<a class="sourceLine" id="cb22-39" data-line-number="39">                                           <span class="st">&quot;_log2_norm.tsv.gz&quot;</span>))</a>
+<a class="sourceLine" id="cb22-40" data-line-number="40"><span class="kw">write.table</span>(<span class="dt">x =</span> <span class="kw">format</span>(<span class="dt">digits =</span> <span class="dv">3</span>, <span class="dt">big.mark   =</span> <span class="st">&quot;&quot;</span>, <span class="dt">decimal.mark =</span> <span class="st">&quot;.&quot;</span>, log2Standardised), </a>
+<a class="sourceLine" id="cb22-41" data-line-number="41">            <span class="dt">dec =</span> <span class="st">&quot;.&quot;</span>, </a>
+<a class="sourceLine" id="cb22-42" data-line-number="42">            <span class="dt">file =</span> <span class="kw">gzfile</span>(outfiles[<span class="st">&quot;standardised&quot;</span>], <span class="st">&quot;w&quot;</span>), </a>
+<a class="sourceLine" id="cb22-43" data-line-number="43">            <span class="dt">quote =</span> <span class="ot">FALSE</span>, <span class="dt">sep =</span> <span class="st">&quot;</span><span class="ch">\t</span><span class="st">&quot;</span>)</a>
+<a class="sourceLine" id="cb22-44" data-line-number="44"></a>
+<a class="sourceLine" id="cb22-45" data-line-number="45"><span class="co">## Metadata</span></a>
+<a class="sourceLine" id="cb22-46" data-line-number="46">outfiles[<span class="st">&quot;metadata&quot;</span>] &lt;-<span class="st"> </span><span class="kw">file.path</span>(outdirs[parameters<span class="op">$</span>datatype], </a>
+<a class="sourceLine" id="cb22-47" data-line-number="47">                                    <span class="kw">paste0</span>(parameters<span class="op">$</span>dataset, </a>
+<a class="sourceLine" id="cb22-48" data-line-number="48">                                           <span class="st">&quot;_&quot;</span>, parameters<span class="op">$</span>datatype, </a>
+<a class="sourceLine" id="cb22-49" data-line-number="49">                                           <span class="st">&quot;_metadata.tsv&quot;</span>))</a>
+<a class="sourceLine" id="cb22-50" data-line-number="50"><span class="kw">write.table</span>(<span class="dt">x =</span> metadata, </a>
+<a class="sourceLine" id="cb22-51" data-line-number="51">            <span class="dt">file =</span> outfiles[<span class="st">&quot;metadata&quot;</span>] ,</a>
+<a class="sourceLine" id="cb22-52" data-line-number="52">            <span class="dt">quote =</span> <span class="ot">FALSE</span>, <span class="dt">sep =</span> <span class="st">&quot;</span><span class="ch">\t</span><span class="st">&quot;</span>)</a>
+<a class="sourceLine" id="cb22-53" data-line-number="53"></a>
+<a class="sourceLine" id="cb22-54" data-line-number="54"></a>
+<a class="sourceLine" id="cb22-55" data-line-number="55"></a>
+<a class="sourceLine" id="cb22-56" data-line-number="56"></a>
+<a class="sourceLine" id="cb22-57" data-line-number="57"></a>
+<a class="sourceLine" id="cb22-58" data-line-number="58"></a>
+<a class="sourceLine" id="cb22-59" data-line-number="59"><span class="co">## Build a table to display the links in the report</span></a>
+<a class="sourceLine" id="cb22-60" data-line-number="60">fileTable &lt;-<span class="st"> </span><span class="kw">data.frame</span>(outfiles)</a>
+<a class="sourceLine" id="cb22-61" data-line-number="61">fileTable<span class="op">$</span>basename &lt;-<span class="st"> </span><span class="kw">basename</span>(fileTable<span class="op">$</span>outfiles)</a>
+<a class="sourceLine" id="cb22-62" data-line-number="62">fileTable<span class="op">$</span>dirname &lt;-<span class="st"> </span><span class="kw">dirname</span>(fileTable<span class="op">$</span>outfiles)</a>
+<a class="sourceLine" id="cb22-63" data-line-number="63">fileTable<span class="op">$</span>link &lt;-<span class="st"> </span><span class="kw">paste0</span>(<span class="st">&quot;[&quot;</span>, fileTable<span class="op">$</span>basename, <span class="st">&quot;]&quot;</span>, <span class="st">&quot;(&quot;</span>, fileTable<span class="op">$</span>outfiles, <span class="st">&quot;)&quot;</span>)</a>
+<a class="sourceLine" id="cb22-64" data-line-number="64"></a>
+<a class="sourceLine" id="cb22-65" data-line-number="65"><span class="co">## Print the directories</span></a>
+<a class="sourceLine" id="cb22-66" data-line-number="66"><span class="kw">kable</span>(<span class="kw">t</span>(<span class="kw">as.data.frame.list</span>(outdirs)), <span class="dt">col.names =</span> <span class="st">&quot;Directories&quot;</span>, <span class="dt">caption =</span> <span class="st">&quot;Directories&quot;</span>)</a></code></pre></div>
 <table>
 <caption>Directories</caption>
 <thead>
@@ -723,9 +1048,9 @@ Distribution of raw counts
 </tr>
 </tbody>
 </table>
-<div class="sourceCode" id="cb22"><pre class="sourceCode r"><code class="sourceCode r"><a class="sourceLine" id="cb22-1" data-line-number="1"><span class="co">##  Print the link table</span></a>
-<a class="sourceLine" id="cb22-2" data-line-number="2"><span class="kw">kable</span>(<span class="kw">cbind</span>(<span class="kw">rownames</span>(fileTable), fileTable<span class="op">$</span>link), <span class="dt">row.names =</span> <span class="ot">FALSE</span>, <span class="dt">col.names =</span> <span class="kw">c</span>(<span class="st">&quot;Contents&quot;</span>, <span class="st">&quot;Link&quot;</span>),</a>
-<a class="sourceLine" id="cb22-3" data-line-number="3">      <span class="dt">caption =</span> <span class="st">&quot;Output files&quot;</span>)</a></code></pre></div>
+<div class="sourceCode" id="cb23"><pre class="sourceCode r"><code class="sourceCode r"><a class="sourceLine" id="cb23-1" data-line-number="1"><span class="co">##  Print the link table</span></a>
+<a class="sourceLine" id="cb23-2" data-line-number="2"><span class="kw">kable</span>(<span class="kw">cbind</span>(<span class="kw">rownames</span>(fileTable), fileTable<span class="op">$</span>link), <span class="dt">row.names =</span> <span class="ot">FALSE</span>, <span class="dt">col.names =</span> <span class="kw">c</span>(<span class="st">&quot;Contents&quot;</span>, <span class="st">&quot;Link&quot;</span>),</a>
+<a class="sourceLine" id="cb23-3" data-line-number="3">      <span class="dt">caption =</span> <span class="st">&quot;Output files&quot;</span>)</a></code></pre></div>
 <table>
 <caption>Output files</caption>
 <thead>
@@ -736,31 +1061,31 @@ Distribution of raw counts
 </thead>
 <tbody>
 <tr class="odd">
-<td align="left">raw counts</td>
-<td align="left"><a href="./results/transcriptome/transcriptome_raw.tsv.gz">transcriptome_raw.tsv.gz</a></td>
+<td align="left">raw</td>
+<td align="left"><a href="./results/transcriptome/uuo_transcriptome_raw.tsv.gz">uuo_transcriptome_raw.tsv.gz</a></td>
 </tr>
 <tr class="even">
-<td align="left">log2 counts</td>
-<td align="left"><a href="./results/transcriptome/transcriptome_log2.tsv.gz">transcriptome_log2.tsv.gz</a></td>
+<td align="left">log2</td>
+<td align="left"><a href="./results/transcriptome/uuo_transcriptome_log2.tsv.gz">uuo_transcriptome_log2.tsv.gz</a></td>
 </tr>
 <tr class="odd">
-<td align="left">filtered log2 counts</td>
-<td align="left"><a href="./results/transcriptome/transcriptome_log2_filterd.tsv.gz">transcriptome_log2_filterd.tsv.gz</a></td>
+<td align="left">filtered</td>
+<td align="left"><a href="./results/transcriptome/uuo_transcriptome_log2_filtered.tsv.gz">uuo_transcriptome_log2_filtered.tsv.gz</a></td>
 </tr>
 <tr class="even">
-<td align="left">standardised log2 counts</td>
-<td align="left"><a href="./results/transcriptome/transcriptome_log2_norm.tsv.gz">transcriptome_log2_norm.tsv.gz</a></td>
+<td align="left">standardised</td>
+<td align="left"><a href="./results/transcriptome/uuo_transcriptome_log2_norm.tsv.gz">uuo_transcriptome_log2_norm.tsv.gz</a></td>
 </tr>
 <tr class="odd">
-<td align="left">Metadata</td>
-<td align="left"><a href="./results/transcriptome/transcriptome_metadata.tsv">transcriptome_metadata.tsv</a></td>
+<td align="left">metadata</td>
+<td align="left"><a href="./results/transcriptome/uuo_transcriptome_metadata.tsv">uuo_transcriptome_metadata.tsv</a></td>
 </tr>
 </tbody>
 </table>
 </div>
 <div id="session-info" class="section level2">
 <h2>Session info</h2>
-<div class="sourceCode" id="cb23"><pre class="sourceCode r"><code class="sourceCode r"><a class="sourceLine" id="cb23-1" data-line-number="1"><span class="kw">sessionInfo</span>()</a></code></pre></div>
+<div class="sourceCode" id="cb24"><pre class="sourceCode r"><code class="sourceCode r"><a class="sourceLine" id="cb24-1" data-line-number="1"><span class="kw">sessionInfo</span>()</a></code></pre></div>
 <pre><code>R version 4.0.0 (2020-04-24)
 Platform: x86_64-apple-darwin17.0 (64-bit)
 Running under: macOS Mojave 10.14.6
