@@ -23,12 +23,16 @@ We provide here
 
 ## Data sources
 
+
+### Publications
+
+- G. Ciriello *et al.* (2015). Comprehensive Molecular Portraits of Invasive Lobular Breast Cancer, Cell. 163: 506–519. <https://doi.org/10.1016/j.cell.2015.09.033>.
+
+- <https://www.nature.com/articles/nature11412>
+
 ### TCGA web site
 
 <https://cancergenome.nih.gov/>
-
-### Recount2
-
 
 
 ### Preprocessed datasets made available by Ron Shamir's team
@@ -48,17 +52,21 @@ We provide here
        
      - Laura Cantini prepared an additional file with the subtypes (Human/subtypes_annotation.txt) + a script enabling to produce this subtype label based on the combination of these two markers (Human/SubAnnot.R)
 
-## Data preprocessing
+### Recount2
 
-We downloaded the raw counts from TCGA, and applied the following steps
 
-- select the samples belonging to the Breast Invasive Cancer (BIC) study;
-- define the cancer type (used as class label for supervised classification) based on the three immuno markers. 
-- filter out genes with zeros in almost all samples
-- standardzie library sizes
-- log2-transform the data
-- STILL TO BE DONE: detect differentially expressed genes for the clustering
-- exported the different results (raw counts, filtered, normalised, differentially expressed) in TSV files
+### Data preprocessing
+
+We downloaded the TCGA raw counts from the Recount2 database, and applied the following preprocessing steps:
+
+1. select the samples belonging to the Breast Invasive Cancer (BIC) study;
+2. define the cancer type (used as class label for supervised classification) based on the three immuno markers;
+3. filter out "undetected" genes, i.e. genes having zero counts in almost all samples;
+4. library size standardisation;
+5. log2-transform of the counts;
+6. detection of differentially expressed genes 
+7. selection of a reduced subset of genes (likely to be relevant for clustering and supervised classification) by keeping the 1000 genes having the lowest adjusted p-value in differential expression analysis;
+8. exported the different results (raw counts, filtered, normalised, differentially expressed) in TSV files.
 
 The preprocessing was done with an R markdown file, which enables anyone to reproduce the results and understand each step. 
 
